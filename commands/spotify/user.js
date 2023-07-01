@@ -55,6 +55,7 @@ module.exports = {
                     .setTimestamp()
                     .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
                 await interaction.reply({ embeds: [embed], ephemeral: true });
+                return;
             }
 
             const embed = new EmbedBuilder()

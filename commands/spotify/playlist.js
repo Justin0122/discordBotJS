@@ -42,30 +42,38 @@ module.exports = {
                     ...choices,
                 ),
         )
-
         .addBooleanOption( option =>
             option.setName('ephemeral')
                 .setDescription('Should the response be ephemeral?')
                 .setRequired(false)
         ),
-    async execute(interaction) {
-        await interaction.deferReply();
 
-        const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
+    async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
+
+        const spotifySession = new SpotifySession(
+            secureToken,
+            apiUrl,
+            process.env.SPOTIFY_REDIRECT_URI,
+            process.env.SPOTIFY_CLIENT_ID,
+            process.env.SPOTIFY_CLIENT_SECRET
+        );
         const user = await spotifySession.getUser(interaction.user.id);
         await wait(4000);
+
         const month = interaction.options.getString('month');
         const year = interaction.options.getString('year');
-        const playlistName = `${month}/${year} Liked Songs`;
 
-
+        const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'short' })} ${year}.`;
 
         //send a message to the user to let them know we're working on it
         const embed = new EmbedBuilder()
-            .setColor(config.color)
-            .setTitle('Creating Playlist')
+            .setColor(config.color_success)
+            .setTitle('Creating Playlist: ' + playlistName)
             .setDescription(`Creating a playlist for ${month}/${year}...`)
             .setTimestamp();
+
         await interaction.editReply({ embeds: [embed] });
-    },
+    }
+
 };

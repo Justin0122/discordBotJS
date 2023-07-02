@@ -1,5 +1,5 @@
 const SpotifyWebApi = require('spotify-web-api-node');
-const { promisify } = require('util');
+const request = require('request');
 
 class SessionHandler {
     constructor(secureToken, apiUrl, redirectUri, clientId, clientSecret) {
@@ -14,66 +14,37 @@ class SessionHandler {
             clientSecret: this.clientSecret,
             redirectUri: this.redirectUri,
         });
-
-        this.initialize();
     }
 
-    async initialize() {
-        const clientCredentialsGrantAsync = promisify(this.spotifyApi.clientCredentialsGrant.bind(this.spotifyApi));
+    async getUser(discordId) {
+        const link = `${this.apiUrl}?discord_id=${discordId}&secure_token=${this.secureToken}`;
+        const response = await fetch(link);
+        const json = await response.json();
+        // find the user with the discord id
+        const user = json.data.find((data) => data.attributes.discord_id === discordId);
 
+        // set the access token and refresh token
+        this.spotifyApi.setAccessToken(user.attributes.spotify_access_token);
+        this.spotifyApi.setRefreshToken(user.attributes.spotify_refresh_token);
+
+        // get the "me" data
         try {
-            const result = await clientCredentialsGrantAsync();
-            console.log('The access token expires in ' + result.body['expires_in']);
-            console.log('The access token is ' + result.body['access_token']);
-
-            this.spotifyApi.setAccessToken(result.body['access_token']);
-        } catch (error) {
-            console.log('Error occurred during token initialization:', error);
-        }
-    }
-
-    async getTokens(userId) {
-        try {
-            const response = await fetch(`${this.apiUrl}${userId}?secure_token=${this.secureToken}&discord_id=${userId}`);
-            const json = await response.json();
-
-            const { spotify_access_token, spotify_refresh_token } = json.data.attributes;
-            return {
-                access_token: spotify_access_token,
-                refresh_token: spotify_refresh_token,
-            };
-        } catch (error) {
-            console.error('Failed to retrieve Spotify tokens:', error);
-            return null;
-        }
-    }
-
-    async getUser(userId) {
-        let tokens = await this.getTokens(userId);
-
-        this.spotifyApi.setAccessToken(tokens.access_token);
-        this.spotifyApi.setRefreshToken(tokens.refresh_token);
-
-        try {
-            const user = await this.spotifyApi.getMe();
-            return user.body;
+            const me = await this.spotifyApi.getMe();
+            return me.body;
         } catch (error) {
             if (error.statusCode === 401) {
-                // Access token expired, refresh the token
-                const refreshedTokens = await this.refreshAccessToken(userId, tokens.refresh_token);
+                const refreshedTokens = await this.refreshAccessToken(user.attributes.spotify_refresh_token);
                 if (refreshedTokens) {
-                    console.log('Access token expired, refreshed token.');
 
-                    // Set the new access token
                     this.spotifyApi.setAccessToken(refreshedTokens.access_token);
+                    this.spotifyApi.setRefreshToken(refreshedTokens.refresh_token);
 
-                    // Retry getting the user
+                    // Retry getting the "me" data
                     try {
-                        const refreshedUser = await this.spotifyApi.getMe();
-                        return refreshedUser.body;
+                        const refreshedMe = await this.spotifyApi.getMe();
+                        return refreshedMe.body;
                     } catch (error) {
-                        console.error('Failed to retrieve Spotify user after refreshing access token:', error);
-                        return null;
+                        throw new Error('Failed to retrieve Spotify user after refreshing token.');
                     }
                 }
             }
@@ -81,29 +52,32 @@ class SessionHandler {
         }
     }
 
-    async refreshAccessToken(userId, refreshToken) {
-        const link = `${this.apiUrl}?discord_id=${userId}&secure_token=${this.secureToken}&spotify_refresh_token=${refreshToken}`;
+    async refreshAccessToken(refreshToken) {
+        const authOptions = {
+            url: 'https://accounts.spotify.com/api/token',
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(this.clientId + ':' + this.clientSecret).toString('base64'),
+            },
+            form: {
+                grant_type: 'refresh_token',
+                refresh_token: refreshToken,
+            },
+            json: true,
+        };
 
-        try {
-            const response = await fetch(link);
-            const json = await response.json();
-            console.log('Refreshed access token:', json);
-
-            if (!json.data || !json.data[0].attributes.spotify_access_token) {
-                return null;
-            }
-            //find the new access token of the user where discord_id = discord_id
-            const firstData = json.data.find((data) => data.attributes.discord_id === userId);
-            console.log('firstData:', firstData);
-
-            return {
-                access_token: firstData.attributes.spotify_access_token,
-                refresh_token: firstData.attributes.spotify_refresh_token,
-            }
-        } catch (error) {
-            console.error('Failed to refresh access token:', error);
-            return null;
-        }
+        return new Promise((resolve, reject) => {
+            request.post(authOptions, (error, response, body) => {
+                if (!error && response.statusCode === 200) {
+                    const { access_token, refresh_token } = body;
+                    resolve({
+                        access_token: access_token,
+                        refresh_token: refresh_token || refreshToken,
+                    });
+                } else {
+                    reject(error);
+                }
+            });
+        });
     }
 }
 

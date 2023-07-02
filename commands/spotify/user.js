@@ -53,21 +53,33 @@ module.exports = {
             }
             const currentlyPlaying = await spotifySession.getCurrentlyPlaying(interaction.user.id);
             const topTracks = await spotifySession.getTopTracks(interaction.user.id);
-            const topTracksList = topTracks.items.slice(0, 5);
             const topArtists = await spotifySession.getTopArtists(interaction.user.id);
-            const topArtistsList = topArtists.items.slice(0, 5);
+
+            const topTracksValue = topTracks.items && topTracks.items.length > 0 ?
+                topTracks.items.map(track => `[${track.name}](${track.external_urls.spotify}) - ${track.artists.map(artist => artist.name).join(', ')}`).join('\n') :
+                'Nothing';
+
+            const topArtistsValue = topArtists.items.length > 0 ?
+                topArtists.items.map(artist => `[${artist.name}](${artist.external_urls.spotify})`).join('\n') :
+                'Nothing';
+
+            const currentlyPlayingValue = currentlyPlaying && currentlyPlaying.item ?
+                `[${currentlyPlaying.item.name}](${currentlyPlaying.item.external_urls.spotify}) - ${currentlyPlaying.item.artists.map(artist => '[' + artist.name + '](' + artist.external_urls.spotify + ')').join(', ')}` :
+                'Nothing';
+
 
             const embed = new EmbedBuilder()
                 .setTitle('Spotify Me')
                 .setDescription(`**Username:** ${user.display_name}\n**\n**Country:** ${user.country}\n**Product:** ${user.product}**`)
                 .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
                 .addFields(
-                    { name: 'Top Tracks', value: topTracksList.map((track, index) => `${index + 1}. [${track.name}](${track.external_urls.spotify}) - ${track.artists.map(artist => '[' + artist.name + '](' + artist.external_urls.spotify + ')').join(', ')}`).join('\n') },
-                    { name: 'Top Artists', value: topArtistsList.map((artist, index) => `${index + 1}. [${artist.name}](${artist.external_urls.spotify})`).join('\n') },
-                    { name: 'Currently Playing', value: currentlyPlaying ? `[${currentlyPlaying.item.name}](${currentlyPlaying.item.external_urls.spotify}) - ${currentlyPlaying.item.artists.map(artist => '[' + artist.name + '](' + artist.external_urls.spotify + ')').join(', ')}` : 'Nothing' },
+                    { name: 'Top Tracks', value: topTracksValue, inline: true },
+                    { name: 'Top Artists', value: topArtistsValue, inline: true },
+                    { name: 'Currently Playing', value: currentlyPlayingValue, inline: false },
                 )
                 .setColor(config.color_success)
-                .setTimestamp();
+                .setTimestamp()
+                .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
 
             const row = new ActionRowBuilder()
                 .addComponents(
@@ -76,10 +88,16 @@ module.exports = {
                         .setURL(user.external_urls.spotify)
                         .setStyle(ButtonStyle.Link),
 
-                    currentlyPlaying ? new ButtonBuilder()
-                        .setLabel('Listen Along')
-                        .setURL(currentlyPlaying.item.external_urls.spotify)
-                        .setStyle(ButtonStyle.Link) : null,
+                    currentlyPlaying && currentlyPlaying.item ?
+                        new ButtonBuilder()
+                            .setLabel('Listen Along')
+                            .setURL(currentlyPlaying.item.external_urls.spotify)
+                            .setStyle(ButtonStyle.Link) :
+                        new ButtonBuilder()
+                            .setLabel('Listen Along')
+                            .setCustomId('spotify_listen_along')
+                            .setDisabled(true)
+                            .setStyle(ButtonStyle.Secondary),
                 );
 
             await interaction.reply({ embeds: [embed], components: [row], ephemeral: ephemeral });

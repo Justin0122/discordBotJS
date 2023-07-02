@@ -91,7 +91,7 @@ class SessionHandler {
 
     async getTopTracks(id) {
         try {
-            const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks());
+            const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks({ limit: 5 }));
             return topTracks.body;
         } catch (error) {
             throw new Error('Failed to retrieve Spotify user.');
@@ -112,7 +112,7 @@ class SessionHandler {
 
     async getTopArtists(id) {
         try {
-            const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists());
+            const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: 5 }));
             return topArtists.body;
         } catch (error) {
             throw new Error('Failed to retrieve Spotify user.');

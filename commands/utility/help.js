@@ -64,7 +64,8 @@ module.exports = {
 
                     for (const file of commandFiles) {
                         const command = require(`../../commands/${folder}/${file}`);
-                        filteredNames.push(command.data.name);
+                        //add a slash infront of the name to make it a command
+                        filteredNames.push("`/" + command.data.name + "`");
                         filteredDescriptions.push(command.data.description);
                     }
                 }

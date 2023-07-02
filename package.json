@@ -3,9 +3,10 @@
     "axios": "^1.4.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
-    "spotify-web-api-js": "^1.5.2",
-    "spotify-web-api-node": "^5.0.2",
-    "xhr2": "^0.2.1"
+    "iso-639-1": "^2.1.15",
+    "puppeteer": "^20.7.4",
+    "request": "^2.88.2",
+    "spotify-web-api-node": "^5.0.2"
   },
   "devDependencies": {
     "eslint": "^8.43.0"

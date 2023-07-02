@@ -46,25 +46,28 @@ module.exports = {
         }
 
         if (interaction.options.getString('select') === 'me') {
+            const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
             const user = await spotifySession.getUser(interaction.user.id);
             if (!user) {
-                const embed = new EmbedBuilder()
-                    .setTitle('Spotify Me')
-                    .setDescription('You are not logged in to Spotify. Please login using `/spotify login`.')
-                    .setColor(config.color_error)
-                    .setTimestamp()
-                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
-                await interaction.reply({ embeds: [embed], ephemeral: true });
-                return;
+                throw new Error('You are not logged in to Spotify. Please login using `/spotify login`.');
             }
+            const currentlyPlaying = await spotifySession.getCurrentlyPlaying(interaction.user.id);
+            const topTracks = await spotifySession.getTopTracks(interaction.user.id);
+            const topTracksList = topTracks.items.slice(0, 5);
+            const topArtists = await spotifySession.getTopArtists(interaction.user.id);
+            const topArtistsList = topArtists.items.slice(0, 5);
 
             const embed = new EmbedBuilder()
                 .setTitle('Spotify Me')
                 .setDescription(`**Username:** ${user.display_name}\n**\n**Country:** ${user.country}\n**Product:** ${user.product}**`)
-                .setColor(config.color_success)
-                .setTimestamp()
                 .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
-                .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+                .addFields(
+                    { name: 'Top Tracks', value: topTracksList.map((track, index) => `${index + 1}. [${track.name}](${track.external_urls.spotify}) - ${track.artists.map(artist => '[' + artist.name + '](' + artist.external_urls.spotify + ')').join(', ')}`).join('\n') },
+                    { name: 'Top Artists', value: topArtistsList.map((artist, index) => `${index + 1}. [${artist.name}](${artist.external_urls.spotify})`).join('\n') },
+                    { name: 'Currently Playing', value: currentlyPlaying ? `[${currentlyPlaying.item.name}](${currentlyPlaying.item.external_urls.spotify}) - ${currentlyPlaying.item.artists.map(artist => '[' + artist.name + '](' + artist.external_urls.spotify + ')').join(', ')}` : 'Nothing' },
+                )
+                .setColor(config.color_success)
+                .setTimestamp();
 
             const row = new ActionRowBuilder()
                 .addComponents(
@@ -72,9 +75,12 @@ module.exports = {
                         .setLabel('View Profile')
                         .setURL(user.external_urls.spotify)
                         .setStyle(ButtonStyle.Link),
-                );
 
-            const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
+                    currentlyPlaying ? new ButtonBuilder()
+                        .setLabel('Listen Along')
+                        .setURL(currentlyPlaying.item.external_urls.spotify)
+                        .setStyle(ButtonStyle.Link) : null,
+                );
 
             await interaction.reply({ embeds: [embed], components: [row], ephemeral: ephemeral });
         }

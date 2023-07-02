@@ -7,9 +7,14 @@ module.exports = {
         .setName('ping')
         .setDescription('Replies with Pong!'),
     async execute(interaction) {
-        await interaction.reply('Pong!');
+        //see how long it takes to reply
+        const ping = Date.now() - interaction.createdTimestamp;
+        await interaction.reply('Pong! ' + ping + 'ms');
         //how long to wait in milliseconds
-        await wait(4000);
-        await interaction.followUp({ content: 'Pong again!', ephemeral: true });
+        const waitTime = 4000;
+        await wait(waitTime);
+        //see how long it takes to reply
+        const ping2 = Date.now() - interaction.createdTimestamp - waitTime;
+        await interaction.followUp({ content: 'Pong again! ' + ping2 + 'ms', ephemeral: true });
         },
 };

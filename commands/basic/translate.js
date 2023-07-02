@@ -19,37 +19,31 @@ module.exports = {
                 .setDescription('The language to translate from')),
 
     async execute(interaction) {
-        const text = interaction.options.getString('text');
-        const to = interaction.options.getString('language');
-        const from = interaction.options.getString('from') || 'auto';
+        return new Promise((resolve, reject) => {
+            const text = interaction.options.getString('text');
+            const to = interaction.options.getString('language');
+            const from = interaction.options.getString('from') || 'auto';
 
-        exec(`trans -t ${to} "${text}" -s ${from}`, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                interaction.reply('An error occurred while translating the text.');
-                return;
-            }
+            exec(`trans -t ${to} "${text}" -s ${from}`, (error, stdout, stderr) => {
+                if (error || stderr) {
+                    const errorMessage = 'An error occurred while translating the text.';
+                    reject(new Error(errorMessage)); // Reject the promise with an error
+                    return;
+                }
 
-            if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                interaction.reply('An error occurred while translating the text.');
-                return;
-            }
+                const translation = stdout
+                    .replace(/\x1B\[\d+m/g, '') // Remove escape sequences
+                    .trim();
 
-            const translation = stdout
-                .replace(/\x1B\[\d+m/g, '') // Remove escape sequences
-                .trim();
+                const embed = new EmbedBuilder()
+                    .setTitle('Translating')
+                    .addFields(
+                        { name: 'Text', value: text + '\n' + '**To:** ' + to + '\n' + '**From:** ' + from, inline: false},
+                        { name: 'Translation', value: translation, inline: false },
+                    );
 
-            const embed = new EmbedBuilder()
-                .setTitle('Translating')
-                .setColor(config.color_success)
-                .setTimestamp()
-                .addFields(
-                    { name: 'Text', value: text + '\n' + '**To:** ' + to + '\n' + '**From:** ' + from, inline: false},
-                    { name: 'Translation', value: translation, inline: false },
-                );
-
-            interaction.reply({ embeds: [embed], ephemeral: true });
+                resolve(embed);
+            });
         });
-    }
+    },
 };

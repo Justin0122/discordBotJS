@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
+const config = require('./botconfig/embed.json');
 const Dotenv = require('dotenv');
 Dotenv.config();
 const token = process.env.TOKEN;
@@ -63,10 +64,31 @@ client.on(Events.InteractionCreate, async interaction => {
     setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
     try {
-        await command.execute(interaction);
+        const embed = await command.execute(interaction);
+        if (interaction.replied) {
+            return;
+        }
+        embed.setColor(config.color_success);
+        embed.setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+        embed.setTimestamp();
+
+        const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
+        if (ephemeral) {
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+        }
+        else {
+            await interaction.reply({ embeds: [embed] });
+        }
     } catch (error) {
-        console.error(error);
-        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        const embed = new EmbedBuilder()
+            .setColor(config.color_error)
+            .setTitle('Error')
+            .addFields(
+                { name: 'Command', value: `\`${command.data.name}\`` },
+                { name: 'Error', value: error.message },
+            )
+            .setTimestamp();
+        await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 });
 

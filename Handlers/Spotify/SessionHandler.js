@@ -20,35 +20,30 @@ class SessionHandler {
         const link = `${this.apiUrl}?discord_id=${discordId}&secure_token=${this.secureToken}`;
         const response = await fetch(link);
         const json = await response.json();
-        // find the user with the discord id
         const user = json.data.find((data) => data.attributes.discord_id === discordId);
 
-        // set the access token and refresh token
-        this.spotifyApi.setAccessToken(user.attributes.spotify_access_token);
-        this.spotifyApi.setRefreshToken(user.attributes.spotify_refresh_token);
+        this.setSpotifyTokens(user.attributes.spotify_access_token, user.attributes.spotify_refresh_token);
 
-        // get the "me" data
         try {
             const me = await this.spotifyApi.getMe();
             return me.body;
         } catch (error) {
-            if (error.statusCode === 401) {
-                const refreshedTokens = await this.refreshAccessToken(user.attributes.spotify_refresh_token);
-                if (refreshedTokens) {
-
-                    this.spotifyApi.setAccessToken(refreshedTokens.access_token);
-                    this.spotifyApi.setRefreshToken(refreshedTokens.refresh_token);
-
-                    // Retry getting the "me" data
-                    try {
-                        const refreshedMe = await this.spotifyApi.getMe();
-                        return refreshedMe.body;
-                    } catch (error) {
-                        throw new Error('Failed to retrieve Spotify user after refreshing token.');
-                    }
-                }
+            await this.handleTokenRefresh(user.attributes.spotify_refresh_token);
+            try {
+                const refreshedMe = await this.spotifyApi.getMe();
+                return refreshedMe.body;
+            } catch (error) {
+                throw new Error('Failed to retrieve Spotify user after refreshing token.');
             }
-            throw new Error('Failed to retrieve Spotify user.');
+        }
+    }
+
+    async handleTokenRefresh(refreshToken) {
+        try {
+            const refreshedTokens = await this.refreshAccessToken(refreshToken);
+            this.setSpotifyTokens(refreshedTokens.access_token, refreshedTokens.refresh_token);
+        } catch (error) {
+            throw new Error('Failed to refresh Spotify access token.');
         }
     }
 
@@ -56,7 +51,7 @@ class SessionHandler {
         const authOptions = {
             url: 'https://accounts.spotify.com/api/token',
             headers: {
-                'Authorization': 'Basic ' + Buffer.from(this.clientId + ':' + this.clientSecret).toString('base64'),
+                Authorization: 'Basic ' + Buffer.from(this.clientId + ':' + this.clientSecret).toString('base64'),
             },
             form: {
                 grant_type: 'refresh_token',
@@ -78,6 +73,50 @@ class SessionHandler {
                 }
             });
         });
+    }
+
+    setSpotifyTokens(accessToken, refreshToken) {
+        this.spotifyApi.setAccessToken(accessToken);
+        this.spotifyApi.setRefreshToken(refreshToken);
+    }
+
+    async getCurrentlyPlaying(id) {
+        try {
+            const currentlyPlaying = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyCurrentPlayingTrack());
+            return currentlyPlaying.body;
+        } catch (error) {
+            throw new Error('Failed to retrieve Spotify user.');
+        }
+    }
+
+    async getTopTracks(id) {
+        try {
+            const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks());
+            return topTracks.body;
+        } catch (error) {
+            throw new Error('Failed to retrieve Spotify user.');
+        }
+    }
+
+    async makeSpotifyApiCall(apiCall) {
+        try {
+            return await apiCall();
+        } catch (error) {
+            if (error.statusCode === 401) {
+                await this.handleTokenRefresh(id);
+                return await apiCall();
+            }
+            throw error;
+        }
+    }
+
+    async getTopArtists(id) {
+        try {
+            const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists());
+            return topArtists.body;
+        } catch (error) {
+            throw new Error('Failed to retrieve Spotify user.');
+        }
     }
 }
 

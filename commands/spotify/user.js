@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ActionRow, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../../botconfig/embed.json');
-const SpotifySession = require('../../Handlers/Spotify/SessionHandler');
+const SpotifySession = require('../../Api/Spotify/SessionHandler');
 const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 

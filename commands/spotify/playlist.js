@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ActionRow, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../../botconfig/embed.json');
-const SpotifySession = require('../../Handlers/Spotify/SessionHandler');
+const SpotifySession = require('../../Api/Spotify/Spotify');
 const {setTimeout: wait} = require("node:timers/promises");
 const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
@@ -49,31 +49,55 @@ module.exports = {
         ),
 
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
-
-        const spotifySession = new SpotifySession(
-            secureToken,
-            apiUrl,
-            process.env.SPOTIFY_REDIRECT_URI,
-            process.env.SPOTIFY_CLIENT_ID,
-            process.env.SPOTIFY_CLIENT_SECRET
-        );
+        const ephemeral = interaction.options.getBoolean('ephemeral') || false;
+        const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
         const user = await spotifySession.getUser(interaction.user.id);
-        await wait(4000);
+
+        if (!user) {
+            throw new Error('You are not logged in to Spotify. Please login using `/spotify login`.');
+        }
+        await interaction.deferReply({ ephemeral: true });
 
         const month = interaction.options.getString('month');
         const year = interaction.options.getString('year');
 
         const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'short' })} ${year}.`;
 
+        const playlist = await spotifySession.createPlaylist(interaction.user.id, playlistName, month, year);
+        if (!playlist) {
+            throw new Error('Something went wrong while creating your playlist. Please try again later.');
+        }
+        const name = playlist.name;
+        const total = playlist.tracks.total.toString();
+
         //send a message to the user to let them know we're working on it
         const embed = new EmbedBuilder()
             .setColor(config.color_success)
-            .setTitle('Creating Playlist: ' + playlistName)
-            .setDescription(`Creating a playlist for ${month}/${year}...`)
-            .setTimestamp();
+            .setTitle('Done ✅')
+            .setDescription(`Click the button below to view your playlist on Spotify.`)
+            .addFields(
+                { name: 'Name', value: name, inline: true },
+                { name: 'Total Tracks', value: total, inline: true },
+            )
+            .setURL(playlist.external_urls.spotify)
+            .setTimestamp()
+            .setThumbnail(playlist.images[0].url);
 
-        await interaction.editReply({ embeds: [embed] });
+        const row = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setLabel('View Playlist')
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(playlist.external_urls.spotify),
+            );
+
+        if (!ephemeral) {
+            await interaction.editReply({content: 'Done ✅', ephemeral: true});
+            await interaction.followUp({ embeds: [embed], components: [row]});
+            await interaction.deleteReply();
+        } else {
+            await interaction.editReply({ embeds: [embed], components: [row], ephemeral: true });
+        }
     }
 
 };

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const Weather = require('../../Handlers/Weather/Weather');
-const { createPaginatedEmbed } = require("../../Handlers/Pagination");
+const Weather = require('../../Api/Weather/Weather');
+const { createPaginatedEmbed } = require("../../Utils/Pagination");
 const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
 
@@ -116,9 +116,22 @@ module.exports = {
                     if (condition) {
                         color = weatherConditions[condition];
                     }
+                    const date = new Date(forecastDay.date);
+                    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+                    const month = date.toLocaleDateString('en-US', { month: 'long' });
+                    const dayOfMonth = date.toLocaleDateString('en-US', { day: 'numeric' });
+
+                    function getOrdinalSuffix(day) {
+                        const suffixes = ['th', 'st', 'nd', 'rd'];
+                        const relevantDigits = (day < 30) ? day % 20 : day % 30;
+                        const suffix = (relevantDigits <= 3 && relevantDigits >= 1) ? suffixes[relevantDigits] : suffixes[0];
+                        return day + suffix;
+                    }
+
+                    const formattedDayOfMonth = getOrdinalSuffix(parseInt(dayOfMonth));
 
                     return new EmbedBuilder()
-                        .setTitle('Weather Forecast for ' + forecastDay.date)
+                        .setTitle('Weather Forecast for ' + dayOfWeek + ', ' + month + ' ' + formattedDayOfMonth)
                         .setDescription(`Weather forecast for ${location.name}, ${location.region}, ${location.country}\n\`${day.condition.text}\``)
                         .addFields(
                             { name: 'Temperature', value: `${day.avgtemp_c}°C`, inline: true },
@@ -128,7 +141,9 @@ module.exports = {
                             { name: 'Visibility', value: `${day.avgvis_km}km`, inline: true },
                             { name: 'UV Index', value: `${day.uv}`, inline: true },
                             { name: 'Sunrise', value: `${astro.sunrise}`, inline: true },
-                            { name: 'Sunset', value: `${astro.sunset}`, inline: true }
+                            { name: 'Sunset', value: `${astro.sunset}`, inline: true },
+                            { name: 'Moon phase', value: `${astro.moon_phase}`, inline: true
+                            }
                         )
                         .setThumbnail(`https:${day.condition.icon}`)
                         .setColor(color)

@@ -89,7 +89,7 @@ client.on(Events.InteractionCreate, async interaction => {
             )
             .setTimestamp();
         try{
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.reply({ embeds: [embed], ephemeral: true });
         } catch (error) {
             console.log(error);
         }

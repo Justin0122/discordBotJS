@@ -125,7 +125,6 @@ module.exports = {
                             { name: 'Humidity', value: `${day.avghumidity}%`, inline: true },
                             { name: 'Wind Speed', value: `${day.maxwind_kph}km/h`, inline: true },
                             { name: 'Precipitation', value: `${day.totalprecip_mm}mm`, inline: true },
-                            { name: 'Cloud Cover', value: `${day.avgcloud}%`, inline: true },
                             { name: 'Visibility', value: `${day.avgvis_km}km`, inline: true },
                             { name: 'UV Index', value: `${day.uv}`, inline: true },
                             { name: 'Sunrise', value: `${astro.sunrise}`, inline: true },

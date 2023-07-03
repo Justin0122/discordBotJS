@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const puppeteer = require('puppeteer');
 
 module.exports = {
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('search')
         .setDescription('Search something on Google')

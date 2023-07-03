@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { exec } = require('child_process');
 
 module.exports = {
+    cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('translate')
         .setDescription('Translate text to a different language')

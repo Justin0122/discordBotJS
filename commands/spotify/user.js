@@ -5,6 +5,7 @@ const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
 module.exports = {
+    cooldown: 120,
     data: new SlashCommandBuilder()
         .setName('spotify')
         .setDescription('Allow the bot to access your spotify account.')

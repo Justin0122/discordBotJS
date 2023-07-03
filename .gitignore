@@ -1,5 +1,4 @@
 .env
 .eslintrc.json
-config.json
 node_modules
 .idea

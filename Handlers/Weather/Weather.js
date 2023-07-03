@@ -1,6 +1,6 @@
 const request = require('request');
 
-class SessionHandler {
+class Weather {
     constructor(apiUrl, apiKey){
         this.apiUrl = apiUrl;
         this.apiKey = apiKey;
@@ -31,4 +31,4 @@ class SessionHandler {
     }
 }
 
-module.exports = SessionHandler;
+module.exports = Weather;

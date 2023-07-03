@@ -10,7 +10,6 @@ async function createPaginatedEmbed(interaction, embeds, currentPage) {
 
     //add color to embeds if not present
     embeds.forEach(embed => {
-        console.log(embed);
         // Check if EmbedBuilder data has color
         if (!embed.data.color) {
             embed.setColor(config.color_success);
@@ -39,7 +38,7 @@ async function createPaginatedEmbed(interaction, embeds, currentPage) {
     });
 
     const filter = (i) => ['previous', 'next'].includes(i.customId) && i.user.id === interaction.user.id;
-    const collector = message.createMessageComponentCollector({ filter, time: 15000 }); // 15 seconds
+    const collector = message.createMessageComponentCollector({ filter, time: 120000 }); // 120 seconds
 
     collector.on('collect', async (i) => {
         if (i.customId === 'next') {
@@ -65,6 +64,7 @@ async function createPaginatedEmbed(interaction, embeds, currentPage) {
                 .setDisabled(currentPage === totalPages)
                 .setStyle(ButtonStyle.Secondary)
         );
+
         await i.update({ embeds: newCurrentEmbeds, components: [newRow] });
     });
 }

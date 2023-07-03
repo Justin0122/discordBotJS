@@ -55,8 +55,9 @@ client.on(Events.InteractionCreate, async interaction => {
         const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
 
         if (now < expirationTime) {
-            const expiredTimestamp = Math.round(expirationTime / 1000);
-            return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`, ephemeral: true });
+            const expiredTimestamp = Math.floor(expirationTime / 1000);
+            const descriptionTime = `<t:${expiredTimestamp}:R>`;
+            return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again ${descriptionTime}.`, ephemeral: true });
         }
     }
 

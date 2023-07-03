@@ -19,6 +19,7 @@ const weatherConditions = {
 };
 
 module.exports = {
+    cooldown: 30,
     data: new SlashCommandBuilder()
         .setName('weather')
         .setDescription('Use one of the options to get the weather or forecast for a location')
@@ -72,7 +73,6 @@ module.exports = {
                 if (condition) {
                     color = weatherConditions[condition];
                 }
-
                 const embed = new EmbedBuilder()
                     .setTitle('Weather')
                     .setDescription(`Weather for ${location.name}, ${location.region}, ${location.country}\n\`${current.condition.text}\``)

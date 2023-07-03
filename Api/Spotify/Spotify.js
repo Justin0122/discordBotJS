@@ -1,7 +1,7 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 const request = require('request');
 
-class SessionHandler {
+class Spotify {
     constructor(secureToken, apiUrl, redirectUri, clientId, clientSecret) {
         this.secureToken = secureToken;
         this.apiUrl = apiUrl;
@@ -14,6 +14,18 @@ class SessionHandler {
             clientSecret: this.clientSecret,
             redirectUri: this.redirectUri,
         });
+    }
+
+    async makeSpotifyApiCall(apiCall) {
+        try {
+            return await apiCall();
+        } catch (error) {
+            if (error.statusCode === 401) {
+                await this.handleTokenRefresh(id);
+                return await apiCall();
+            }
+            throw error;
+        }
     }
 
     async getUser(discordId) {
@@ -98,18 +110,6 @@ class SessionHandler {
         }
     }
 
-    async makeSpotifyApiCall(apiCall) {
-        try {
-            return await apiCall();
-        } catch (error) {
-            if (error.statusCode === 401) {
-                await this.handleTokenRefresh(id);
-                return await apiCall();
-            }
-            throw error;
-        }
-    }
-
     async getTopArtists(id) {
         try {
             const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: 5 }));
@@ -118,6 +118,67 @@ class SessionHandler {
             throw new Error('Failed to retrieve Spotify user.');
         }
     }
+
+    async createPlaylist(id, playlistName, month, year) {
+        try {
+            const songsFromMonth = await this.findLikedFromMonth(id, month, year);
+            const playlistDescription = `This playlist is generated with your liked songs from ${month}/${year}.`;
+            const playlist = await this.makeSpotifyApiCall(() =>
+                this.spotifyApi.createPlaylist(playlistName, {
+                    description: playlistDescription,
+                    public: false,
+                    collaborative: false
+                })
+            );
+            const songUris = songsFromMonth.map((song) => song.track.uri);
+            //add tracks to the playlist in batches of 50
+            for (let i = 0; i < songUris.length; i += 50) {
+                const uris = songUris.slice(i, i + 50);
+                await this.makeSpotifyApiCall(() =>
+                    this.spotifyApi.addTracksToPlaylist(playlist.body.id, uris)
+                );
+            }
+            //get the playlist with the tracks added
+            const playlistWithTracks = await this.makeSpotifyApiCall(() =>
+                this.spotifyApi.getPlaylist(playlist.body.id)
+            );
+            return playlistWithTracks.body;
+        } catch (error) {
+            throw new Error('Failed to create playlist.');
+        }
+    }
+
+    async findLikedFromMonth(id, month, year) {
+        let likedSongs = [];
+        let offset = 0;
+        let limit = 50;
+        let total = 1;
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        while (likedSongs.length < total) {
+            const response = await this.makeSpotifyApiCall(() =>
+                this.spotifyApi.getMySavedTracks({ limit: limit, offset: offset })
+            );
+            const songs = response.body.items;
+            total = response.body.total;
+            offset += limit;
+
+            const addedAt = new Date(songs[0].added_at);
+            if (addedAt < startDate || (addedAt > endDate && likedSongs.length > 0)) {
+                break;
+            }
+
+            likedSongs = likedSongs.concat(
+                songs.filter((song) => {
+                    const addedAt = new Date(song.added_at);
+                    return addedAt >= startDate && addedAt <= endDate;
+                })
+            )
+        }
+        return likedSongs;
+    }
+
 }
 
-module.exports = SessionHandler;
+module.exports = Spotify;

@@ -89,11 +89,6 @@ client.on(Events.InteractionCreate, async interaction => {
                 { name: 'Error', value: error.message },
             )
             .setTimestamp();
-        try{
-            await interaction.reply({ embeds: [embed], ephemeral: true });
-        } catch (error) {
-            console.log(error);
-        }
     }
 });
 

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../../botconfig/embed.json');
 const SpotifySession = require('../../Api/Spotify/Spotify');
-const {setTimeout: wait} = require("node:timers/promises");
+const { setTimeout: wait } = require("node:timers/promises");
 const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
@@ -11,9 +11,7 @@ for (let year = 2015; year <= currentYear; year++) {
     choices.push({ name: year.toString(), value: year.toString() });
 }
 
-
 const monthChoices = [];
-
 for (let i = 1; i <= 12; i++) {
     const month = i.toString().padStart(2, '0'); // Pad single-digit months with leading zero
     const monthName = new Date(currentYear, i - 1, 1).toLocaleString('en-US', { month: 'long' });
@@ -21,6 +19,9 @@ for (let i = 1; i <= 12; i++) {
     // Add the month choice to the array
     monthChoices.push({ name: monthName, value: month });
 }
+
+const queue = [];
+let isProcessing = false;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -42,7 +43,7 @@ module.exports = {
                     ...choices,
                 ),
         )
-        .addBooleanOption( option =>
+        .addBooleanOption(option =>
             option.setName('ephemeral')
                 .setDescription('Should the response be ephemeral?')
                 .setRequired(false)
@@ -54,50 +55,100 @@ module.exports = {
         const user = await spotifySession.getUser(interaction.user.id);
 
         if (!user) {
-            throw new Error('You are not logged in to Spotify. Please login using `/spotify login`.');
+            const embed = new EmbedBuilder()
+                .setColor(config.color_error)
+                .setTitle('Error')
+                .setDescription('Something went wrong while getting your user information.')
+                .addFields(
+                    { name: '`Solution`', value: 'Please use the `/spotify login` command to authorize the bot.' },
+                    { name: '`Note`', value: 'If you have already authorized the bot, please wait a few minutes and try again.' }
+                )
+                .setTimestamp();
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return;
         }
-        await interaction.deferReply({ ephemeral: true });
+
+        await interaction.deferReply({ ephemeral });
 
         const month = interaction.options.getString('month');
         const year = interaction.options.getString('year');
 
         const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'short' })} ${year}.`;
+        // Enqueue the request
+        queue.push({
+            interaction,
+            ephemeral,
+            spotifySession,
+            user,
+            month,
+            year,
+            playlistName
+        });
 
-        const playlist = await spotifySession.createPlaylist(interaction.user.id, playlistName, month, year);
-        if (!playlist) {
-            throw new Error('Something went wrong while creating your playlist. Please try again later.');
-        }
-        const name = playlist.name;
-        const total = playlist.tracks.total.toString();
-
-        //send a message to the user to let them know we're working on it
-        const embed = new EmbedBuilder()
-            .setColor(config.color_success)
-            .setTitle('Done ✅')
-            .setDescription(`Click the button below to view your playlist on Spotify.`)
-            .addFields(
-                { name: 'Name', value: name, inline: true },
-                { name: 'Total Tracks', value: total, inline: true },
-            )
-            .setURL(playlist.external_urls.spotify)
-            .setTimestamp()
-            .setThumbnail(playlist.images[0].url);
-
-        const row = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setLabel('View Playlist')
-                    .setStyle(ButtonStyle.Link)
-                    .setURL(playlist.external_urls.spotify),
-            );
-
-        if (!ephemeral) {
-            await interaction.editReply({content: 'Done ✅', ephemeral: true});
-            await interaction.followUp({ embeds: [embed], components: [row]});
-            await interaction.deleteReply();
-        } else {
-            await interaction.editReply({ embeds: [embed], components: [row], ephemeral: true });
+        // Process the queue if it's not already being processed
+        if (!isProcessing) {
+            await processQueue();
         }
     }
-
 };
+
+async function processQueue() {
+    isProcessing = true;
+
+    // Process requests one by one from the queue
+    while (queue.length > 0) {
+        console.log(`Processing request for ${queue[0].user.id}`);
+        const { interaction, ephemeral, spotifySession, user, month, year, playlistName } = queue.shift();
+        try {
+            const playlist = await spotifySession.createPlaylist(playlistName, month, year);
+            console.log(`Created playlist for ${user.id}`);
+
+            if (playlist) {
+                console.log(playlist);
+                const embed = new EmbedBuilder()
+                    .setColor(config.color_success)
+                    .setTitle('Playlist Created')
+                    .setDescription(`Click the button below to view the playlist.`)
+                    .setURL(playlist.external_urls.spotify)
+                    .addFields({ name: 'Name', value: playlist.name, inline: true },
+                        { name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true },
+                        { name: 'Owner', value: playlist.owner.display_name, inline: true
+                    })
+                    .setThumbnail(playlist.images[0].url)
+                    .setTimestamp()
+                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+
+                const row = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setLabel('View Playlist')
+                            .setStyle(ButtonStyle.Link)
+                            .setURL(playlist.external_urls.spotify),
+                    );
+
+                await interaction.editReply({ embeds: [embed], components: [row], ephemeral });
+            } else {
+                const embed = new EmbedBuilder()
+                    .setColor(config.color_error)
+                    .setTitle('No Songs Found')
+                    .setDescription('No songs found for the specified month.')
+                    .setTimestamp();
+
+                await interaction.editReply({ embeds: [embed], ephemeral });
+            }
+        } catch (error) {
+            console.log(error);
+            const embed = new EmbedBuilder()
+                .setColor(config.color_error)
+                .setTitle('Error')
+                .setDescription('Failed to create the playlist.')
+                .setTimestamp();
+
+            await interaction.editReply({ embeds: [embed], ephemeral });
+        }
+
+        await wait(2000);
+    }
+
+    isProcessing = false;
+}

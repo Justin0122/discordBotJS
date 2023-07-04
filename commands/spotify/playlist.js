@@ -68,13 +68,11 @@ module.exports = {
             return;
         }
 
-        await interaction.deferReply({ ephemeral });
 
         const month = interaction.options.getString('month');
         const year = interaction.options.getString('year');
 
         const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'short' })} ${year}.`;
-        // Enqueue the request
         queue.push({
             interaction,
             ephemeral,
@@ -84,6 +82,20 @@ module.exports = {
             year,
             playlistName
         });
+
+        const embed = new EmbedBuilder()
+            .setColor(config.color_info)
+            .setTitle('Creating Playlist')
+            .setDescription('Please wait while the playlist is being created.')
+            .addFields(
+                { name: 'Month', value: month, inline: true },
+                { name: 'Year', value: year, inline: true },
+                { name: 'Playlist Name', value: playlistName, inline: true },
+            )
+            .setTimestamp();
+
+        await interaction.reply({ embeds: [embed], ephemeral });
+
 
         // Process the queue if it's not already being processed
         if (!isProcessing) {
@@ -97,14 +109,11 @@ async function processQueue() {
 
     // Process requests one by one from the queue
     while (queue.length > 0) {
-        console.log(`Processing request for ${queue[0].user.id}`);
         const { interaction, ephemeral, spotifySession, user, month, year, playlistName } = queue.shift();
         try {
             const playlist = await spotifySession.createPlaylist(playlistName, month, year);
-            console.log(`Created playlist for ${user.id}`);
 
             if (playlist) {
-                console.log(playlist);
                 const embed = new EmbedBuilder()
                     .setColor(config.color_success)
                     .setTitle('Playlist Created')

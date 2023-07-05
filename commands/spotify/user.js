@@ -53,7 +53,7 @@ module.exports = {
                 throw new Error('You are not logged in to Spotify. Please login using `/spotify login`.');
             }
             const currentlyPlaying = await spotifySession.getCurrentlyPlaying(interaction.user.id);
-            const topTracks = await spotifySession.getTopTracks(interaction.user.id);
+            const topTracks = await spotifySession.getTopTracks(5);
             const topArtists = await spotifySession.getTopArtists(interaction.user.id);
 
             const topTracksValue = topTracks.items && topTracks.items.length > 0 ?

@@ -5,17 +5,65 @@ const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
 
 const weatherConditions = {
-    sunny: '#ffff00',
-    'patchy rain': '#adfffc',
-    rain: '#0000ff',
-    cloudy: '#808080',
-    overcast: '#808080',
-    snow: '#ffffff',
-    thunderstorm: '#800080',
-    fog: '#808080',
-    mist: '#808080',
-    haze: '#808080',
-    drizzle: '#808080'
+    sunny: {
+        color: '#ffff00',
+        emoji: '🌞',
+    },
+    'patchy rain': {
+        color: '#adfffc',
+        emoji: '🌧️',
+    },
+    rain: {
+        color: '#0000ff',
+        emoji: '🌧️',
+    },
+    cloudy: {
+        color: '#808080',
+        emoji: '🌤',
+    },
+    overcast: {
+        color: '#808080',
+        emoji: '🌥',
+    },
+    snow: {
+        color: '#ffffff',
+        emoji: '❄️',
+    },
+    thunderstorm: {
+        color: '#800080',
+        emoji: '⛈️',
+    },
+    fog: {
+        color: '#808080',
+        emoji: '🌫️',
+    },
+    mist: {
+        color: '#808080',
+        emoji: '🌫️',
+    },
+    haze: {
+        color: '#808080',
+        emoji: '🌫️',
+    },
+    drizzle: {
+        color: '#808080',
+        emoji: '🌧️',
+    },
+    freezing: {
+        color: '#ffffff',
+        emoji: '❄️',
+    },
+};
+
+const moonPhases = {
+    'New Moon': '🌑',
+    'Waxing Crescent': '🌒',
+    'First Quarter': '🌓',
+    'Waxing Gibbous': '🌔',
+    'Full Moon': '🌕',
+    'Waning Gibbous': '🌖',
+    'Last Quarter': '🌗',
+    'Waning Crescent': '🌘',
 };
 
 module.exports = {
@@ -60,6 +108,7 @@ module.exports = {
             const ephemeral = interaction.options.getBoolean('ephemeral');
             const weatherSession = new Weather(apiUrl, apiKey);
 
+            let emoji;
             if (choice === 'current') {
                 const weatherData = await weatherSession.getWeather(country, city);
                 const location = weatherData.location;
@@ -71,23 +120,26 @@ module.exports = {
                 );
 
                 if (condition) {
-                    color = weatherConditions[condition];
+                    color = weatherConditions[condition].color;
+                    emoji = weatherConditions[condition].emoji;
                 }
+
                 const embed = new EmbedBuilder()
                     .setTitle('Weather')
-                    .setDescription(`Weather for ${location.name}, ${location.region}, ${location.country}\n\`${current.condition.text}\``)
-                    .addFields(
-                        { name: 'Temperature', value: `${current.temp_c}°C`, inline: true },
-                        { name: 'Humidity', value: `${current.humidity}%`, inline: true },
-                        { name: 'Wind Speed', value: `${current.wind_kph}km/h`, inline: true },
-                        { name: 'Feels Like', value: `${current.feelslike_c}°C`, inline: true },
-                        { name: 'Precipitation', value: `${current.precip_mm}mm`, inline: true },
-                        { name: 'Wind Direction', value: `${current.wind_dir}`, inline: true },
-                        { name: 'Cloud Cover', value: `${current.cloud}%`, inline: true },
-                        { name: 'Pressure', value: `${current.pressure_mb}mb`, inline: true },
-                        { name: 'UV Index', value: `${current.uv}`, inline: true },
-                        { name: 'Last Updated', value: `${current.last_updated}`, inline: false }
-                    )
+                    .setDescription(`${location.name}, ${location.region}, ${location.country}\n\`\`${current.condition.text}\`\`\n\`\`\`
+${emoji} Temperature: ${current.temp_c}°C
+${emoji} Feels Like: ${current.feelslike_c}°C
+💦 Humidity: ${current.humidity}%
+🍃 Wind: ${current.wind_kph}km/h
+🧭 Wind Dir: ${current.wind_dir}
+🌧️ Rain: ${current.precip_mm}mm
+🌥 Cloud Cover: ${current.cloud}%
+🌀 Pressure: ${current.pressure_mb}mb
+🌞 UV Index: ${current.uv}
+\`\`\`Last Updated: ${current.last_updated}
+                    `)
+                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() })
+                    .setTimestamp()
                     .setThumbnail(`https:${current.condition.icon}`)
                     .setColor(color); // Set the dynamically determined color
 
@@ -108,18 +160,22 @@ module.exports = {
                     const day = forecastDay.day;
                     const astro = forecastDay.astro;
 
-                    let color = weatherConditions.default || '#00ff00'; // Default color
                     const condition = Object.keys(weatherConditions).find(condition =>
                         day.condition.text.toLowerCase().includes(condition)
                     );
 
+                    let color = weatherConditions.default?.color || '#00ff00'; // Default color
+                    let emoji = '';
+
                     if (condition) {
-                        color = weatherConditions[condition];
+                        color = weatherConditions[condition].color;
+                        emoji = weatherConditions[condition].emoji;
                     }
+
                     const date = new Date(forecastDay.date);
-                    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
-                    const month = date.toLocaleDateString('en-US', { month: 'long' });
-                    const dayOfMonth = date.toLocaleDateString('en-US', { day: 'numeric' });
+                    const dayOfWeek = date.toLocaleDateString('en-US', {weekday: 'long'});
+                    const month = date.toLocaleDateString('en-US', {month: 'long'});
+                    const dayOfMonth = date.toLocaleDateString('en-US', {day: 'numeric'});
 
                     function getOrdinalSuffix(day) {
                         const suffixes = ['th', 'st', 'nd', 'rd'];
@@ -128,23 +184,24 @@ module.exports = {
                         return day + suffix;
                     }
 
+                    const moonPhaseDescription = astro.moon_phase;
+                    const moonPhaseEmoji = Object.entries(moonPhases).find(([phase]) =>
+                        moonPhaseDescription.includes(phase)
+                    )?.[1] || '';
+
                     const formattedDayOfMonth = getOrdinalSuffix(parseInt(dayOfMonth));
 
                     return new EmbedBuilder()
                         .setTitle('Weather Forecast for ' + dayOfWeek + ', ' + month + ' ' + formattedDayOfMonth)
-                        .setDescription(`Weather forecast for ${location.name}, ${location.region}, ${location.country}\n\`${day.condition.text}\``)
-                        .addFields(
-                            { name: 'Temperature', value: `${day.avgtemp_c}°C`, inline: true },
-                            { name: 'Humidity', value: `${day.avghumidity}%`, inline: true },
-                            { name: 'Wind Speed', value: `${day.maxwind_kph}km/h`, inline: true },
-                            { name: 'Precipitation', value: `${day.totalprecip_mm}mm`, inline: true },
-                            { name: 'Visibility', value: `${day.avgvis_km}km`, inline: true },
-                            { name: 'UV Index', value: `${day.uv}`, inline: true },
-                            { name: 'Sunrise', value: `${astro.sunrise}`, inline: true },
-                            { name: 'Sunset', value: `${astro.sunset}`, inline: true },
-                            { name: 'Moon phase', value: `${astro.moon_phase}`, inline: true
-                            }
-                        )
+                        .setDescription(`${location.name}, ${location.region}, ${location.country}\n\`\`${day.condition.text}\`\`\n\`\`\`
+${emoji} ${day.maxtemp_c}°C / ${day.mintemp_c}°C
+🍃 Winds: ${day.maxwind_kph}km/h
+🌧️ Rain: ${day.totalprecip_mm}mm
+👀 Visibility: ${day.avgvis_km}km
+🌞 UV Index: ${day.uv}\`\`\`
+🌅 Sunrise: \`${astro.sunrise}\`
+🌇 Sunset: \`${astro.sunset}\`
+${moonPhaseEmoji} Moon phase: \`${astro.moon_phase}\``)
                         .setThumbnail(`https:${day.condition.icon}`)
                         .setColor(color)
                         .setFooter({

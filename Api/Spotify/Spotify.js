@@ -1,6 +1,8 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 const request = require('request');
 
+const max = 25;
+
 class Spotify {
     constructor(secureToken, apiUrl, redirectUri, clientId, clientSecret) {
         this.secureToken = secureToken;
@@ -114,9 +116,9 @@ class Spotify {
         }
     }
 
-    async getTopTracks() {
+    async getTopTracks(amount = max) {
         try {
-            const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks({ limit: 5 }));
+            const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks({ limit: amount }));
             return topTracks.body;
         } catch (error) {
             throw new Error('Failed to retrieve Spotify user.');
@@ -147,9 +149,8 @@ class Spotify {
                 })
             );
             const songUris = songsFromMonth.map((song) => song.track.uri);
-            //add tracks to the playlist in batches of 50
-            for (let i = 0; i < songUris.length; i += 50) {
-                const uris = songUris.slice(i, i + 50);
+            for (let i = 0; i < songUris.length; i += max) {
+                const uris = songUris.slice(i, i + max);
                 await this.makeSpotifyApiCall(() => this.spotifyApi.addTracksToPlaylist(playlist.body.id, uris));
             }
             //get the playlist with the tracks added
@@ -163,7 +164,7 @@ class Spotify {
     async findLikedFromMonth(month, year) {
         let likedSongs = [];
         let offset = 0;
-        let limit = 50;
+        let limit = max;
         let total = 1;
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0);
@@ -189,6 +190,118 @@ class Spotify {
             );
         }
         return likedSongs;
+    }
+
+    async getLikedSongs(total = max) {
+        try {
+            const likedSongs = await this.makeSpotifyApiCall(() => this.spotifyApi.getMySavedTracks({ limit: total }));
+            return likedSongs.body;
+        } catch (error) {
+            throw new Error('Failed to retrieve liked songs.');
+        }
+    }
+
+    async getAudioFeatures(tracksIds) {
+        const limit = 100;
+        let offset = 0;
+        const total = tracksIds.length;
+        let audioFeatures = [];
+
+        while (audioFeatures.length < total) {
+            const response = await this.makeSpotifyApiCall(() =>
+                this.spotifyApi.getAudioFeaturesForTracks(tracksIds.slice(offset, offset + limit))
+            );
+            audioFeatures = audioFeatures.concat(response.body.audio_features);
+            offset += limit;
+        }
+
+        return audioFeatures;
+    }
+
+    async createRecommendationPlaylist(trackIds){
+        const audioFeatures = await this.getAudioFeatures(trackIds);
+        const lowestDanceability = Math.min(...audioFeatures.map((track) => track.danceability));
+        const highestDanceability = Math.max(...audioFeatures.map((track) => track.danceability));
+        const lowestEnergy = Math.min(...audioFeatures.map((track) => track.energy));
+        const highestEnergy = Math.max(...audioFeatures.map((track) => track.energy));
+        const lowestLoudness = Math.min(...audioFeatures.map((track) => track.loudness));
+        const highestLoudness = Math.max(...audioFeatures.map((track) => track.loudness));
+        const lowestSpeechiness = Math.min(...audioFeatures.map((track) => track.speechiness));
+        const highestSpeechiness = Math.max(...audioFeatures.map((track) => track.speechiness));
+        const lowestAcousticness = Math.min(...audioFeatures.map((track) => track.acousticness));
+        const highestAcousticness = Math.max(...audioFeatures.map((track) => track.acousticness));
+        const lowestInstrumentalness = Math.min(...audioFeatures.map((track) => track.instrumentalness));
+        const highestInstrumentalness = Math.max(...audioFeatures.map((track) => track.instrumentalness));
+        const lowestLiveness = Math.min(...audioFeatures.map((track) => track.liveness));
+        const highestLiveness = Math.max(...audioFeatures.map((track) => track.liveness));
+        const lowestValence = Math.min(...audioFeatures.map((track) => track.valence));
+        const highestValence = Math.max(...audioFeatures.map((track) => track.valence));
+        const lowestTempo = Math.min(...audioFeatures.map((track) => track.tempo));
+        const highestTempo = Math.max(...audioFeatures.map((track) => track.tempo));
+
+        const randomTrackIds = [];
+        for (let i = 0; i < 3; i++) {
+            const randomIndex = Math.floor(Math.random() * trackIds.length);
+            randomTrackIds.push(trackIds[randomIndex]);
+        }
+        const genre = await this.getTopGenre(2);
+
+
+        const recommendations = await this.makeSpotifyApiCall(() => this.spotifyApi.getRecommendations({
+            seed_tracks: randomTrackIds,
+            seed_genres: genre,
+            limit: 50,
+            min_danceability: lowestDanceability,
+            max_danceability: highestDanceability,
+            min_energy: lowestEnergy,
+            max_energy: highestEnergy,
+            min_loudness: lowestLoudness,
+            max_loudness: highestLoudness,
+            min_speechiness: lowestSpeechiness,
+            max_speechiness: highestSpeechiness,
+            min_acousticness: lowestAcousticness,
+            max_acousticness: highestAcousticness,
+            min_instrumentalness: lowestInstrumentalness,
+            max_instrumentalness: highestInstrumentalness,
+            min_liveness: lowestLiveness,
+            max_liveness: highestLiveness,
+            min_valence: lowestValence,
+            max_valence: highestValence,
+            min_tempo: lowestTempo,
+            max_tempo: highestTempo,
+        }));
+        const genreString = genre.join(', ');
+
+        const playlist = await this.makeSpotifyApiCall(() => this.spotifyApi.createPlaylist('Recommendations', {
+            description: 'Genres: ' + genreString,
+            public: false,
+            collaborative: false,
+        }));
+
+        const songUris = recommendations.body.tracks.map((song) => song.uri);
+        for (let i = 0; i < songUris.length; i += max) {
+            const uris = songUris.slice(i, i + max);
+            await this.makeSpotifyApiCall(() => this.spotifyApi.addTracksToPlaylist(playlist.body.id, uris));
+        }
+
+        const playlistWithTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getPlaylist(playlist.body.id));
+        return playlistWithTracks.body;
+    }
+
+    async getTopGenre(amount) {
+        const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: max }));
+        const topArtistsGenres = topArtists.body.items.map((artist) => artist.genres);
+        const topArtistsGenresFlat = [].concat.apply([], topArtistsGenres);
+        const topArtistsGenresCount = topArtistsGenresFlat.reduce((acc, genre) => {
+            if (acc[genre]) {
+                acc[genre]++;
+            } else {
+                acc[genre] = 1;
+            }
+            return acc;
+        }, {});
+        const topArtistsGenresSorted = Object.keys(topArtistsGenresCount).sort((a, b) => topArtistsGenresCount[b] - topArtistsGenresCount[a]);
+        return topArtistsGenresSorted.slice(0, amount);
     }
 }
 

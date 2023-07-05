@@ -5,44 +5,13 @@ const { setTimeout: wait } = require("node:timers/promises");
 const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
-const currentYear = new Date().getFullYear();
-const choices = [];
-for (let year = 2015; year <= currentYear; year++) {
-    choices.push({ name: year.toString(), value: year.toString() });
-}
-
-const monthChoices = [];
-for (let i = 1; i <= 12; i++) {
-    const month = i.toString().padStart(2, '0'); // Pad single-digit months with leading zero
-    const monthName = new Date(currentYear, i - 1, 1).toLocaleString('en-US', { month: 'long' });
-
-    // Add the month choice to the array
-    monthChoices.push({ name: monthName, value: month });
-}
-
 const queue = [];
 let isProcessing = false;
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('playlist')
-        .setDescription('Create a playlist of your liked songs from a specific month.')
-        .addStringOption(option =>
-            option.setName('month')
-                .setDescription('The month to create the playlist for.')
-                .setRequired(true)
-                .addChoices(
-                    ...monthChoices,
-                ),
-        )
-        .addStringOption(option =>
-            option.setName('year')
-                .setDescription('The year to create the playlist for.')
-                .setRequired(true)
-                .addChoices(
-                    ...choices,
-                ),
-        )
+        .setName('recommendations')
+        .setDescription('Create a playlist with song recommendations based on your liked/most played songs.')
         .addBooleanOption(option =>
             option.setName('ephemeral')
                 .setDescription('Should the response be ephemeral?')
@@ -73,18 +42,12 @@ module.exports = {
             return;
         }
 
-
-        const month = interaction.options.getString('month');
-        const year = interaction.options.getString('year');
-
-        const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'short' })} ${year}.`;
+        const playlistName = `Recommendations - ${user.display_name}`;
         queue.push({
             interaction,
             ephemeral,
             spotifySession,
             user,
-            month,
-            year,
             playlistName
         });
 
@@ -93,8 +56,7 @@ module.exports = {
             .setTitle('Creating Playlist')
             .setDescription('Please wait while the playlist is being created.')
             .addFields(
-                { name: 'Month', value: month, inline: true },
-                { name: 'Year', value: year, inline: true },
+                { name: 'User', value: user.display_name, inline: true },
                 { name: 'Playlist Name', value: playlistName, inline: true },
             )
             .setTimestamp();
@@ -114,9 +76,15 @@ async function processQueue() {
 
     // Process requests one by one from the queue
     while (queue.length > 0) {
-        const { interaction, ephemeral, spotifySession, user, month, year, playlistName } = queue.shift();
+        const { interaction, ephemeral, spotifySession, user, playlistName } = queue.shift();
         try {
-            const playlist = await spotifySession.createPlaylist(playlistName, month, year);
+            const mostListened = await spotifySession.getTopTracks(50);
+            const ids = mostListened.items.map(item => item.id);
+            const likedSongs = await spotifySession.getLikedSongs(50);
+            const likedSongIds = likedSongs.items.map((item) => item.track.id);
+            const allIds = [...ids, ...likedSongIds];
+
+            const playlist = await spotifySession.createRecommendationPlaylist(allIds);
 
             if (playlist) {
                 const embed = new EmbedBuilder()
@@ -126,8 +94,8 @@ async function processQueue() {
                     .setURL(playlist.external_urls.spotify)
                     .addFields({ name: 'Name', value: playlist.name, inline: true },
                         { name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true },
-                        { name: 'Owner', value: playlist.owner.display_name, inline: true
-                    })
+                        { name: 'Owner', value: playlist.owner.display_name, inline: true},
+                    )
                     .setThumbnail(playlist.images[0].url)
                     .setTimestamp()
                     .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
@@ -142,7 +110,6 @@ async function processQueue() {
 
                 await interaction.editReply({ embeds: [embed], components: [row], ephemeral });
                 if (interaction.options.getBoolean('notify')) {
-                    //ping the user
                     await interaction.followUp({ content: `<@${interaction.user.id}>`, ephemeral: true });
                 }
             } else {
@@ -152,7 +119,7 @@ async function processQueue() {
                     .setDescription('No songs found for the specified month.')
                     .setTimestamp();
 
-                await interaction.editReply({ embeds: [embed], ephemeral });
+                await interaction.editReply({ embeds: [embed], ephemeral: true });
             }
         } catch (error) {
             console.log(error);
@@ -162,7 +129,7 @@ async function processQueue() {
                 .setDescription('Failed to create the playlist.')
                 .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed], ephemeral });
+            await interaction.editReply({ embeds: [embed], ephemeral: true });
         }
 
         await wait(2000);

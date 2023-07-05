@@ -2,6 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, Butt
 const config = require('../../botconfig/embed.json');
 const SpotifySession = require('../../Api/Spotify/Spotify');
 const { setTimeout: wait } = require("node:timers/promises");
+const ArrayShuffler = require('../../Utils/ArrayShuffler');
+const {createPaginatedEmbed} = require("../../Utils/Pagination");
 const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
@@ -84,9 +86,32 @@ async function processQueue() {
             const likedSongIds = likedSongs.items.map((item) => item.track.id);
             const allIds = [...ids, ...likedSongIds];
 
-            const playlist = await spotifySession.createRecommendationPlaylist(allIds);
+            const shuffleArray = new ArrayShuffler();
+            const shuffledIds = shuffleArray.shuffle(allIds);
+
+            const playlist = await spotifySession.createRecommendationPlaylist(shuffledIds);
+
+            //get the audio features for the playlist
+            const audioFeatures = await spotifySession.getAudioFeatures(playlist.tracks.items.map(item => item.track.id));
+            const averageAudioFeatures = {
+                acousticness: audioFeatures.reduce((acc, item) => acc + item.acousticness, 0) / audioFeatures.length,
+                danceability: audioFeatures.reduce((acc, item) => acc + item.danceability, 0) / audioFeatures.length,
+                energy: audioFeatures.reduce((acc, item) => acc + item.energy, 0) / audioFeatures.length,
+                instrumentalness: audioFeatures.reduce((acc, item) => acc + item.instrumentalness, 0) / audioFeatures.length,
+                liveness: audioFeatures.reduce((acc, item) => acc + item.liveness, 0) / audioFeatures.length,
+                speechiness: audioFeatures.reduce((acc, item) => acc + item.speechiness, 0) / audioFeatures.length,
+                valence: audioFeatures.reduce((acc, item) => acc + item.valence, 0) / audioFeatures.length,
+            };
+
+            const audioFeaturesDescription = Object.entries(averageAudioFeatures).map(([key, value]) => {
+                const percentage = Math.round(value * 100);
+                return `${key}: ${percentage}%`;
+            }).join('\n');
 
             if (playlist) {
+
+                const embeds = [];
+
                 const embed = new EmbedBuilder()
                     .setColor(config.color_success)
                     .setTitle('Playlist Created')
@@ -108,7 +133,22 @@ async function processQueue() {
                             .setURL(playlist.external_urls.spotify),
                     );
 
-                await interaction.editReply({ embeds: [embed], components: [row], ephemeral });
+                embeds.push(embed);
+
+                const audioFeaturesEmbed = new EmbedBuilder()
+                    .setColor(config.color_success)
+                    .setURL(playlist.external_urls.spotify)
+                    .setTitle('Audio Features')
+                    .setDescription(audioFeaturesDescription)
+                    .setThumbnail(playlist.images[0].url)
+                    .setTimestamp()
+                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+
+                embeds.push(audioFeaturesEmbed);
+
+                await createPaginatedEmbed(interaction, embeds, 1, true, row);
+
+
                 if (interaction.options.getBoolean('notify')) {
                     await interaction.followUp({ content: `<@${interaction.user.id}>`, ephemeral: true });
                 }

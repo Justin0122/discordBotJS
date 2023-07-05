@@ -47,6 +47,11 @@ module.exports = {
             option.setName('ephemeral')
                 .setDescription('Should the response be ephemeral?')
                 .setRequired(false)
+        )
+        .addBooleanOption(option =>
+            option.setName('notify')
+                .setDescription('Should the bot notify you when the playlist is created?')
+                .setRequired(false)
         ),
 
     async execute(interaction) {
@@ -94,7 +99,7 @@ module.exports = {
             )
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed], ephemeral });
+        await interaction.reply({ embeds: [embed], ephemeral: ephemeral });
 
 
         // Process the queue if it's not already being processed
@@ -136,6 +141,10 @@ async function processQueue() {
                     );
 
                 await interaction.editReply({ embeds: [embed], components: [row], ephemeral });
+                if (interaction.options.getBoolean('notify')) {
+                    //ping the user
+                    await interaction.followUp({ content: `<@${interaction.user.id}>`, ephemeral: true });
+                }
             } else {
                 const embed = new EmbedBuilder()
                     .setColor(config.color_error)

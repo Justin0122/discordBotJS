@@ -1,7 +1,7 @@
 const { MessageActionRow, ButtonBuilder, ButtonComponent, ActionRowBuilder, ButtonStyle} = require('discord.js');
 const config = require('../botconfig/embed.json');
 
-async function createPaginatedEmbed(interaction, embeds, currentPage) {
+async function createPaginatedEmbed(interaction, embeds, currentPage, update = false, InitialRow = null) {
     const maxPerPage = 1;
     const totalPages = Math.ceil(embeds.length / maxPerPage);
 
@@ -15,7 +15,6 @@ async function createPaginatedEmbed(interaction, embeds, currentPage) {
             embed.setColor(config.color_success);
         }
     });
-
 
     const currentEmbeds = embeds.slice(startIndex, endIndex);
 
@@ -32,10 +31,22 @@ async function createPaginatedEmbed(interaction, embeds, currentPage) {
             .setStyle(ButtonStyle.Secondary)
     );
 
-    const message = await interaction.reply({
-        embeds: currentEmbeds,
-        components: [row]
-    });
+    let message;
+
+
+    if (update) {
+        if (InitialRow) {
+            message = await interaction.editReply({ embeds: currentEmbeds, components: [row, InitialRow] });
+        } else {
+            message = await interaction.editReply({ embeds: currentEmbeds, components: [row] });
+        }
+    } else {
+        if (InitialRow) {
+            message = await interaction.reply({ embeds: currentEmbeds, components: [row, InitialRow] });
+        } else {
+            message = await interaction.reply({ embeds: currentEmbeds, components: [row] });
+        }
+    }
 
     const filter = (i) => ['previous', 'next'].includes(i.customId) && i.user.id === interaction.user.id;
     const collector = message.createMessageComponentCollector({ filter, time: 120000 }); // 120 seconds
@@ -65,7 +76,11 @@ async function createPaginatedEmbed(interaction, embeds, currentPage) {
                 .setStyle(ButtonStyle.Secondary)
         );
 
-        await i.update({ embeds: newCurrentEmbeds, components: [newRow] });
+        if (InitialRow) {
+            await i.update({ embeds: newCurrentEmbeds, components: [newRow, InitialRow] });
+        } else {
+            await i.update({ embeds: newCurrentEmbeds, components: [newRow] });
+        }
     });
 }
 

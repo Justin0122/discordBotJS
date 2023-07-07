@@ -5,7 +5,7 @@ const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
 module.exports = {
-    cooldown: 120,
+    cooldown: 30,
     data: new SlashCommandBuilder()
         .setName('spotify')
         .setDescription('Allow the bot to access your spotify account.')
@@ -14,7 +14,7 @@ module.exports = {
                 .setDescription('Login / Me / Logout')
                 .setRequired(true)
                 .addChoices(
-                    { name: 'Login', value: 'login' },
+                    { name: 'Auth', value: 'authorize' },
                     { name: 'Me', value: 'me' },
                     { name: 'Logout', value: 'logout' },
                 ),
@@ -26,19 +26,19 @@ module.exports = {
         ),
     async execute(interaction) {
         const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
-        if (interaction.options.getString('select') === 'login') {
+        if (interaction.options.getString('select') === 'authorize') {
             const url = `https://accounts.spotify.com/authorize?client_id=${process.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}&scope=user-read-email%20user-read-private%20user-library-read%20user-top-read%20user-read-recently-played%20user-read-currently-playing%20user-follow-read%20playlist-read-private%20playlist-modify-public%20playlist-modify-private%20playlist-read-collaborative%20user-library-modify&state=${interaction.user.id}`;
 
             const embed = new EmbedBuilder()
                 .setTitle('Spotify Login')
-                .setDescription('Click the button below to login to Spotify.')
+                .setDescription('Click the button below to authorize the bot to access your Spotify account.')
                 .setColor(config.color_success)
                 .setTimestamp();
 
             const row = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
-                        .setLabel('Login')
+                        .setLabel('Authorize')
                         .setURL(url)
                         .setStyle(ButtonStyle.Link),
                 );
@@ -102,6 +102,20 @@ module.exports = {
                 );
 
             await interaction.reply({ embeds: [embed], components: [row], ephemeral: ephemeral });
+        }
+        if (interaction.options.getString('select') === 'logout') {
+            const user = await spotifySession.getUser(interaction.user.id);
+            if (!user) {
+                throw new Error('You have not authorized the application. Please authorize it using `/spotify auth`.');
+            }
+            await spotifySession.logout(interaction.user.id);
+            const embed = new EmbedBuilder()
+                .setTitle('Spotify Logout')
+                .setDescription('You have been logged out of Spotify.')
+                .setColor(config.color_success)
+                .setTimestamp();
+
+            await interaction.reply({ embeds: [embed], ephemeral: true });
         }
     },
 };

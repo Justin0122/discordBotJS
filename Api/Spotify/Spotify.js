@@ -46,13 +46,21 @@ class Spotify {
                 } else {
                     const json = JSON.parse(body);
                     const user = json.data.find((data) => data.attributes.discord_id === discordId);
+                    try{
                     this.setSpotifyTokens(user.attributes.spotify_access_token, user.attributes.spotify_refresh_token);
+                    } catch (error) {
+                        reject(new Error('You have not authorized the application. Please authorize it using `/spotify auth`.'));
+                    }
 
                     try {
                         const me = await this.spotifyApi.getMe();
                         resolve(me.body);
                     } catch (error) {
+                        try{
                         await this.handleTokenRefresh(user.attributes.spotify_refresh_token);
+                        } catch (error) {
+                            return;
+                        }
                         try {
                             const refreshedMe = await this.spotifyApi.getMe();
                             resolve(refreshedMe.body);
@@ -289,7 +297,7 @@ class Spotify {
     }
 
     async getTopGenre(amount) {
-        const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: max }));
+        const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: 5 }));
         const topArtistsGenres = topArtists.body.items.map((artist) => artist.genres);
         const topArtistsGenresFlat = [].concat.apply([], topArtistsGenres);
         const topArtistsGenresCount = topArtistsGenresFlat.reduce((acc, genre) => {
@@ -302,6 +310,11 @@ class Spotify {
         }, {});
         const topArtistsGenresSorted = Object.keys(topArtistsGenresCount).sort((a, b) => topArtistsGenresCount[b] - topArtistsGenresCount[a]);
         return topArtistsGenresSorted.slice(0, amount);
+    }
+
+    async logout(id) {
+        const url = `${this.apiUrl}?discord_id=${id}&secure_token=${this.secureToken}&logout=true`;
+        await fetch(url);
     }
 }
 

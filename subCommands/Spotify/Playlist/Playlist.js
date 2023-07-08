@@ -1,58 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../../botconfig/embed.json');
-const SpotifySession = require('../../Api/Spotify/Spotify');
-const { setTimeout: wait } = require("node:timers/promises");
-const apiUrl = process.env.SPOTIFY_API_URL;
-const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
-
-const currentYear = new Date().getFullYear();
-const choices = [];
-for (let year = 2015; year <= currentYear; year++) {
-    choices.push({ name: year.toString(), value: year.toString() });
-}
-
-const monthChoices = [];
-for (let i = 1; i <= 12; i++) {
-    const month = i.toString().padStart(2, '0'); // Pad single-digit months with leading zero
-    const monthName = new Date(currentYear, i - 1, 1).toLocaleString('en-US', { month: 'long' });
-
-    // Add the month choice to the array
-    monthChoices.push({ name: monthName, value: month });
-}
-
+const {ActionRowBuilder} = require("discord.js");
 const queue = [];
 let isProcessing = false;
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('playlist')
-        .setDescription('Create a playlist of your liked songs from a specific month.')
-        .addStringOption(option =>
-            option.setName('month')
-                .setDescription('The month to create the playlist for.')
-                .setRequired(true)
-                .addChoices(
-                    ...monthChoices,
-                ),
-        )
-        .addStringOption(option =>
-            option.setName('year')
-                .setDescription('The year to create the playlist for.')
-                .setRequired(true)
-                .addChoices(
-                    ...choices,
-                ),
-        )
-        .addBooleanOption(option =>
-            option.setName('ephemeral')
-                .setDescription('Should the response be ephemeral?')
-                .setRequired(false)
-        )
-        .addBooleanOption(option =>
-            option.setName('notify')
-                .setDescription('Should the bot notify you when the playlist is created?')
-                .setRequired(false)
-        ),
 
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;

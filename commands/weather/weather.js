@@ -1,71 +1,47 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const Weather = require('../../Api/Weather/Weather');
-const { createPaginatedEmbed } = require("../../Utils/Pagination");
+const { SlashCommandBuilder } = require('discord.js');
+const fs = require('fs');
+const Weather = require("../../Api/Weather/Weather");
 const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
 
+const subCommandFiles = fs.readdirSync(`${__dirname}/subCommands/Weather`).filter(file => file.endsWith('.js'));
+const subCommands = subCommandFiles.map(file => file.slice(0, -3).charAt(0).toUpperCase() + file.slice(1, -3));
+
+const commandBuilder = new SlashCommandBuilder()
+    .setName('weather')
+    .setDescription('Get the weather for a location');
+subCommands.forEach(subCommand => {
+    commandBuilder.addSubcommand(subcommand =>
+        subcommand
+            .setName(subCommand.toLowerCase())
+            .setDescription(`Get the ${subCommand.toLowerCase()} weather for a location`)
+            .addStringOption(option =>
+                option.setName('country')
+                    .setDescription('The location to get the weather for')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('city')
+                    .setDescription('The location to get the weather for')
+                    .setRequired(true)
+            )
+    );
+});
+
+
 module.exports = {
     cooldown: 30,
-    data: new SlashCommandBuilder()
-        .setName('weather')
-        .setDescription('Use one of the options to get the weather or forecast for a location')
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('current')
-                .setDescription('Get the current weather for a location')
-                .addStringOption(option =>
-                    option
-                        .setName('country')
-                        .setDescription('The country of the location')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option
-                        .setName('city')
-                        .setDescription('The city of the location')
-                        .setRequired(true)
-                )
-                .addBooleanOption(option =>
-                    option
-                        .setName('ephemeral')
-                        .setDescription('Whether the response should be ephemeral')
-                        .setRequired(false)
-                )
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('forecast')
-                .setDescription('Get the forecast for a location')
-                .addStringOption(option =>
-                    option
-                        .setName('country')
-                        .setDescription('The country of the location')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option
-                        .setName('city')
-                        .setDescription('The city of the location')
-                        .setRequired(true)
-                )
-                .addBooleanOption(option =>
-                    option
-                        .setName('ephemeral')
-                        .setDescription('Whether the response should be ephemeral')
-                        .setRequired(false)
-                )
-        ),
+    data: commandBuilder,
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);
-        const subCommandDir = './../../subCommands/Weather';
+        const subCommandDir = `${__dirname}/subCommands/Weather`;
 
         const commandPath = `${subCommandDir}/${subcommand}`;
         const command = require(commandPath);
         const weatherSession = new Weather(apiUrl, apiKey);
 
-
         return command.execute(interaction, weatherSession);
     },
-
 };
+

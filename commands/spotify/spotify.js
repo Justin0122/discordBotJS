@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const fs = require("fs");
 
 const currentYear = new Date().getFullYear();
 const choices = [];
@@ -13,6 +14,16 @@ for (let i = 1; i <= 12; i++) {
 
     monthChoices.push({ name: monthName, value: month });
 }
+
+const subCommandFiles = fs.readdirSync(`${__dirname}/subCommands/User/`).filter(file => file.endsWith('.js'));
+const subCommandsUser = subCommandFiles.map(file => file.slice(0, -3).charAt(0).toUpperCase() + file.slice(1, -3));
+console.log(subCommandsUser);
+
+const subCommandFiles2 = fs.readdirSync(`${__dirname}/subCommands/Playlist/`).filter(file => file.endsWith('.js'));
+const subCommandsPlaylist = subCommandFiles2.map(file => file.slice(0, -3).charAt(0).toUpperCase() + file.slice(1, -3));
+console.log(subCommandsPlaylist);
+
+
 
 module.exports = {
     cooldown: 30,

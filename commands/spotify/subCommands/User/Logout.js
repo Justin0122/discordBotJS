@@ -1,5 +1,5 @@
 const {EmbedBuilder } = require('discord.js');
-const config = require('../../botconfig/embed.json');
+const config = require('../../../../botconfig/embed.json');
 
 module.exports = {
 

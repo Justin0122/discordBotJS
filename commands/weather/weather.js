@@ -5,7 +5,7 @@ const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
 
 const subCommandFiles = fs.readdirSync(`${__dirname}/subCommands/Weather`).filter(file => file.endsWith('.js'));
-const subCommands = subCommandFiles.map(file => file.slice(0, -3).charAt(0).toUpperCase() + file.slice(1, -3));
+const subCommands = subCommandFiles.map(file => file.split('.')[0]);
 
 const commandBuilder = new SlashCommandBuilder()
     .setName('weather')
@@ -17,12 +17,12 @@ subCommands.forEach(subCommand => {
             .setDescription(`Get the ${subCommand.toLowerCase()} weather for a location`)
             .addStringOption(option =>
                 option.setName('country')
-                    .setDescription('The location to get the weather for')
+                    .setDescription('The country to get the weather for')
                     .setRequired(true)
             )
             .addStringOption(option =>
                 option.setName('city')
-                    .setDescription('The location to get the weather for')
+                    .setDescription('The city to get the weather for')
                     .setRequired(true)
             )
     );

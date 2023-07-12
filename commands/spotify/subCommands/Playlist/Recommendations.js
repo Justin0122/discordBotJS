@@ -1,29 +1,17 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../../botconfig/embed.json');
-const SpotifySession = require('../../Api/Spotify/Spotify');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const config = require('../../../../botconfig/embed.json');
+const SpotifySession = require('../../../../Api/Spotify/Spotify');
 const { setTimeout: wait } = require("node:timers/promises");
-const ArrayShuffler = require('../../Utils/ArrayShuffler');
-const {createPaginatedEmbed} = require("../../Utils/Pagination");
+const ArrayShuffler = require('../../../../Utils/ArrayShuffler');
+const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
 const queue = [];
 let isProcessing = false;
 
+
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('recommendations')
-        .setDescription('Create a playlist with song recommendations based on your liked/most played songs.')
-        .addBooleanOption(option =>
-            option.setName('ephemeral')
-                .setDescription('Should the response be ephemeral?')
-                .setRequired(false)
-        )
-        .addBooleanOption(option =>
-            option.setName('notify')
-                .setDescription('Should the bot notify you when the playlist is created?')
-                .setRequired(false)
-        ),
 
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;

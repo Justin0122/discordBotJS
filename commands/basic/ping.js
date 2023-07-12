@@ -37,6 +37,7 @@ module.exports = {
                 .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
 
             await interaction.reply({ embeds: [embed], ephemeral: ephemeral });
+            return;
         }
         await interaction.reply({ content: 'Pong! ' + ping + 'ms', ephemeral: ephemeral });
         //how long to wait in milliseconds

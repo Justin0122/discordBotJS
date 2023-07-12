@@ -133,9 +133,9 @@ class Spotify {
         }
     }
 
-    async getTopArtists() {
+    async getTopArtists(amount = max) {
         try {
-            const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: 5 }));
+            const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: amount }));
             return topArtists.body;
         } catch (error) {
             throw new Error('Failed to retrieve Spotify user.');

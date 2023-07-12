@@ -1,17 +1,18 @@
 const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../../../botconfig/embed.json');
+const config = require('../../../../botconfig/embed.json');
 
 module.exports = {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
+
         const user = await spotifySession.getUser(interaction.user.id);
         if (!user) {
             throw new Error('Please authorize the application to access your Spotify account. You can do this by using the `/spotify user authorize` command.');
         }
         const currentlyPlaying = await spotifySession.getCurrentlyPlaying(interaction.user.id);
-        const topTracks = await spotifySession.getTopTracks(5);
-        const topArtists = await spotifySession.getTopArtists(interaction.user.id);
+        const topTracks = await spotifySession.getTopTracks(3);
+        const topArtists = await spotifySession.getTopArtists(3);
 
         const topTracksValue = topTracks.items && topTracks.items.length > 0 ?
             topTracks.items.map(track => `[${track.name}](${track.external_urls.spotify}) - ${track.artists.map(artist => artist.name).join(', ')}`).join('\n') :
@@ -21,14 +22,23 @@ module.exports = {
             topArtists.items.map(artist => `[${artist.name}](${artist.external_urls.spotify})`).join('\n') :
             'Nothing';
 
-        const currentlyPlayingValue = currentlyPlaying && currentlyPlaying.item ?
-            `[${currentlyPlaying.item.name}](${currentlyPlaying.item.external_urls.spotify}) - ${currentlyPlaying.item.artists.map(artist => '[' + artist.name + '](' + artist.external_urls.spotify + ')').join(', ')}` :
-            'Nothing';
+        let currentlyPlayingValue = 'Nothing'
+        if (currentlyPlaying){
+            const progress = `${Math.floor(currentlyPlaying.progress_ms / 1000 / 60)}:${Math.floor(currentlyPlaying.progress_ms / 1000 % 60).toString().padStart(2, '0')} / ${Math.floor(currentlyPlaying.item.duration_ms / 1000 / 60)}:${Math.floor(currentlyPlaying.item.duration_ms / 1000 % 60).toString().padStart(2, '0')}`
+
+            if (currentlyPlaying.is_playing){
+                currentlyPlayingValue = `▶️ [${currentlyPlaying.item.name}](${currentlyPlaying.item.external_urls.spotify}) - ${currentlyPlaying.item.artists.map(artist => artist.name).join(', ')} \n${progress}`
+            } else {
+                currentlyPlayingValue = `⏸️ [${currentlyPlaying.item.name}](${currentlyPlaying.item.external_urls.spotify}) - ${currentlyPlaying.item.artists.map(artist => artist.name).join(', ')} \n${progress}`
+            }
+        } else {
+            currentlyPlayingValue = 'Nothing'
+        }
 
 
         const embed = new EmbedBuilder()
             .setTitle('Spotify Me')
-            .setDescription(`**Username:** ${user.display_name}\n**\n**Country:** ${user.country}\n**Product:** ${user.product}**`)
+            .setDescription(`**${user.display_name}**, ${user.country} - ${user.followers.total} followers`)
             .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
             .addFields(
                 { name: 'Top Tracks', value: topTracksValue, inline: true },

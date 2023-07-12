@@ -40,7 +40,7 @@ module.exports = {
             if (interaction.replied) {
                 return;
             }
-            embed.setColor(config.color_success);
+            await embed.setColor(config.color_success);
             embed.setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
             embed.setTimestamp();
 
@@ -61,7 +61,7 @@ module.exports = {
                 )
                 .setTimestamp();
             try{
-                await interaction.reply({ embeds: [embed], ephemeral: true });
+                console.log(error);
             } catch (error) {
                 console.log(error);
             }

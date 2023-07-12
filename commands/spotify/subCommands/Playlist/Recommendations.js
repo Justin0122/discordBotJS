@@ -1,9 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../../../botconfig/embed.json');
-const SpotifySession = require('../../../Api/Spotify/Spotify');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const config = require('../../../../botconfig/embed.json');
+const SpotifySession = require('../../../../Api/Spotify/Spotify');
 const { setTimeout: wait } = require("node:timers/promises");
-const ArrayShuffler = require('../../../Utils/ArrayShuffler');
-const {createPaginatedEmbed} = require("../../../Utils/Pagination");
+const ArrayShuffler = require('../../../../Utils/ArrayShuffler');
+const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 

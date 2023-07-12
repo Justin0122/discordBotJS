@@ -77,7 +77,7 @@ async function processQueue() {
                     .addFields({ name: 'Name', value: playlist.name, inline: true },
                         { name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true },
                         { name: 'Owner', value: playlist.owner.display_name, inline: true
-                    })
+                        })
                     .setThumbnail(playlist.images[0].url)
                     .setTimestamp()
                     .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });

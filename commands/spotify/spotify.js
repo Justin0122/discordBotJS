@@ -47,7 +47,7 @@ module.exports = {
         )
         .addSubcommandGroup(group =>
             group
-                .setName('playlists')
+                .setName('playlist')
                 .setDescription('Playlist commands.')
                 .addSubcommand(subcommand =>
                     subcommand
@@ -113,13 +113,12 @@ module.exports = {
         );
     },
 
-
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);
         const subcommandGroup = interaction.options.getSubcommandGroup().charAt(0).toUpperCase() + interaction.options.getSubcommandGroup().slice(1);
-        const subCommandDir = './../../subCommands/Spotify';
+        const subCommandDir = `${__dirname}/subCommands/${subcommandGroup}`;
 
-        const commandPath = `${subCommandDir}/${subcommandGroup}/${subcommand}`;
+        const commandPath = `${subCommandDir}/${subcommand}`;
         const command = require(commandPath);
 
         const SpotifySession = require('../../Api/Spotify/Spotify');

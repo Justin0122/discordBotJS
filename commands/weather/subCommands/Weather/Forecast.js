@@ -1,7 +1,7 @@
 const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../../../../botconfig/embed.json');
-const WeatherConditions = require('../../../../Utils/weatherConditions');
-const {moonPhases} = require("../../../../Utils/weatherConditions");
+const WeatherConditions = require('../../../../Utils/Weather/weatherConditions');
+const {moonPhases} = require("../../../../Utils/Weather/weatherConditions");
 
 module.exports = {
 

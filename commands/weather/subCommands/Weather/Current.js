@@ -1,5 +1,5 @@
 const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const WeatherConditions = require('../../../../Utils/weatherConditions');
+const WeatherConditions = require('../../../../Utils/Weather/weatherConditions');
 
 module.exports = {
     async execute(interaction, weatherSession) {

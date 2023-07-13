@@ -46,6 +46,7 @@ module.exports = {
             const countryNames = countries.map(country => country.name);
             choices = countryNames
                 .filter(countryName => countryName.toLowerCase().startsWith(focusedOption.value.toLowerCase()))
+                .sort((a, b) => a.localeCompare(b))
                 .slice(0, 25);
         }
 

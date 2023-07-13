@@ -1,12 +1,14 @@
-const {ActionRowBuilder} = require("discord.js");
+const {ActionRowBuilder, EmbedBuilder} = require("discord.js");
+const config = require('../../../../botconfig/embed.json');
+const { setTimeout: wait } = require("node:timers/promises");
+
 const queue = [];
 let isProcessing = false;
 
 module.exports = {
 
-    async execute(interaction) {
+    async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
-        const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
         const user = await spotifySession.getUser(interaction.user.id);
 
         if (!user) {

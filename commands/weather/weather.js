@@ -28,7 +28,6 @@ subCommands.forEach(subCommand => {
     );
 });
 
-
 module.exports = {
     cooldown: 30,
     data: commandBuilder,

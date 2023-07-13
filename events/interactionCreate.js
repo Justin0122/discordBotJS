@@ -37,9 +37,8 @@ module.exports = {
         try {
             const embed = await command.execute(interaction);
 
-            if (interaction.replied) {
-                return;
-            }
+            if (!embed) return;
+
             await embed.setColor(config.color_success);
             embed.setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
             embed.setTimestamp();

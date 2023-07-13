@@ -18,9 +18,17 @@ module.exports = {
         if (interaction.user.id === process.env.DEV_USER_ID) {
             const axios = require('axios');
             const url = process.env.SPOTIFY_REDIRECT_URI;
-            const res = await axios.get(url);
-            const status = res.status;
-            const statusText = res.statusText;
+            let status = 0;
+            let statusText = 'Null';
+            try {
+                const res = await axios.get(url);
+
+                status = res.status;
+                statusText = res.statusText;
+            } catch (error) {
+                status ='404';
+                statusText = 'Not found';
+            }
 
             const embed = new EmbedBuilder()
                 .setTitle('Pong!')
@@ -32,7 +40,6 @@ module.exports = {
                 )
                 .setColor('#00ff00')
                 .setTimestamp()
-                //set the bot's avatar as the embed thumbnail if it has one, otherwise use the default avatar
                 .setThumbnail(interaction.client.user.avatarURL() ? interaction.client.user.avatarURL() : interaction.client.user.defaultAvatarURL)
                 .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
 

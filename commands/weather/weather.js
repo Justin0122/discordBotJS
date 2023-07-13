@@ -29,6 +29,11 @@ subCommands.forEach(subCommand => {
                     .setRequired(true)
                     .setAutocomplete(true)
             )
+            .addBooleanOption(option =>
+                option.setName('ephemeral')
+                    .setDescription('Whether to send the message as an ephemeral message')
+                    .setRequired(false)
+            )
     );
 });
 
@@ -52,7 +57,11 @@ module.exports = {
 
         if (focusedOption.name === 'city') {
             const country = interaction.options.get('country').value
-            const code = countries.find(({ name }) => name === country).code;
+
+            if (!interaction.options.get('country') || !countries.map(country => country.name.toLowerCase()).includes(country.toLowerCase())){
+                return;
+            }
+            const code = countries.find(countryObj => countryObj.name.toLowerCase() === country.toLowerCase()).code;
             const filteredCities = cities.filter(city => city.country === code);
             const cityNames = filteredCities.map(city => city.name);
             choices = cityNames

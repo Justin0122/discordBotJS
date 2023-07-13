@@ -1,7 +1,7 @@
 const { MessageActionRow, ButtonBuilder, ButtonComponent, ActionRowBuilder, ButtonStyle} = require('discord.js');
 const config = require('../botconfig/embed.json');
 
-async function createPaginatedEmbed(interaction, embeds, currentPage, update = false, InitialRow = null) {
+async function createPaginatedEmbed(interaction, embeds, currentPage, update = false, InitialRow = null, ephemeral) {
     const maxPerPage = 1;
     const totalPages = Math.ceil(embeds.length / maxPerPage);
 
@@ -42,9 +42,9 @@ async function createPaginatedEmbed(interaction, embeds, currentPage, update = f
         }
     } else {
         if (InitialRow) {
-            message = await interaction.reply({ embeds: currentEmbeds, components: [row, InitialRow] });
+            message = await interaction.reply({ embeds: currentEmbeds, components: [row, InitialRow], ephemeral: ephemeral });
         } else {
-            message = await interaction.reply({ embeds: currentEmbeds, components: [row] });
+            message = await interaction.reply({ embeds: currentEmbeds, components: [row], ephemeral: ephemeral });
         }
     }
 

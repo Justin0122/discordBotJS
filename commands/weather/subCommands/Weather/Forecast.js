@@ -1,15 +1,14 @@
-const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const config = require('../../../../botconfig/embed.json');
-const WeatherConditions = require('../../../../Utils/weatherConditions');
+const WeatherConditions = require('../../../../Utils/Weather/weatherConditions');
+const {moonPhases} = require("../../../../Utils/Weather/weatherConditions");
+const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 
 module.exports = {
 
     async execute(interaction, weatherSession) {
     const {EmbedBuilder} = require("discord.js");
-    const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
-        const country = interaction.options.getString('country');
-        const city = interaction.options.getString('city');
-        const ephemeral = interaction.options.getBoolean('ephemeral');
+    const country = interaction.options.getString('country');
+    const city = interaction.options.getString('city');
+    const ephemeral = interaction.options.getBoolean('ephemeral');
     const forecastData = await weatherSession.getForecast(country, city);
     const location = forecastData.location;
     const forecastDays = forecastData.forecast.forecastday;
@@ -69,6 +68,6 @@ ${moonPhaseEmoji} Moon phase: \`${astro.moon_phase}\``)
     });
     const currentPage = 1;
 
-    await createPaginatedEmbed(interaction, embeds, currentPage);
+    await createPaginatedEmbed(interaction, embeds, currentPage, '', '', ephemeral);
     }
 }

@@ -23,7 +23,7 @@ module.exports = {
             'Nothing';
 
         let currentlyPlayingValue = 'Nothing'
-        if (currentlyPlaying){
+        if (currentlyPlaying && currentlyPlaying.item) {
             const progress = `${Math.floor(currentlyPlaying.progress_ms / 1000 / 60)}:${Math.floor(currentlyPlaying.progress_ms / 1000 % 60).toString().padStart(2, '0')} / ${Math.floor(currentlyPlaying.item.duration_ms / 1000 / 60)}:${Math.floor(currentlyPlaying.item.duration_ms / 1000 % 60).toString().padStart(2, '0')}`
 
             if (currentlyPlaying.is_playing){

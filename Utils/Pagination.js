@@ -49,7 +49,7 @@ async function createPaginatedEmbed(interaction, embeds, currentPage, update = f
     }
 
     const filter = (i) => ['previous', 'next'].includes(i.customId) && i.user.id === interaction.user.id;
-    const collector = message.createMessageComponentCollector({ filter, time: 120000 }); // 120 seconds
+    const collector = message.createMessageComponentCollector({ filter, time: 240000 }); // 240 seconds
 
     collector.on('collect', async (i) => {
         if (i.customId === 'next') {
@@ -80,6 +80,28 @@ async function createPaginatedEmbed(interaction, embeds, currentPage, update = f
             await i.update({ embeds: newCurrentEmbeds, components: [newRow, InitialRow] });
         } else {
             await i.update({ embeds: newCurrentEmbeds, components: [newRow] });
+        }
+    });
+
+    collector.on('end', async (collected, reason) => {
+        //disable the buttons
+        const newRow = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setLabel('Previous')
+                .setCustomId('previous')
+                .setDisabled(true)
+                .setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setLabel('Next')
+                .setCustomId('next')
+                .setDisabled(true)
+                .setStyle(ButtonStyle.Secondary)
+        );
+
+        if (InitialRow) {
+            await message.edit({ components: [newRow, InitialRow] });
+        } else {
+            await message.edit({ components: [newRow] });
         }
     });
 }

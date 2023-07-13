@@ -25,7 +25,6 @@ module.exports = {
             return;
         }
 
-
         const month = interaction.options.getString('month');
         const year = interaction.options.getString('year');
 

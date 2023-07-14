@@ -18,7 +18,7 @@ module.exports = {
     cooldown: 30,
     data: new SlashCommandBuilder()
         .setName('spotify')
-        .setDescription('Allow the bot to access your spotify account.')
+        .setDescription('Spotify commands.')
         .addSubcommandGroup(group =>
             group
                 .setName('user')

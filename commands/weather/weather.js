@@ -40,6 +40,7 @@ subCommands.forEach(subCommand => {
 
 
 module.exports = {
+    category: 'Weather',
     cooldown: 30,
     data: commandBuilder,
 

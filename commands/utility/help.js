@@ -1,87 +1,82 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const config = require('../../botconfig/embed.json');
-const fs = require('fs');
 
-const choices = [];
-const commandFolders = fs.readdirSync('./commands');
-for (const folder of commandFolders) {
-    choices.push({ name: folder, value: folder });
-}
+const { readdirSync } = require('fs');
+const { join } = require('path');
+const commandDir = join(__dirname, '../../commands');
+
+const options = [];
+readdirSync(commandDir).forEach((dir) => {
+    if (dir === 'privateCommands') return;
+    const commandFiles = readdirSync(`${commandDir}/${dir}`).filter((file) => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        if (file === 'help.js') continue;
+        const command = require(`${commandDir}/${dir}/${file}`);
+        if (command.category) {
+            options.push(command.category);
+        }
+    }
+});
+
+const uniqueOptions = [...new Set(options)];
+const choices = uniqueOptions.map((option) => ({ name: option, value: option }));
 
 module.exports = {
+    category: 'Info',
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('Show all commands')
-    //add option to filter by category (folder name)
-    .addStringOption(option =>
-        option.setName('category')
-            .setDescription('The category to filter by.')
-            .setRequired(false)
-            .addChoices(
-                ...choices,
-            ),
+        .addStringOption((option) =>
+            option.setName('category').setDescription('The category to filter by.').setRequired(false).addChoices(...choices)
+    )
+        .addBooleanOption((option) =>
+            option.setName('ephemeral').setDescription('Whether the message should be ephemeral.').setRequired(false)
     ),
     async execute(interaction) {
-
-
-//get all the command names and descriptions from the commands files
-        const commandNames = [];
-        const commandDescriptions = [];
-        const commandFolders = fs.readdirSync('./commands');
-
-        for (const folder of commandFolders) {
-            const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
-
-            for (const file of commandFiles) {
-                const command = require(`../../commands/${folder}/${file}`);
-                commandNames.push(command.data.name);
-                commandDescriptions.push(command.data.description);
-            }
-        }
+        const { commands } = interaction.client;
+        const commandList = [];
+        const ephemeral = interaction.options.getBoolean('ephemeral');
 
         const category = interaction.options.getString('category');
-        if (!category) {
-            const embed = new EmbedBuilder()
-                .setTitle('Help')
-                .setColor(config.color_info)
-                .setTimestamp()
-                .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()})
-                .addFields(
-                    {name: 'Commands', value: commandNames.join('\n'), inline: true},
-                    {name: 'Description', value: commandDescriptions.join('\n'), inline: true},
-                );
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            if (category) {
+            commands.forEach((command, name) => {
+                if (command.guildOnly) return;
 
-        } else {
-            // filter out commands that are not in the category
-            const filteredNames = [];
-            const filteredDescriptions = [];
-
-            for (const folder of commandFolders) {
-                if (folder === category) {
-                    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
-
-                    for (const file of commandFiles) {
-                        const command = require(`../../commands/${folder}/${file}`);
-                        //add a slash infront of the name to make it a command
-                        filteredNames.push("`/" + command.data.name + "`");
-                        filteredDescriptions.push(command.data.description);
-                    }
+                const commandName = '**`/' + command.data.name + '`**';
+                const commandDescription = command.data.description || 'No description provided.';
+                const commandCategory = command.category || 'No category provided.';
+                if (commandCategory.toLowerCase() === category.toLowerCase()) {
+                    commandList.push(`${commandName} - ${commandDescription}`);
                 }
-            }
-
+            });
             const embed = new EmbedBuilder()
-                .setTitle('Help')
-                .setColor(config.color_info)
+                .setTitle('Help' + (category ? ` - ${category}` : ''))
+                .setColor(config.color_success)
                 .setTimestamp()
-                .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()})
-                .addFields(
-                    {name: 'Commands', value: filteredNames.join('\n'), inline: true},
-                    {name: 'Description', value: filteredDescriptions.join('\n'), inline: true},
-                );
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+                .setDescription(commandList.join('\n'));
+
+            interaction.reply({ embeds: [embed], ephemeral: ephemeral });
+            return;
         }
+
+        commands.forEach((command, name) => {
+            if (command.guildOnly) return;
+
+            const commandName = '**`/' + command.data.name + '`**';
+            const commandDescription = command.data.description || 'No description provided.';
+            const commandCategory = command.category || 'No category provided.';
+            commandList.push(`${commandName} - ${commandDescription}`);
+        });
+
+
+        const embed = new EmbedBuilder()
+            .setTitle('Help')
+            .setColor(config.color_success)
+            .setTimestamp()
+            .setDescription(commandList.join('\n'));
+
+        interaction.reply({ embeds: [embed], ephemeral: ephemeral });
     },
 
 };

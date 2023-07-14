@@ -4,10 +4,10 @@ const config = require("../botconfig/embed.json");
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+
         if (!interaction.isChatInputCommand()) return;
 
         const command = interaction.client.commands.get(interaction.commandName);
-
         if (!command) return;
 
         const { cooldowns } = interaction.client;

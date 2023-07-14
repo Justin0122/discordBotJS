@@ -43,7 +43,7 @@ for (const file of eventFiles) {
 
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isChatInputCommand()) {
-        // command handling
+
     } else if (interaction.isAutocomplete()) {
         const command = interaction.client.commands.get(interaction.commandName);
 

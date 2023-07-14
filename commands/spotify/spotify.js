@@ -1,6 +1,4 @@
 const { SlashCommandBuilder} = require('discord.js');
-const fs = require("fs");
-
 const currentYear = new Date().getFullYear();
 const choices = [];
 for (let year = 2015; year <= currentYear; year++) {
@@ -16,6 +14,7 @@ for (let i = 1; i <= 12; i++) {
 }
 
 module.exports = {
+    category: 'Music',
     cooldown: 30,
     data: new SlashCommandBuilder()
         .setName('spotify')

@@ -3,7 +3,6 @@ const {moonPhases} = require("../../../../Utils/Weather/weatherConditions");
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 
 module.exports = {
-
     async execute(interaction, weatherSession) {
     const {EmbedBuilder} = require("discord.js");
     const country = interaction.options.getString('country');

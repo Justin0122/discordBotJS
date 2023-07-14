@@ -3,6 +3,7 @@ const wait = require('node:timers/promises').setTimeout;
 
 
 module.exports = {
+    category: 'Utility',
     data: new SlashCommandBuilder()
         .setName('ping')
         .setDescription('Replies with Pong!')

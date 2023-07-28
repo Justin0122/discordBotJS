@@ -60,10 +60,6 @@ ${emoji} ${day.maxtemp_c}°C / ${day.mintemp_c}°C
 ${moonPhaseEmoji} Moon phase: \`${astro.moon_phase}\``)
             .setThumbnail(`https:${day.condition.icon}`)
             .setColor(color)
-            .setFooter({
-                text: `${interaction.user.username} - page: ${forecastDays.indexOf(forecastDay) + 1}/${forecastDays.length}`,
-                iconURL: interaction.user.avatarURL()
-            });
     });
     const currentPage = 1;
 

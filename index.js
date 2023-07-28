@@ -5,8 +5,15 @@ const Dotenv = require('dotenv');
 Dotenv.config();
 const token = process.env.TOKEN;
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
+const client = new Client({
+        intents:
+            [
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.MessageContent,
+            ]
+    }
+);
 client.cooldowns = new Collection();
 client.commands = new Collection();
 
@@ -40,6 +47,7 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args));
     }
 }
+require('./events/messageCreate.js')(client);
 
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isChatInputCommand()) {

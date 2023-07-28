@@ -1,10 +1,13 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const fs = require('fs');
 const Weather = require("../../Api/Weather/Weather");
 const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
 const countries = require('../../Utils/Weather/countries.json')
 const cities = require('../../Utils/Weather/cities.json')
+const config = require("../../botconfig/embed.json");
+const {createPaginatedEmbed} = require("../../Utils/Pagination");
+
 
 const subCommandFiles = fs.readdirSync(`${__dirname}/subCommands/Weather`).filter(file => file.endsWith('.js'));
 const subCommands = subCommandFiles.map(file => file.split('.')[0]);
@@ -85,5 +88,33 @@ module.exports = {
 
         return command.execute(interaction, weatherSession);
     },
+
+    async help(interaction){
+        const embeds = [];
+        const ephemeral = interaction.options.getBoolean('ephemeral') || false;
+
+        const firstPage = new EmbedBuilder()
+            .setTitle("Weather")
+            .setDescription(`Get the weather or forecast for a location`)
+            .addFields(
+                {name: "Sub Commands", value: subCommands.map(subCommand => `\`${subCommand}\``).join(", ")}
+            )
+        embeds.push(firstPage);
+
+        const secondPage = new EmbedBuilder()
+            .setTitle("UV Index")
+            .setDescription(`When should you wear sunscreen?`)
+            .setImage('https://www.jeunesse.co.nz/wp-content/uploads/2020/02/UV-INDEX.png')
+        embeds.push(secondPage);
+
+        const thirdPage = new EmbedBuilder()
+            .setTitle("Wind direction")
+            .setDescription(`How to read the wind direction`)
+            .setImage('https://www.surfertoday.com/images/stories/compassrose.jpg')
+        embeds.push(thirdPage);
+
+        await createPaginatedEmbed(interaction, embeds, 1, false, '', ephemeral);
+
+    }
 };
 

@@ -138,6 +138,7 @@ module.exports = {
             .addFields(
                 {name: "User Commands", value: "Use these commands to authorize the bot, show your profile information or deauthorize the bot.", inline: false},
                 { name: "Playlist Commands", value: "These commands are used to create playlists.", inline: false },
+                { name: " ", value: "Go to the next page to see the commands.", inline: false },
             )
         embeds.push(firstPage);
 

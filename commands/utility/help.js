@@ -3,6 +3,7 @@ const config = require('../../botconfig/embed.json');
 
 const { readdirSync } = require('fs');
 const { join } = require('path');
+const {createPaginatedEmbed} = require("../../Utils/Pagination");
 const commandDir = join(__dirname, '../../commands');
 
 const options = [];
@@ -42,14 +43,9 @@ module.exports = {
             if (category) {
                 const commandDir = join(__dirname, '../../commands');
                 const commandFiles = readdirSync(`${commandDir}/${category.toLowerCase()}`).filter((file) => file.endsWith('.js'));
-                for (const file of commandFiles){
-                    const execute = require(`${commandDir}/${category.toLowerCase()}/${file}`);
-                    try{
-                    execute.help(interaction);
-                    } catch (error) {
-                        interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-                    }
-                }
+                const file = commandFiles[0];
+                const execute = require(`${commandDir}/${category.toLowerCase()}/${file}`);
+                execute.help(interaction);
                 return;
         }
 
@@ -74,4 +70,19 @@ module.exports = {
         interaction.reply({ embeds: [embed], ephemeral: ephemeral });
     },
 
+    async help(interaction) {
+        const embeds = [];
+        const ephemeral = interaction.options.getBoolean('ephemeral') || false;
+
+        const firstPage = new EmbedBuilder()
+            .setTitle('Help')
+            .setColor(config.color_success)
+            .setTimestamp()
+            .setDescription('`/help` - Show all commands\n`/help <category>` - Show all commands in a category')
+            .setTimestamp()
+
+        embeds.push(firstPage);
+
+        await createPaginatedEmbed(interaction, embeds, 1, false, '', ephemeral);
+    },
 };

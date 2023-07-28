@@ -8,12 +8,14 @@ async function createPaginatedEmbed(interaction, embeds, currentPage, update = f
     const startIndex = (currentPage - 1) * maxPerPage;
     const endIndex = currentPage * maxPerPage;
 
-    //add color to embeds if not present
+    let pageCount = 0;
     embeds.forEach(embed => {
-        // Check if EmbedBuilder data has color
-        if (!embed.data.color) {
-            embed.setColor(config.color_success);
+        if (!embed.data.color || !embed.data.footer) {
+            embed.setColor(config.color_success)
+            embed.setTimestamp()
+            embed.setFooter({ text: 'page ' + (pageCount + 1) + ' of ' + totalPages, iconURL: interaction.user.avatarURL() });
         }
+        pageCount++;
     });
 
     const currentEmbeds = embeds.slice(startIndex, endIndex);

@@ -3,6 +3,7 @@ const config = require('../../botconfig/embed.json');
 
 const { readdirSync } = require('fs');
 const { join } = require('path');
+const {createPaginatedEmbed} = require("../../Utils/Pagination");
 const commandDir = join(__dirname, '../../commands');
 
 const options = [];
@@ -40,24 +41,12 @@ module.exports = {
 
         const category = interaction.options.getString('category');
             if (category) {
-            commands.forEach((command, name) => {
-                if (command.guildOnly) return;
-
-                const commandName = '**`/' + command.data.name + '`**';
-                const commandDescription = command.data.description || 'No description provided.';
-                const commandCategory = command.category || 'No category provided.';
-                if (commandCategory.toLowerCase() === category.toLowerCase()) {
-                    commandList.push(`${commandName} - ${commandDescription}`);
-                }
-            });
-            const embed = new EmbedBuilder()
-                .setTitle('Help' + (category ? ` - ${category}` : ''))
-                .setColor(config.color_success)
-                .setTimestamp()
-                .setDescription(commandList.join('\n'));
-
-            interaction.reply({ embeds: [embed], ephemeral: ephemeral });
-            return;
+                const commandDir = join(__dirname, '../../commands');
+                const commandFiles = readdirSync(`${commandDir}/${category.toLowerCase()}`).filter((file) => file.endsWith('.js'));
+                const file = commandFiles[0];
+                const execute = require(`${commandDir}/${category.toLowerCase()}/${file}`);
+                execute.help(interaction);
+                return;
         }
 
         commands.forEach((command, name) => {
@@ -74,9 +63,26 @@ module.exports = {
             .setTitle('Help')
             .setColor(config.color_success)
             .setTimestamp()
-            .setDescription(commandList.join('\n'));
+            .setDescription(commandList.join('\n'))
+            .setTimestamp()
+            .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
 
         interaction.reply({ embeds: [embed], ephemeral: ephemeral });
     },
 
+    async help(interaction) {
+        const embeds = [];
+        const ephemeral = interaction.options.getBoolean('ephemeral') || false;
+
+        const firstPage = new EmbedBuilder()
+            .setTitle('Help')
+            .setColor(config.color_success)
+            .setTimestamp()
+            .setDescription('`/help` - Show all commands\n`/help <category>` - Show all commands in a category')
+            .setTimestamp()
+
+        embeds.push(firstPage);
+
+        await createPaginatedEmbed(interaction, embeds, 1, false, '', ephemeral);
+    },
 };

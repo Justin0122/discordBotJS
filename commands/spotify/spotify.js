@@ -1,4 +1,5 @@
-const { SlashCommandBuilder} = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
+const {createPaginatedEmbed} = require("../../Utils/Pagination");
 const currentYear = new Date().getFullYear();
 const choices = [];
 for (let year = 2015; year <= currentYear; year++) {
@@ -14,7 +15,7 @@ for (let i = 1; i <= 12; i++) {
 }
 
 module.exports = {
-    category: 'Music',
+    category: 'Spotify',
     cooldown: 30,
     data: new SlashCommandBuilder()
         .setName('spotify')
@@ -126,4 +127,40 @@ module.exports = {
 
         return command.execute(interaction, spotifySession);
     },
+
+    async help(interaction){
+        const embeds = [];
+        const ephemeral = interaction.options.getBoolean('ephemeral') || false;
+
+        const firstPage = new EmbedBuilder()
+            .setTitle("Spotify Help Menu")
+            .setDescription("This is the help menu for the Spotify commands.")
+            .addFields(
+                {name: "User Commands", value: "Use these commands to authorize the bot, show your profile information or deauthorize the bot.", inline: false},
+                { name: "Playlist Commands", value: "These commands are used to create playlists.", inline: false },
+                { name: " ", value: "Go to the next page to see the commands.", inline: false },
+            )
+        embeds.push(firstPage);
+
+        const secondPage = new EmbedBuilder()
+            .setTitle("User Commands")
+            .setDescription("Use these commands to authorize the bot, show your profile information or deauthorize the bot.")
+            .addFields(
+                {name: "Authorize", value: "Authorize the bot to access your spotify account.", inline: false},
+                { name: "Me", value: "Get information about your spotify account.", inline: false },
+                { name: "Logout", value: "Deauthorize the bot.", inline: false },
+            )
+        embeds.push(secondPage);
+
+        const thirdPage = new EmbedBuilder()
+            .setTitle("Playlist Commands")
+            .setDescription("These commands are used to create playlists.")
+            .addFields(
+                {name: "Liked", value: "Create a playlist of your liked songs from a specific month.", inline: false},
+                { name: "Recommendations", value: "Create a playlist with song recommendations based on your liked/most played songs.", inline: false },
+            )
+        embeds.push(thirdPage);
+
+        await createPaginatedEmbed(interaction, embeds, 1, false, '', ephemeral);
+    }
 };

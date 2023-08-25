@@ -1,0 +1,55 @@
+{
+  "Sunny": {
+    "default": {
+      "default": "It's a beautiful day outside. It's {temperature} degrees and {condition}. You should get some fresh air.",
+      "hot": "It's scorching hot outside. It's {temperature} degrees and {condition}. Stay hydrated!",
+      "dry": "The sun is shining bright. It's {temperature} degrees and {condition}. Don't forget your sunscreen!",
+      "clear": "Clear skies and sunshine. It's {temperature} degrees and {condition}. Perfect weather for a picnic.",
+      "breezy": "A pleasant breeze in the air. It's {temperature} degrees and {condition}. Ideal for a stroll."
+    },
+    "Cold": {
+      "default": "It's a bit chilly outside. It's {temperature} degrees and {condition}. You should get some fresh air.",
+      "windy": "It's a bit chilly and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
+      "cloudy": "A mix of sun and clouds. It's {temperature} degrees and {condition}. A light jacket might be needed.",
+      "dry": "Chilly with clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
+      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities."
+    },
+    "Rain": {
+      "default": "It's raining outside. It's {temperature} degrees and {condition}. Don't forget your umbrella."
+    }
+  },
+  "Cloudy": {
+    "default": {
+      "default": "It's cloudy outside. It's {temperature} degrees and {condition}. You should get some fresh air.",
+      "windy": "It's cloudy and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
+      "dry": "Cloudy with clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
+      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities."
+    }
+  },
+  "Partly cloudy": {
+    "default": {
+      "default": "It's partly cloudy outside. It's {temperature} degrees and {condition}. You should get some fresh air.",
+      "windy": "It's partly cloudy and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
+      "dry": "Partly cloudy with clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
+      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities.",
+      "breezy": "A pleasant breeze in the air. It's {temperature} degrees and {condition}. Ideal for a stroll."
+    }
+  },
+  "Clear": {
+    "default": {
+      "default": "It's {temperature} degrees and {condition}. You should get some fresh air.",
+      "windy": "It's clear and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
+      "dry": "Clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
+      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities.",
+      "breezy": "A pleasant breeze in the air. It's {temperature} degrees and {condition}. Ideal for a stroll."
+    }
+  },
+  "Overcast": {
+    "default": {
+      "default": "It's overcast outside. It's {temperature} degrees and {condition}. You should get some fresh air.",
+      "windy": "It's overcast and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
+      "dry": "Overcast with clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
+      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities."
+    }
+  }
+}

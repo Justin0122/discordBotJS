@@ -1,5 +1,6 @@
-const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const WeatherConditions = require('../../../../Utils/Weather/weatherConditions');
+const WeatherStories = require('../../../../Utils/Weather/weatherStories'); // Import the weatherStories JSON
 
 module.exports = {
     async execute(interaction, weatherSession) {
@@ -7,24 +8,28 @@ module.exports = {
         const city = interaction.options.getString('city');
         const ephemeral = interaction.options.getBoolean('ephemeral');
 
+        const weatherData = await weatherSession.getWeather(country, city);
+        const location = weatherData.location;
+        const current = weatherData.current;
+
+        const condition = Object.keys(WeatherConditions.weatherConditions).find(condition =>
+            current.condition.text.toLowerCase().includes(condition)
+        );
+
+        let color = '#00ff00'; // Default color
         let emoji;
-            const weatherData = await weatherSession.getWeather(country, city);
-            const location = weatherData.location;
-            const current = weatherData.current;
-            let color = '#00ff00'; // Default color
 
-            const condition = Object.keys(WeatherConditions.weatherConditions).find(condition =>
-                current.condition.text.toLowerCase().includes(condition)
-            );
+        if (condition) {
+            color = WeatherConditions.weatherConditions[condition].color;
+            emoji = WeatherConditions.weatherConditions[condition].emoji;
+        }
+        const weatherStoryData = WeatherStories[current.condition.text][condition] || WeatherStories[current.condition.text]['default'];
+        const weatherStory = weatherStoryData[current.condition.text] || weatherStoryData.default;
+        const weatherStoryReplaced = weatherStory.replace('{condition}', current.condition.text).replace('{temperature}', current.temp_c);
 
-            if (condition) {
-                color = WeatherConditions.weatherConditions[condition].color;
-                emoji = WeatherConditions.weatherConditions[condition].emoji;
-            }
-
-            const embed = new EmbedBuilder()
-                .setTitle('Weather')
-                .setDescription(`${location.name}, ${location.region}, ${location.country}\n\`\`${current.condition.text}\`\`\n\`\`\`
+        const embed = new EmbedBuilder()
+            .setTitle('Weather')
+            .setDescription(`${location.name}, ${location.region}, ${location.country}\n\`\`${weatherStoryReplaced}\`\`\n\`\`\`
 ${emoji} Temperature: ${current.temp_c}°C
 ${emoji} Feels Like: ${current.feelslike_c}°C
 💦 Humidity: ${current.humidity}%
@@ -35,13 +40,12 @@ ${emoji} Feels Like: ${current.feelslike_c}°C
 🌀 Pressure: ${current.pressure_mb}mb
 🌞 UV Index: ${current.uv}
 \`\`\`Last Updated: ${current.last_updated}
-                    `)
-                .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() })
-                .setTimestamp()
-                .setThumbnail(`https:${current.condition.icon}`)
-                .setColor(color); // Set the dynamically determined color
+`)
+            .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() })
+            .setTimestamp()
+            .setThumbnail(`https:${current.condition.icon}`)
+            .setColor(color); // Set the dynamically determined color
 
         await interaction.reply({ embeds: [embed], ephemeral: ephemeral });
-
     }
-}
+};

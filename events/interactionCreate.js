@@ -4,6 +4,16 @@ const config = require("../botconfig/embed.json");
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
+        if (interaction.isMessageContextMenuCommand()) {
+            const command = interaction.client.commands.get(interaction.commandName);
+
+            try {
+                await command.execute(interaction);
+            } catch (error) {
+                console.log(error);
+            }
+            return;
+        }
 
         if (!interaction.isChatInputCommand()) return;
 

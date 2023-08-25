@@ -62,5 +62,5 @@ const moonPhases = {
 
 module.exports = {
     moonPhases: moonPhases,
-    weatherConditions: weatherConditions,
+    weatherConditions: weatherConditions
 }

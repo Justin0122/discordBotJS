@@ -47,7 +47,7 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args));
     }
 }
-require('./events/messageCreate.js')(client);
+// require('./events/messageCreate.js')(client);
 
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isChatInputCommand()) {

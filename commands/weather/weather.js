@@ -5,7 +5,6 @@ const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
 const countries = require('../../Utils/Weather/countries.json')
 const cities = require('../../Utils/Weather/cities.json')
-const config = require("../../botconfig/embed.json");
 const {createPaginatedEmbed} = require("../../Utils/Pagination");
 
 

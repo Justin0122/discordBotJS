@@ -226,7 +226,7 @@ class Spotify {
         return audioFeatures;
     }
 
-    async createRecommendationPlaylist(trackIds){
+    async createRecommendationPlaylist(trackIds, countryCode){
         const audioFeatures = await this.getAudioFeatures(trackIds);
         const lowestDanceability = Math.min(...audioFeatures.map((track) => track.danceability));
         const highestDanceability = Math.max(...audioFeatures.map((track) => track.danceability));
@@ -256,6 +256,7 @@ class Spotify {
 
 
         const recommendations = await this.makeSpotifyApiCall(() => this.spotifyApi.getRecommendations({
+            ...(countryCode && {market: countryCode}),
             seed_tracks: randomTrackIds,
             seed_genres: genre,
             limit: 50,

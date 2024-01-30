@@ -15,6 +15,7 @@ module.exports = {
 
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
+        const countryCode = interaction.options.getString('country') || '';
         const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
         const user = await spotifySession.getUser(interaction.user.id);
 
@@ -38,7 +39,8 @@ module.exports = {
             ephemeral,
             spotifySession,
             user,
-            playlistName
+            playlistName,
+            countryCode
         });
 
         const embed = new EmbedBuilder()
@@ -66,7 +68,7 @@ async function processQueue() {
 
     // Process requests one by one from the queue
     while (queue.length > 0) {
-        const { interaction, ephemeral, spotifySession, user, playlistName } = queue.shift();
+        const { interaction, ephemeral, spotifySession, user, playlistName, countryCode } = queue.shift();
         try {
             const mostListened = await spotifySession.getTopTracks(50);
             const ids = mostListened.items.map(item => item.id);
@@ -77,7 +79,7 @@ async function processQueue() {
             const shuffleArray = new ArrayShuffler();
             const shuffledIds = shuffleArray.shuffle(allIds);
 
-            const playlist = await spotifySession.createRecommendationPlaylist(shuffledIds);
+            const playlist = await spotifySession.createRecommendationPlaylist(shuffledIds, countryCode);
 
             //get the audio features for the playlist
             const audioFeatures = await spotifySession.getAudioFeatures(playlist.tracks.items.map(item => item.track.id));

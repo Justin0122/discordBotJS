@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "start": "node index.js",
+    "deploy": "node deployCommands.js",
+    "delete": "node deleteCommands.js"
+  },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "axios": "^1.4.0",

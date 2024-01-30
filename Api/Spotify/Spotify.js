@@ -46,8 +46,8 @@ class Spotify {
                 } else {
                     const json = JSON.parse(body);
                     const user = json.data.find((data) => data.attributes.discord_id === discordId);
-                    try{
-                    this.setSpotifyTokens(user.attributes.spotify_access_token, user.attributes.spotify_refresh_token);
+                    try {
+                        this.setSpotifyTokens(user.attributes.spotify_access_token, user.attributes.spotify_refresh_token);
                     } catch (error) {
                         reject(new Error('You have not authorized the application. Please authorize it using `/spotify auth`.'));
                     }
@@ -56,8 +56,8 @@ class Spotify {
                         const me = await this.spotifyApi.getMe();
                         resolve(me.body);
                     } catch (error) {
-                        try{
-                        await this.handleTokenRefresh(user.attributes.spotify_refresh_token);
+                        try {
+                            await this.handleTokenRefresh(user.attributes.spotify_refresh_token);
                         } catch (error) {
                             return;
                         }
@@ -98,7 +98,7 @@ class Spotify {
         return new Promise((resolve, reject) => {
             request.post(authOptions, (error, response, body) => {
                 if (!error && response.statusCode === 200) {
-                    const { access_token, refresh_token } = body;
+                    const {access_token, refresh_token} = body;
                     resolve({
                         access_token: access_token,
                         refresh_token: refresh_token || refreshToken,
@@ -126,7 +126,7 @@ class Spotify {
 
     async getTopTracks(amount = max) {
         try {
-            const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks({ limit: amount }));
+            const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks({limit: amount}));
             return topTracks.body;
         } catch (error) {
             throw new Error('Failed to retrieve Spotify user.');
@@ -135,7 +135,7 @@ class Spotify {
 
     async getTopArtists(amount = max) {
         try {
-            const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: amount }));
+            const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({limit: amount}));
             return topArtists.body;
         } catch (error) {
             throw new Error('Failed to retrieve Spotify user.');
@@ -179,7 +179,7 @@ class Spotify {
 
         while (likedSongs.length < total) {
             const response = await this.makeSpotifyApiCall(() =>
-                this.spotifyApi.getMySavedTracks({ limit: limit, offset: offset })
+                this.spotifyApi.getMySavedTracks({limit: limit, offset: offset})
             );
             const songs = response.body.items;
             total = response.body.total;
@@ -202,7 +202,7 @@ class Spotify {
 
     async getLikedSongs(total = max) {
         try {
-            const likedSongs = await this.makeSpotifyApiCall(() => this.spotifyApi.getMySavedTracks({ limit: total }));
+            const likedSongs = await this.makeSpotifyApiCall(() => this.spotifyApi.getMySavedTracks({limit: total}));
             return likedSongs.body;
         } catch (error) {
             throw new Error('Failed to retrieve liked songs.');
@@ -226,7 +226,7 @@ class Spotify {
         return audioFeatures;
     }
 
-    async createRecommendationPlaylist(trackIds, countryCode){
+    async createRecommendationPlaylist(trackIds, countryCode) {
         const audioFeatures = await this.getAudioFeatures(trackIds);
         const lowestDanceability = Math.min(...audioFeatures.map((track) => track.danceability));
         const highestDanceability = Math.max(...audioFeatures.map((track) => track.danceability));
@@ -298,7 +298,7 @@ class Spotify {
     }
 
     async getTopGenre(amount) {
-        const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({ limit: 5 }));
+        const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({limit: 5}));
         const topArtistsGenres = topArtists.body.items.map((artist) => artist.genres);
         const topArtistsGenresFlat = [].concat.apply([], topArtistsGenres);
         const topArtistsGenresCount = topArtistsGenresFlat.reduce((acc, genre) => {

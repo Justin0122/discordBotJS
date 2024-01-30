@@ -1,5 +1,6 @@
 const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const {createPaginatedEmbed} = require("../../Utils/Pagination");
+const SpotifySession = require('../../Api/Spotify/Spotify');
 const currentYear = new Date().getFullYear();
 const choices = [];
 for (let year = 2015; year <= currentYear; year++) {
@@ -103,7 +104,7 @@ module.exports = {
                         )
                         .addStringOption(option =>
                             option.setName('country')
-                                .setDescription('What country should the playlist be based on?')
+                                .setDescription('Songs available in this country.')
                                 .setRequired(false)
                                 .setAutocomplete(true)
                         ),
@@ -115,10 +116,15 @@ module.exports = {
         const choices = ['Happy', 'Sad', 'Angry', 'Chill', 'Party', 'Romantic', 'Workout', 'Focus', 'Sleep', 'Study', 'Travel', 'Rainy Day', 'Energetic', 'Relaxed', 'Motivated', 'Melancholic', 'Excited', 'Reflective', 'Nostalgic', 'Calm', 'Bored', 'Lonely', 'Stressed', 'Anxious', 'Tired', 'Sick', 'Heartbroken', 'In Love', 'Confident', 'Pumped', 'Trippy'];
         const filtered = choices.filter(choice => choice.startsWith(focusedValue));
         if (interaction.options.getFocused(true).name === 'country') {
-            const countries = require('../../Utils/countryCodes.json')
-            const sliced = focusedValue ? countries.filter(country => country.Name.toLowerCase().startsWith(focusedValue.toLowerCase())).slice(0, 25) : countries.sort(() => Math.random() - 0.5).slice(0, 25);
+            const countries = require('../../Utils/countryCodes.json');
+
+            const filteredCountries = Object.entries(countries.markets)
+                .filter(([code, name]) => name.toLowerCase().includes(focusedValue.toLowerCase()))
+                .slice(0, 25);
+
+            const sliced = filteredCountries.map(([code, name]) => ({name: name, value: code}));
             await interaction.respond(
-                sliced.map(country => ({name: country.Name, value: country.Code})),
+                sliced,
             );
             return;
         }
@@ -137,7 +143,6 @@ module.exports = {
         const commandPath = `${subCommandDir}/${subcommand}`;
         const command = require(commandPath);
 
-        const SpotifySession = require('../../Api/Spotify/Spotify');
         const spotifySession = new SpotifySession(process.env.SPOTIFY_SECURE_TOKEN, process.env.SPOTIFY_API_URL, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
 
         return command.execute(interaction, spotifySession);

@@ -103,6 +103,12 @@ module.exports = {
                                 .setAutocomplete(true)
                         )
                         .addStringOption(option =>
+                            option.setName('genre')
+                                .setDescription('What genre should the playlist have?')
+                                .setRequired(false)
+                                .setAutocomplete(true)
+                        )
+                        .addStringOption(option =>
                             option.setName('country')
                                 .setDescription('Songs available in this country.')
                                 .setRequired(false)
@@ -123,6 +129,15 @@ module.exports = {
                 .slice(0, 25);
 
             const sliced = filteredCountries.map(([code, name]) => ({name: name, value: code}));
+            await interaction.respond(
+                sliced,
+            );
+            return;
+        }
+        if (interaction.options.getFocused(true).name === 'genre') {
+            const genres = require('../../Utils/genres.json');
+            const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(focusedValue.toLowerCase())).slice(0, 25);
+            const sliced = filteredGenres.map(genre => ({name: genre, value: genre}));
             await interaction.respond(
                 sliced,
             );

@@ -147,7 +147,7 @@ class Spotify {
             const songsFromMonth = await this.findLikedFromMonth(month, year);
             const playlistDescription = `This playlist is generated with your liked songs from ${month}/${year}.`;
             if (songsFromMonth.length === 0) {
-                return;
+                return
             }
             const playlist = await this.makeSpotifyApiCall(() =>
                 this.spotifyApi.createPlaylist(playlistName, {
@@ -226,39 +226,41 @@ class Spotify {
         return audioFeatures;
     }
 
-    async createRecommendationPlaylist(trackIds, countryCode) {
+    async createRecommendationPlaylist(trackIds, countryCode, genre, mood) {
         const audioFeatures = await this.getAudioFeatures(trackIds);
-        const lowestDanceability = Math.min(...audioFeatures.map((track) => track.danceability));
-        const highestDanceability = Math.max(...audioFeatures.map((track) => track.danceability));
-        const lowestEnergy = Math.min(...audioFeatures.map((track) => track.energy));
-        const highestEnergy = Math.max(...audioFeatures.map((track) => track.energy));
-        const lowestLoudness = Math.min(...audioFeatures.map((track) => track.loudness));
-        const highestLoudness = Math.max(...audioFeatures.map((track) => track.loudness));
-        const lowestSpeechiness = Math.min(...audioFeatures.map((track) => track.speechiness));
-        const highestSpeechiness = Math.max(...audioFeatures.map((track) => track.speechiness));
-        const lowestAcousticness = Math.min(...audioFeatures.map((track) => track.acousticness));
-        const highestAcousticness = Math.max(...audioFeatures.map((track) => track.acousticness));
-        const lowestInstrumentalness = Math.min(...audioFeatures.map((track) => track.instrumentalness));
-        const highestInstrumentalness = Math.max(...audioFeatures.map((track) => track.instrumentalness));
-        const lowestLiveness = Math.min(...audioFeatures.map((track) => track.liveness));
-        const highestLiveness = Math.max(...audioFeatures.map((track) => track.liveness));
-        const lowestValence = Math.min(...audioFeatures.map((track) => track.valence));
-        const highestValence = Math.max(...audioFeatures.map((track) => track.valence));
-        const lowestTempo = Math.min(...audioFeatures.map((track) => track.tempo));
-        const highestTempo = Math.max(...audioFeatures.map((track) => track.tempo));
+        let lowestDanceability = Math.min(...audioFeatures.map((track) => track.danceability));
+        let highestDanceability = Math.max(...audioFeatures.map((track) => track.danceability));
+        let lowestEnergy = Math.min(...audioFeatures.map((track) => track.energy));
+        let highestEnergy = Math.max(...audioFeatures.map((track) => track.energy));
+        let lowestLoudness = Math.min(...audioFeatures.map((track) => track.loudness));
+        let highestLoudness = Math.max(...audioFeatures.map((track) => track.loudness));
+        let lowestSpeechiness = Math.min(...audioFeatures.map((track) => track.speechiness));
+        let highestSpeechiness = Math.max(...audioFeatures.map((track) => track.speechiness));
+        let lowestAcousticness = Math.min(...audioFeatures.map((track) => track.acousticness));
+        let highestAcousticness = Math.max(...audioFeatures.map((track) => track.acousticness));
+        let lowestInstrumentalness = Math.min(...audioFeatures.map((track) => track.instrumentalness));
+        let highestInstrumentalness = Math.max(...audioFeatures.map((track) => track.instrumentalness));
+        let lowestLiveness = Math.min(...audioFeatures.map((track) => track.liveness));
+        let highestLiveness = Math.max(...audioFeatures.map((track) => track.liveness));
+        let lowestValence = Math.min(...audioFeatures.map((track) => track.valence));
+        let highestValence = Math.max(...audioFeatures.map((track) => track.valence));
+        let lowestTempo = Math.min(...audioFeatures.map((track) => track.tempo));
+        let highestTempo = Math.max(...audioFeatures.map((track) => track.tempo));
 
         const randomTrackIds = [];
         for (let i = 0; i < 3; i++) {
             const randomIndex = Math.floor(Math.random() * trackIds.length);
             randomTrackIds.push(trackIds[randomIndex]);
         }
-        const genre = await this.getTopGenre(2);
+        if (!genre) {
+            await this.getTopGenre(2);
+        }
 
 
         const recommendations = await this.makeSpotifyApiCall(() => this.spotifyApi.getRecommendations({
             ...(countryCode && {market: countryCode}),
+            ...(genre && {seed_genres: genre}),
             seed_tracks: randomTrackIds,
-            seed_genres: genre,
             limit: 50,
             min_danceability: lowestDanceability,
             max_danceability: highestDanceability,
@@ -279,7 +281,13 @@ class Spotify {
             min_tempo: lowestTempo,
             max_tempo: highestTempo,
         }));
-        const genreString = genre.join(', ');
+
+        let genreString;
+        if (typeof genre === 'string') {
+            genreString = genre;
+        } else {
+            genreString = genre.join(', ');
+        }
 
         const playlist = await this.makeSpotifyApiCall(() => this.spotifyApi.createPlaylist('Recommendations', {
             description: 'Genres: ' + genreString,
@@ -298,7 +306,7 @@ class Spotify {
     }
 
     async getTopGenre(amount) {
-        const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({limit: 5}));
+        const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({limit: max}));
         const topArtistsGenres = topArtists.body.items.map((artist) => artist.genres);
         const topArtistsGenresFlat = [].concat.apply([], topArtistsGenres);
         const topArtistsGenresCount = topArtistsGenresFlat.reduce((acc, genre) => {

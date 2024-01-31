@@ -16,6 +16,8 @@ module.exports = {
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const countryCode = interaction.options.getString('country') || '';
+        const genre = interaction.options.getString('genre') || '';
+        const mood = interaction.options.getString('mood') || '';
         const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
         const user = await spotifySession.getUser(interaction.user.id);
 
@@ -40,7 +42,9 @@ module.exports = {
             spotifySession,
             user,
             playlistName,
-            countryCode
+            countryCode,
+            genre,
+            mood
         });
 
         const embed = new EmbedBuilder()
@@ -68,7 +72,7 @@ async function processQueue() {
 
     // Process requests one by one from the queue
     while (queue.length > 0) {
-        const { interaction, ephemeral, spotifySession, user, playlistName, countryCode } = queue.shift();
+        const { interaction, ephemeral, spotifySession, user, playlistName, countryCode, genre, mood } = queue.shift();
         try {
             const mostListened = await spotifySession.getTopTracks(50);
             const ids = mostListened.items.map(item => item.id);
@@ -79,7 +83,7 @@ async function processQueue() {
             const shuffleArray = new ArrayShuffler();
             const shuffledIds = shuffleArray.shuffle(allIds);
 
-            const playlist = await spotifySession.createRecommendationPlaylist(shuffledIds, countryCode);
+            const playlist = await spotifySession.createRecommendationPlaylist(shuffledIds, countryCode, genre, mood);
 
             //get the audio features for the playlist
             const audioFeatures = await spotifySession.getAudioFeatures(playlist.tracks.items.map(item => item.track.id));

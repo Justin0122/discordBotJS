@@ -102,6 +102,21 @@ module.exports = {
                                 .setRequired(false)
                                 .setAutocomplete(true)
                         )
+                        .addBooleanOption(option =>
+                            option.setName('most-played')
+                                .setDescription('Should the generator use your most played songs?')
+                                .setRequired(false)
+                        )
+                        .addBooleanOption(option =>
+                            option.setName('liked-songs')
+                                .setDescription('Should the generator use your liked songs?')
+                                .setRequired(false)
+                        )
+                        .addBooleanOption(option =>
+                            option.setName('recently-played')
+                                .setDescription('Should the generator use your recently played songs?')
+                                .setRequired(false)
+                        ),
                 ),
         ),
 
@@ -121,7 +136,8 @@ module.exports = {
         await interaction.respond(
             sliced.map(choice => ({name: choice, value: choice})),
         );
-    },
+    }
+    ,
 
 
     async execute(interaction) {
@@ -135,7 +151,8 @@ module.exports = {
         const spotifySession = new SpotifySession(process.env.SPOTIFY_SECURE_TOKEN, process.env.SPOTIFY_API_URL, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
 
         return command.execute(interaction, spotifySession);
-    },
+    }
+    ,
 
     async help(interaction) {
         const embeds = [];
@@ -180,4 +197,5 @@ module.exports = {
 
         await createPaginatedEmbed(interaction, embeds, 1, false, '', ephemeral);
     }
-};
+}
+;

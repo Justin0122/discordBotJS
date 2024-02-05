@@ -1,7 +1,7 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const config = require('../../../../botconfig/embed.json');
 const SpotifySession = require('../../../../Api/Spotify/Spotify');
-const { setTimeout: wait } = require("node:timers/promises");
+const {setTimeout: wait} = require("node:timers/promises");
 const ArrayShuffler = require('../../../../Utils/ArrayShuffler');
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 const apiUrl = process.env.SPOTIFY_API_URL;
@@ -16,6 +16,9 @@ module.exports = {
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const genre = interaction.options.getString('genre') || '';
+        const recentlyPlayed = interaction.options.getBoolean('recently-played') || false;
+        const mostPlayed = interaction.options.getBoolean('most-played') || false;
+        const likedSongs = interaction.options.getBoolean('liked-songs') || false;
         const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
         const user = await spotifySession.getUser(interaction.user.id);
 
@@ -25,11 +28,14 @@ module.exports = {
                 .setTitle('Error')
                 .setDescription('Something went wrong while getting your user information.')
                 .addFields(
-                    { name: '`Solution`', value: 'Please use the `/spotify login` command to authorize the bot.' },
-                    { name: '`Note`', value: 'If you have already authorized the bot, please wait a few minutes and try again.' }
+                    {name: '`Solution`', value: 'Please use the `/spotify login` command to authorize the bot.'},
+                    {
+                        name: '`Note`',
+                        value: 'If you have already authorized the bot, please wait a few minutes and try again.'
+                    }
                 )
                 .setTimestamp();
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await interaction.reply({embeds: [embed], ephemeral: true});
             return;
         }
 
@@ -41,6 +47,9 @@ module.exports = {
             user,
             playlistName,
             genre,
+            recentlyPlayed,
+            mostPlayed,
+            likedSongs
         });
 
         const embed = new EmbedBuilder()
@@ -48,12 +57,12 @@ module.exports = {
             .setTitle('Creating Playlist')
             .setDescription('Please wait while the playlist is being created.')
             .addFields(
-                { name: 'User', value: user.display_name, inline: true },
-                { name: 'Playlist Name', value: playlistName, inline: true },
+                {name: 'User', value: user.display_name, inline: true},
+                {name: 'Playlist Name', value: playlistName, inline: true},
             )
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed], ephemeral: ephemeral });
+        await interaction.reply({embeds: [embed], ephemeral: ephemeral});
 
 
         // Process the queue if it's not already being processed
@@ -68,19 +77,39 @@ async function processQueue() {
 
     // Process requests one by one from the queue
     while (queue.length > 0) {
-        const { interaction, ephemeral, spotifySession, user, playlistName, genre } = queue.shift();
+        const {
+            interaction,
+            ephemeral,
+            spotifySession,
+            user,
+            playlistName,
+            genre,
+            recentlyPlayed,
+            mostPlayed,
+            likedSongs
+        } = queue.shift();
         try {
-            const mostListened = await spotifySession.getTopTracks(50);
-            const lastListened = await spotifySession.getLastListenedTracks(50);
-            const mostListenedIds = mostListened.items.map(item => item.id);
-            const lastListenedIds = lastListened.items.map(item => item.track.id);
-            const combinedIds = mostListenedIds.concat(lastListenedIds);
-            const likedSongs = await spotifySession.getLikedSongs(50);
-            const likedSongIds = likedSongs.items.map((item) => item.track.id);
-            const allIds = [...combinedIds, ...likedSongIds];
+            let combinedIds = [];
+
+            if (mostPlayed) {
+                const mostListened = await spotifySession.getTopTracks(50);
+                combinedIds.push(...mostListened.items.map(item => item.id));
+            }
+
+            if (recentlyPlayed) {
+                const lastListened = await spotifySession.getLastListenedTracks(50);
+                const lastListenedIds = lastListened.items.map(item => item.track.id);
+                combinedIds.push(...lastListenedIds);
+            }
+
+            if (likedSongs) {
+                const likedSongsData = await spotifySession.getLikedSongs(50);
+                const likedSongIds = likedSongsData.items.map(item => item.track.id);
+                combinedIds.push(...likedSongIds);
+            }
 
             const shuffleArray = new ArrayShuffler();
-            const shuffledIds = shuffleArray.shuffle(allIds);
+            const shuffledIds = shuffleArray.shuffle(combinedIds);
 
             const playlist = await spotifySession.createRecommendationPlaylist(shuffledIds, genre);
 
@@ -110,13 +139,13 @@ async function processQueue() {
                     .setTitle('Playlist Created')
                     .setDescription(`Click the button below to view the playlist.`)
                     .setURL(playlist.external_urls.spotify)
-                    .addFields({ name: 'Name', value: playlist.name, inline: true },
-                        { name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true },
-                        { name: 'Owner', value: playlist.owner.display_name, inline: true},
+                    .addFields({name: 'Name', value: playlist.name, inline: true},
+                        {name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true},
+                        {name: 'Owner', value: playlist.owner.display_name, inline: true},
                     )
                     .setThumbnail(playlist.images[0].url)
                     .setTimestamp()
-                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+                    .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
                 const row = new ActionRowBuilder()
                     .addComponents(
@@ -135,7 +164,7 @@ async function processQueue() {
                     .setDescription(audioFeaturesDescription)
                     .setThumbnail(playlist.images[0].url)
                     .setTimestamp()
-                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+                    .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
                 embeds.push(audioFeaturesEmbed);
 
@@ -143,7 +172,7 @@ async function processQueue() {
 
 
                 if (interaction.options.getBoolean('notify')) {
-                    await interaction.followUp({ content: `<@${interaction.user.id}>`, ephemeral: true });
+                    await interaction.followUp({content: `<@${interaction.user.id}>`, ephemeral: true});
                 }
             } else {
                 const embed = new EmbedBuilder()
@@ -152,7 +181,7 @@ async function processQueue() {
                     .setDescription('No songs found for the specified month.')
                     .setTimestamp();
 
-                await interaction.editReply({ embeds: [embed], ephemeral: true });
+                await interaction.editReply({embeds: [embed], ephemeral: true});
             }
         } catch (error) {
             console.log(error);
@@ -162,7 +191,7 @@ async function processQueue() {
                 .setDescription('Failed to create the playlist.')
                 .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed], ephemeral: true });
+            await interaction.editReply({embeds: [embed], ephemeral: true});
         }
 
         await wait(2000);

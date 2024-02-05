@@ -12,7 +12,7 @@ module.exports = {
         }
         const currentlyPlaying = await spotifySession.getCurrentlyPlaying(interaction.user.id);
         const topTracks = await spotifySession.getTopTracks(3);
-        const topArtists = await spotifySession.getTopArtists(3);
+        const topArtists = await spotifySession.getRecentlyPlayed(3);
 
         const topTracksValue = topTracks.items && topTracks.items.length > 0 ?
             topTracks.items.map(track => `[${track.name}](${track.external_urls.spotify}) - ${track.artists.map(artist => artist.name).join(', ')}`).join('\n') :

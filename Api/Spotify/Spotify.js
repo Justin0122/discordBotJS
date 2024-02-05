@@ -329,12 +329,10 @@ class Spotify {
     /**
      * Creates a recommendation playlist.
      * @param {Array<string>} trackIds - The IDs of the tracks.
-     * @param {string} countryCode - The country code.
      * @param {string} genre - The genre.
-     * @param {string} mood - The mood.
      * @returns {Promise} - The created recommendation playlist.
      */
-    async createRecommendationPlaylist(trackIds, countryCode, genre, mood) {
+    async createRecommendationPlaylist(trackIds, genre) {
         const audioFeatures = await this.getAudioFeatures(trackIds);
         let lowestDanceability = Math.min(...audioFeatures.map((track) => track.danceability));
         let highestDanceability = Math.max(...audioFeatures.map((track) => track.danceability));
@@ -366,7 +364,6 @@ class Spotify {
 
 
         const recommendations = await this.makeSpotifyApiCall(() => this.spotifyApi.getRecommendations({
-            ...(countryCode && {market: countryCode}),
             ...(genre && {seed_genres: genre}),
             seed_tracks: randomTrackIds,
             limit: 50,

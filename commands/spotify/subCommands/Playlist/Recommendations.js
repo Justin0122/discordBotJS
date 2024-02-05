@@ -42,10 +42,7 @@ module.exports = {
         const playlistName = `Recommendations - ${user.display_name}`;
         queue.push({
             interaction,
-            ephemeral,
             spotifySession,
-            user,
-            playlistName,
             genre,
             recentlyPlayed,
             mostPlayed,
@@ -79,10 +76,7 @@ async function processQueue() {
     while (queue.length > 0) {
         const {
             interaction,
-            ephemeral,
             spotifySession,
-            user,
-            playlistName,
             genre,
             recentlyPlayed,
             mostPlayed,

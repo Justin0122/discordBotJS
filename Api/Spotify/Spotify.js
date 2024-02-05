@@ -3,7 +3,20 @@ const request = require('request');
 
 const max = 25;
 
+/**
+ * Spotify class to handle all Spotify API calls
+ * @class
+ * @classdesc Class to handle all Spotify API calls
+ */
 class Spotify {
+    /**
+     * Create a Spotify object
+     * @param {string} secureToken - The secure token for the Spotify API
+     * @param {string} apiUrl - The URL for the Spotify API
+     * @param {string} redirectUri - The redirect URI for the Spotify API
+     * @param {string} clientId - The client ID for the Spotify API
+     * @param {string} clientSecret - The client secret for the Spotify API
+     */
     constructor(secureToken, apiUrl, redirectUri, clientId, clientSecret) {
         this.secureToken = secureToken;
         this.apiUrl = apiUrl;
@@ -18,6 +31,12 @@ class Spotify {
         });
     }
 
+    /**
+     * Make a Spotify API call and handle token refresh if necessary
+     * @param {Function} apiCall - The Spotify API call to make
+     * @returns {Promise} - The response from the Spotify API
+     * @throws {Error} - Failed to make Spotify API call
+     */
     async makeSpotifyApiCall(apiCall) {
         try {
             return await apiCall();
@@ -30,6 +49,12 @@ class Spotify {
         }
     }
 
+    /**
+     * Get the user's Spotify information
+     * @param {string} discordId - The user's Discord ID
+     * @returns {Promise} - The user's Spotify information
+     * @throws {Error} - Failed to retrieve Spotify user
+     */
     async getUser(discordId) {
         const link = `${this.apiUrl}?discord_id=${discordId}&secure_token=${this.secureToken}`;
         const options = {
@@ -73,6 +98,12 @@ class Spotify {
         });
     }
 
+    /**
+     * Handle token refresh
+     * @param {string} refreshToken - The user's Spotify refresh token
+     * @returns {Promise} - The refreshed Spotify access token
+     * @throws {Error} - Failed to refresh Spotify access token
+     */
     async handleTokenRefresh(refreshToken) {
         try {
             const refreshedTokens = await this.refreshAccessToken(refreshToken);
@@ -82,6 +113,12 @@ class Spotify {
         }
     }
 
+    /**
+     * Refresh the user's Spotify access token
+     * @param {string} refreshToken - The user's Spotify refresh token
+     * @returns {Promise} - The refreshed Spotify access token
+     * @throws {Error} - Failed to refresh Spotify access token
+     */
     async refreshAccessToken(refreshToken) {
         const authOptions = {
             url: 'https://accounts.spotify.com/api/token',
@@ -110,38 +147,83 @@ class Spotify {
         });
     }
 
+    /**
+     * Set the user's Spotify access and refresh tokens
+     * @param {string} accessToken - The user's Spotify access token
+     * @param {string} refreshToken - The user's Spotify refresh token
+     */
     setSpotifyTokens(accessToken, refreshToken) {
         this.spotifyApi.setAccessToken(accessToken);
         this.spotifyApi.setRefreshToken(refreshToken);
     }
 
+    /**
+     * Get the user's currently playing track
+     * @returns {Promise} - The user's currently playing track
+     * @throws {Error} - Failed to retrieve currently playing track
+     */
     async getCurrentlyPlaying() {
         try {
             const currentlyPlaying = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyCurrentPlayingTrack());
             return currentlyPlaying.body;
         } catch (error) {
-            throw new Error('Failed to retrieve Spotify user.');
+            throw new Error('Failed to retrieve currently playing track.');
         }
     }
 
+    /**
+     * Get the user's top tracks
+     * @param {number} [amount=25] - The amount of top tracks to retrieve. Default is the value of the constant 'max'.
+     * @returns {Promise} - The user's top tracks
+     * @throws {Error} - Failed to retrieve top tracks
+     */
     async getTopTracks(amount = max) {
         try {
             const topTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopTracks({limit: amount}));
             return topTracks.body;
         } catch (error) {
-            throw new Error('Failed to retrieve Spotify user.');
+            throw new Error('Failed to retrieve top tracks.');
         }
     }
 
+    /**
+     * Get the user's last listened tracks
+     * @param {number} [amount=25] - The amount of last listened tracks to retrieve. Default is the value of the constant 'max'.
+     * @returns {Promise} - The user's last listened tracks
+     * @throws {Error} - Failed to retrieve last listened tracks
+     */
+    async getLastListenedTracks(amount = max) {
+        try {
+            const lastListenedTracks = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyRecentlyPlayedTracks({limit: amount}));
+            return lastListenedTracks.body;
+        } catch (error) {
+            throw new Error('Failed to retrieve last listened tracks.');
+        }
+    }
+
+    /**
+     * Get the user's top artists
+     * @param {number} [amount=25] - The amount of top artists to retrieve. Default is the value of the constant 'max'.
+     * @returns {Promise} - The user's top artists
+     * @throws {Error} - Failed to retrieve top artists
+     */
     async getTopArtists(amount = max) {
         try {
             const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({limit: amount}));
             return topArtists.body;
         } catch (error) {
-            throw new Error('Failed to retrieve Spotify user.');
+            throw new Error('Failed to retrieve top artists.');
         }
     }
 
+    /**
+     * Get the user's top tracks
+     * @param {string} playlistName - The name of the playlist to create
+     * @param {number} month - The month to create the playlist for
+     * @param {number} year - The year to create the playlist for
+     * @returns {Promise} - The created playlist
+     * @throws {Error} - Failed to create playlist
+     */
     async createPlaylist(playlistName, month, year) {
         try {
             const songsFromMonth = await this.findLikedFromMonth(month, year);
@@ -169,6 +251,13 @@ class Spotify {
         }
     }
 
+    /**
+     * Find liked songs from a specific month
+     * @param {number} month - The month to create the playlist for
+     * @param {number} year - The year to create the playlist for
+     * @returns {Promise} - The liked songs from the specified month
+     * @throws {Error} - Failed to retrieve liked songs
+     */
     async findLikedFromMonth(month, year) {
         let likedSongs = [];
         let offset = 0;
@@ -200,6 +289,12 @@ class Spotify {
         return likedSongs;
     }
 
+    /**
+     * Get the user's top tracks
+     * @param {number} [total=25] - The amount of top tracks to retrieve. Default is the value of the constant 'max'.
+     * @returns {Promise} - The user's top tracks
+     * @throws {Error} - Failed to retrieve top tracks
+     */
     async getLikedSongs(total = max) {
         try {
             const likedSongs = await this.makeSpotifyApiCall(() => this.spotifyApi.getMySavedTracks({limit: total}));
@@ -209,6 +304,11 @@ class Spotify {
         }
     }
 
+    /**
+     * Get the user's top tracks
+     * @param {Array<string>} tracksIds - The IDs of the tracks to get audio features for
+     * @returns {Promise} - The audio features for the specified tracks
+     */
     async getAudioFeatures(tracksIds) {
         const limit = 100;
         let offset = 0;
@@ -226,6 +326,14 @@ class Spotify {
         return audioFeatures;
     }
 
+    /**
+     * Creates a recommendation playlist.
+     * @param {Array<string>} trackIds - The IDs of the tracks.
+     * @param {string} countryCode - The country code.
+     * @param {string} genre - The genre.
+     * @param {string} mood - The mood.
+     * @returns {Promise} - The created recommendation playlist.
+     */
     async createRecommendationPlaylist(trackIds, countryCode, genre, mood) {
         const audioFeatures = await this.getAudioFeatures(trackIds);
         let lowestDanceability = Math.min(...audioFeatures.map((track) => track.danceability));
@@ -305,6 +413,11 @@ class Spotify {
         return playlistWithTracks.body;
     }
 
+    /**
+     * Get the user's top genre
+     * @param {number} amount - The amount of top genres to get.
+     * @returns {Promise} - The user's top genres
+     */
     async getTopGenre(amount) {
         const topArtists = await this.makeSpotifyApiCall(() => this.spotifyApi.getMyTopArtists({limit: max}));
         const topArtistsGenres = topArtists.body.items.map((artist) => artist.genres);

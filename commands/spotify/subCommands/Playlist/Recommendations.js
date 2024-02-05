@@ -17,8 +17,8 @@ module.exports = {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const genre = interaction.options.getString('genre') || '';
         const recentlyPlayed = interaction.options.getBoolean('recently-played') || false;
-        const mostPlayed = interaction.options.getBoolean('most-played') || false;
-        const likedSongs = interaction.options.getBoolean('liked-songs') || false;
+        const mostPlayed = interaction.options.getBoolean('most-played') || true;
+        const likedSongs = interaction.options.getBoolean('liked-songs') || true;
         const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
         const user = await spotifySession.getUser(interaction.user.id);
 

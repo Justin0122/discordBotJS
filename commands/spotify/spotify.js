@@ -104,17 +104,17 @@ module.exports = {
                         )
                         .addBooleanOption(option =>
                             option.setName('most-played')
-                                .setDescription('Should the generator use your most played songs?')
+                                .setDescription('Should the generator use your most played songs? default: true')
                                 .setRequired(false)
                         )
                         .addBooleanOption(option =>
                             option.setName('liked-songs')
-                                .setDescription('Should the generator use your liked songs?')
+                                .setDescription('Should the generator use your liked songs? default: true')
                                 .setRequired(false)
                         )
                         .addBooleanOption(option =>
                             option.setName('recently-played')
-                                .setDescription('Should the generator use your recently played songs?')
+                                .setDescription('Should the generator use your recently played songs? default: false')
                                 .setRequired(false)
                         ),
                 ),

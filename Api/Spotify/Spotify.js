@@ -56,7 +56,7 @@ class Spotify {
      * @throws {Error} - Failed to retrieve Spotify user
      */
     async getUser(discordId) {
-        const link = `${this.apiUrl}?discord_id=${discordId}&secure_token=${this.secureToken}`;
+        const link = `${this.apiUrl}?id=${discordId}&secure_token=${this.secureToken}`;
         const options = {
             url: link,
             headers: {
@@ -432,7 +432,7 @@ class Spotify {
     }
 
     async logout(id) {
-        const url = `${this.apiUrl}?discord_id=${id}&secure_token=${this.secureToken}&logout=true`;
+        const url = `${this.apiUrl}?id=${id}&secure_token=${this.secureToken}&logout=true`;
         await fetch(url);
     }
 }

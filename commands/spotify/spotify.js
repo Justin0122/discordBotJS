@@ -122,7 +122,6 @@ module.exports = {
 
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
-        const filtered = choices.filter(choice => choice.startsWith(focusedValue));
         if (interaction.options.getFocused(true).name === 'genre') {
             const genres = require('../../Utils/genres.json');
             const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(focusedValue.toLowerCase())).slice(0, 25);
@@ -130,12 +129,8 @@ module.exports = {
             await interaction.respond(
                 sliced,
             );
-            return;
+
         }
-        const sliced = focusedValue ? filtered.slice(0, 25) : filtered.sort(() => Math.random() - 0.5).slice(0, 25);
-        await interaction.respond(
-            sliced.map(choice => ({name: choice, value: choice})),
-        );
     }
     ,
 

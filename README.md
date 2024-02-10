@@ -11,6 +11,7 @@ Discord bot written in JS using:
 * Official [Discord.js](https://discord.js.org/#/) library
 * [Node.js](https://nodejs.org/en/)
 * Guide: [Discord.js Guide](https://discordjs.guide/)
+* [vibify](https://github.com/justin0122/vibify) - Spotify API wrapper
 
 
 ## Installation
@@ -34,17 +35,28 @@ npm install
 ### Starting the bot
 
 ```bash
-node index.js
+npm start
 ```
 
 ### Deploying commands
     
 ```bash
-node deployCommands.js
+npm run deploy
 ```
 
 ## Features
-- [x] slash commands
+- Displaying the user's Spotify information
+- Displaying the user's currently playing track
+- Displaying the user's top tracks
+- Displaying the user's last listened tracks
+- Displaying the user's top artists
+- Creating a playlist for a specific month and year
+- Creating a recommendation playlist based on the user's top tracks, top artists and last listened tracks
+
+
+- Displaying the weather for a specific location
+- Displaying the forecast for a specific location
+
 
 
 ## Notes

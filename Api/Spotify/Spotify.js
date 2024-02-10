@@ -10,10 +10,9 @@ const max = 25;
 class Spotify {
     /**
      * Create a Spotify object
-     * @param {string} secureToken - The secure token for the Spotify API
      * @param {string} apiUrl - The URL for the Spotify API
      */
-    constructor(secureToken, apiUrl) {
+    constructor(apiUrl) {
         this.apiUrl = apiUrl;
     }
 

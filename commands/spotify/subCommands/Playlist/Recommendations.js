@@ -3,7 +3,6 @@ const config = require('../../../../botconfig/embed.json');
 const SpotifySession = require('../../../../Api/Spotify/Spotify');
 const {setTimeout: wait} = require("node:timers/promises");
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
-const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
 const queue = [];
 let isProcessing = false;
@@ -17,7 +16,7 @@ module.exports = {
         const recentlyPlayed = interaction.options.getBoolean('recently-played') || false;
         const mostPlayed = interaction.options.getBoolean('most-played') || true;
         const likedSongs = interaction.options.getBoolean('liked-songs') || true;
-        const spotifySession = new SpotifySession(secureToken, process.env.SPOTIFY_API_URL);
+        const spotifySession = new SpotifySession(process.env.SPOTIFY_API_URL);
         const user = await spotifySession.getUser(interaction.user.id);
 
         if (!user) {

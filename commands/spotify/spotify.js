@@ -176,7 +176,7 @@ module.exports = {
         const commandPath = `${subCommandDir}/${subcommand}`;
         const command = require(commandPath);
 
-        const spotifySession = new SpotifySession(process.env.SPOTIFY_SECURE_TOKEN, process.env.SPOTIFY_API_URL);
+        const spotifySession = new SpotifySession(process.env.SPOTIFY_API_URL);
 
         return command.execute(interaction, spotifySession);
     }

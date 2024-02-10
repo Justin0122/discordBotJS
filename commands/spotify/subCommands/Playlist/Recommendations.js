@@ -83,30 +83,6 @@ async function processQueue() {
         try {
             const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs);
             const audioFeatures = await spotifySession.getAudioFeatures(playlist.id, interaction.user.id);
-            console.log(audioFeatures);
-
-            // loop over [
-            //   {
-            //     danceability: 0.597,
-            //     energy: 0.681,
-            //     key: 6,
-            //     loudness: -7.554,
-            //     mode: 0,
-            //     speechiness: 0.0488,
-            //     acousticness: 0.104,
-            //     instrumentalness: 0,
-            //     liveness: 0.104,
-            //     valence: 0.378,
-            //     tempo: 139.992,
-            //     type: 'audio_features',
-            //     id: '7fNfaKwI5qupnBJGc8qAOm',
-            //     uri: 'spotify:track:7fNfaKwI5qupnBJGc8qAOm',
-            //     track_href: 'https://api.spotify.com/v1/tracks/7fNfaKwI5qupnBJGc8qAOm',
-            //     analysis_url: 'https://api.spotify.com/v1/audio-analysis/7fNfaKwI5qupnBJGc8qAOm',
-            //     duration_ms: 234005,
-            //     time_signature: 4
-            //   },
-            // and get the average of the total
 
             const audioFeaturesDescription = `**Danceability**: ${((audioFeatures.map(a => a.danceability).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
                 `**Energy**: ${((audioFeatures.map(a => a.energy).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +

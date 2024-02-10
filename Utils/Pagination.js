@@ -1,7 +1,7 @@
 const { MessageActionRow, ButtonBuilder, ButtonComponent, ActionRowBuilder, ButtonStyle} = require('discord.js');
 const config = require('../botconfig/embed.json');
 
-async function createPaginatedEmbed(interaction, embeds, currentPage, update = false, InitialRow = null, ephemeral) {
+async function createPaginatedEmbed(interaction, embeds, currentPage, update = false, InitialRow = null, ephemeral = false){
     const maxPerPage = 1;
     const totalPages = Math.ceil(embeds.length / maxPerPage);
 

@@ -43,6 +43,39 @@ module.exports = {
                 )
                 .addSubcommand(subcommand =>
                     subcommand
+                        .setName('last-listened')
+                        .setDescription('Get the last listened tracks.')
+                        .addBooleanOption(option =>
+                            option
+                                .setName('ephemeral')
+                                .setDescription('Whether or not the message should be ephemeral.')
+                                .setRequired(false),
+                        ),
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName('top-tracks')
+                        .setDescription('Get the user\'s top tracks.')
+                        .addBooleanOption(option =>
+                            option
+                                .setName('ephemeral')
+                                .setDescription('Whether or not the message should be ephemeral.')
+                                .setRequired(false),
+                        ),
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName('top-artists')
+                        .setDescription('Get the user\'s top artists.')
+                        .addBooleanOption(option =>
+                            option
+                                .setName('ephemeral')
+                                .setDescription('Whether or not the message should be ephemeral.')
+                                .setRequired(false),
+                        ),
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName('logout')
                         .setDescription('Logout of your spotify account.'),
                 ),
@@ -143,7 +176,7 @@ module.exports = {
         const commandPath = `${subCommandDir}/${subcommand}`;
         const command = require(commandPath);
 
-        const spotifySession = new SpotifySession(process.env.SPOTIFY_SECURE_TOKEN, process.env.SPOTIFY_API_URL, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
+        const spotifySession = new SpotifySession(process.env.SPOTIFY_SECURE_TOKEN, process.env.SPOTIFY_API_URL_LOCAL);
 
         return command.execute(interaction, spotifySession);
     }

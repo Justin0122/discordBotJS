@@ -2,9 +2,7 @@ const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('di
 const config = require('../../../../botconfig/embed.json');
 const SpotifySession = require('../../../../Api/Spotify/Spotify');
 const {setTimeout: wait} = require("node:timers/promises");
-const ArrayShuffler = require('../../../../Utils/ArrayShuffler');
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
-const apiUrl = process.env.SPOTIFY_API_URL;
 const secureToken = process.env.SPOTIFY_SECURE_TOKEN;
 
 const queue = [];
@@ -19,7 +17,7 @@ module.exports = {
         const recentlyPlayed = interaction.options.getBoolean('recently-played') || false;
         const mostPlayed = interaction.options.getBoolean('most-played') || true;
         const likedSongs = interaction.options.getBoolean('liked-songs') || true;
-        const spotifySession = new SpotifySession(secureToken, apiUrl, process.env.SPOTIFY_REDIRECT_URI, process.env.SPOTIFY_CLIENT_ID, process.env.SPOTIFY_CLIENT_SECRET);
+        const spotifySession = new SpotifySession(secureToken, process.env.SPOTIFY_API_URL);
         const user = await spotifySession.getUser(interaction.user.id);
 
         if (!user) {
@@ -83,47 +81,42 @@ async function processQueue() {
             likedSongs
         } = queue.shift();
         try {
-            let combinedIds = [];
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs);
+            const audioFeatures = await spotifySession.getAudioFeatures(playlist.id, interaction.user.id);
+            console.log(audioFeatures);
 
-            if (mostPlayed) {
-                const mostListened = await spotifySession.getTopTracks(50);
-                combinedIds.push(...mostListened.items.map(item => item.id));
-            }
+            // loop over [
+            //   {
+            //     danceability: 0.597,
+            //     energy: 0.681,
+            //     key: 6,
+            //     loudness: -7.554,
+            //     mode: 0,
+            //     speechiness: 0.0488,
+            //     acousticness: 0.104,
+            //     instrumentalness: 0,
+            //     liveness: 0.104,
+            //     valence: 0.378,
+            //     tempo: 139.992,
+            //     type: 'audio_features',
+            //     id: '7fNfaKwI5qupnBJGc8qAOm',
+            //     uri: 'spotify:track:7fNfaKwI5qupnBJGc8qAOm',
+            //     track_href: 'https://api.spotify.com/v1/tracks/7fNfaKwI5qupnBJGc8qAOm',
+            //     analysis_url: 'https://api.spotify.com/v1/audio-analysis/7fNfaKwI5qupnBJGc8qAOm',
+            //     duration_ms: 234005,
+            //     time_signature: 4
+            //   },
+            // and get the average of the total
 
-            if (recentlyPlayed) {
-                const lastListened = await spotifySession.getLastListenedTracks(50);
-                const lastListenedIds = lastListened.items.map(item => item.track.id);
-                combinedIds.push(...lastListenedIds);
-            }
-
-            if (likedSongs) {
-                const likedSongsData = await spotifySession.getLikedSongs(50);
-                const likedSongIds = likedSongsData.items.map(item => item.track.id);
-                combinedIds.push(...likedSongIds);
-            }
-
-            const shuffleArray = new ArrayShuffler();
-            const shuffledIds = shuffleArray.shuffle(combinedIds);
-
-            const playlist = await spotifySession.createRecommendationPlaylist(shuffledIds, genre);
-
-            //get the audio features for the playlist
-            const audioFeatures = await spotifySession.getAudioFeatures(playlist.tracks.items.map(item => item.track.id));
-            const averageAudioFeatures = {
-                acousticness: audioFeatures.reduce((acc, item) => acc + item.acousticness, 0) / audioFeatures.length,
-                danceability: audioFeatures.reduce((acc, item) => acc + item.danceability, 0) / audioFeatures.length,
-                energy: audioFeatures.reduce((acc, item) => acc + item.energy, 0) / audioFeatures.length,
-                instrumentalness: audioFeatures.reduce((acc, item) => acc + item.instrumentalness, 0) / audioFeatures.length,
-                liveness: audioFeatures.reduce((acc, item) => acc + item.liveness, 0) / audioFeatures.length,
-                speechiness: audioFeatures.reduce((acc, item) => acc + item.speechiness, 0) / audioFeatures.length,
-                valence: audioFeatures.reduce((acc, item) => acc + item.valence, 0) / audioFeatures.length,
-            };
-
-            const audioFeaturesDescription = Object.entries(averageAudioFeatures).map(([key, value]) => {
-                const percentage = Math.round(value * 100);
-                return `${key}: ${percentage}%`;
-            }).join('\n');
-
+            const audioFeaturesDescription = `**Danceability**: ${((audioFeatures.map(a => a.danceability).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
+                `**Energy**: ${((audioFeatures.map(a => a.energy).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
+                `**Loudness**: ${(audioFeatures.map(a => a.loudness).reduce((a, b) => a + b, 0) / audioFeatures.length).toFixed(2)} dB\n` +
+                `**Speechiness**: ${((audioFeatures.map(a => a.speechiness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
+                `**Acousticness**: ${((audioFeatures.map(a => a.acousticness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
+                `**Instrumentalness**: ${((audioFeatures.map(a => a.instrumentalness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
+                `**Liveness**: ${((audioFeatures.map(a => a.liveness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
+                `**Valence**: ${((audioFeatures.map(a => a.valence).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
+                `**Tempo**: ${(audioFeatures.map(a => a.tempo).reduce((a, b) => a + b, 0) / audioFeatures.length).toFixed(2)} BPM\n`;
             if (playlist) {
 
                 const embeds = [];

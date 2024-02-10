@@ -67,7 +67,7 @@ async function processQueue() {
     while (queue.length > 0) {
         const { interaction, ephemeral, spotifySession, user, month, year, playlistName } = queue.shift();
         try {
-            const playlist = await spotifySession.createPlaylist(playlistName, month, year);
+            const playlist = await spotifySession.createPlaylist(interaction.user.id, playlistName, month, year);
 
             if (playlist) {
                 const embed = new EmbedBuilder()

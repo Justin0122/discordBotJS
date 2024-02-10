@@ -18,17 +18,16 @@ module.exports = {
 
         if (interaction.user.id === process.env.DEV_USER_ID) {
             const axios = require('axios');
-            const url = process.env.SPOTIFY_REDIRECT_URI;
+            const url = process.env.SPOTIFY_REDIRECT_URI.replace('callback', '');
             let status = 0;
             let statusText = 'Null';
             try {
                 const res = await axios.get(url);
-
                 status = res.status;
                 statusText = res.statusText;
             } catch (error) {
-                status ='404';
-                statusText = 'Not found';
+                status = error.response.status;
+                statusText = error.response.statusText;
             }
 
             const embed = new EmbedBuilder()
@@ -37,7 +36,7 @@ module.exports = {
                 .addFields(
                     { name: 'API Latency', value: `${interaction.client.ws.ping}ms`, inline: true },
                     { name: 'Slash Command Latency', value: `${ping}ms`, inline: true },
-                    { name: 'Spotify Redirect URI', value: `${status} ${statusText}`, inline: false },
+                    { name: 'Vibify', value: `${status} ${statusText}`, inline: false },
                 )
                 .setColor('#00ff00')
                 .setTimestamp()

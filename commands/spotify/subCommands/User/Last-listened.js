@@ -12,7 +12,7 @@ module.exports = {
             throw new Error('Please authorize the application to access your Spotify account. You can do this by using the `/spotify user authorize` command.');
         }
 
-        const lastListened = await spotifySession.getLastListenedTracks(interaction.user.id, 20);
+        const lastListened = await spotifySession.getLastListenedTracks(interaction.user.id, 50);
 
         const formatItem = (item, index) => {
             const nameLimit = 20;

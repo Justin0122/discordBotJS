@@ -3,6 +3,7 @@ const config = require('../../../../botconfig/embed.json');
 const SpotifySession = require('../../../../Api/Spotify/Spotify');
 const {setTimeout: wait} = require("node:timers/promises");
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
+const {audioFeatures} = require("../../../../Utils/Spotify");
 
 const queue = [];
 let isProcessing = false;
@@ -81,17 +82,8 @@ async function processQueue() {
         } = queue.shift();
         try {
             const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs);
-            const audioFeatures = await spotifySession.getAudioFeatures(playlist.id, interaction.user.id);
+            const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
-            const audioFeaturesDescription = `**Danceability**: ${((audioFeatures.map(a => a.danceability).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
-                `**Energy**: ${((audioFeatures.map(a => a.energy).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
-                `**Loudness**: ${(audioFeatures.map(a => a.loudness).reduce((a, b) => a + b, 0) / audioFeatures.length).toFixed(2)} dB\n` +
-                `**Speechiness**: ${((audioFeatures.map(a => a.speechiness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
-                `**Acousticness**: ${((audioFeatures.map(a => a.acousticness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
-                `**Instrumentalness**: ${((audioFeatures.map(a => a.instrumentalness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
-                `**Liveness**: ${((audioFeatures.map(a => a.liveness).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
-                `**Valence**: ${((audioFeatures.map(a => a.valence).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
-                `**Tempo**: ${(audioFeatures.map(a => a.tempo).reduce((a, b) => a + b, 0) / audioFeatures.length).toFixed(2)} BPM\n`;
             if (playlist) {
 
                 const embeds = [];
@@ -123,7 +115,7 @@ async function processQueue() {
                     .setColor(config.color_success)
                     .setURL(playlist.external_urls.spotify)
                     .setTitle('Audio Features')
-                    .setDescription(audioFeaturesDescription)
+                    .setDescription(audioFeaturesDescription())
                     .setThumbnail(playlist.images[0].url)
                     .setTimestamp()
                     .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});

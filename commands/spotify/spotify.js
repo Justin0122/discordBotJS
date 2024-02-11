@@ -3,7 +3,7 @@ const {createPaginatedEmbed} = require("../../Utils/Pagination");
 const SpotifySession = require('../../Api/Spotify/Spotify');
 const currentYear = new Date().getFullYear();
 const choices = [];
-for (let year = 2015; year <= currentYear; year++) {
+for (let year = currentYear; year >= 2015; year--) {
     choices.push({name: year.toString(), value: year.toString()});
 }
 

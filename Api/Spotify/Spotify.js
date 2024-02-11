@@ -40,7 +40,6 @@ class Spotify {
             })
                 .then(res => res.text())
                 .then(text => {
-                    console.log(text);
                     return JSON.parse(text);
                 });
         }

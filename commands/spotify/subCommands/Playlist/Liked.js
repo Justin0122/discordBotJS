@@ -1,6 +1,7 @@
 const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../../../../botconfig/embed.json');
 const { setTimeout: wait } = require("node:timers/promises");
+const { audioFeatures } = require('../../../../Utils/Spotify');
 
 const queue = [];
 let isProcessing = false;
@@ -60,6 +61,8 @@ module.exports = {
     }
 };
 
+
+
 async function processQueue() {
     isProcessing = true;
 
@@ -68,12 +71,14 @@ async function processQueue() {
         const { interaction, ephemeral, spotifySession, user, month, year, playlistName } = queue.shift();
         try {
             const playlist = await spotifySession.createPlaylist(interaction.user.id, playlistName, month, year);
+            const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
+            const embeds = [];
             if (playlist) {
                 const embed = new EmbedBuilder()
                     .setColor(config.color_success)
                     .setTitle('Playlist Created')
-                    .setDescription(`Click the button below to view the playlist.`)
+                    .setDescription(audioFeaturesDescription)
                     .setURL(playlist.external_urls.spotify)
                     .addFields({ name: 'Name', value: playlist.name, inline: true },
                         { name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true },

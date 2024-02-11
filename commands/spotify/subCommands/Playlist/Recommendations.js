@@ -115,7 +115,7 @@ async function processQueue() {
                     .setColor(config.color_success)
                     .setURL(playlist.external_urls.spotify)
                     .setTitle('Audio Features')
-                    .setDescription(audioFeaturesDescription())
+                    .setDescription(audioFeaturesDescription)
                     .setThumbnail(playlist.images[0].url)
                     .setTimestamp()
                     .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});

@@ -1,6 +1,6 @@
 const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const config = require('../../../../botconfig/embed.json');
-const SpotifySession = require('../../../../Api/Spotify/Spotify');
+const Vibify = require('../../../../Api/Spotify/Vibify');
 const {setTimeout: wait} = require("node:timers/promises");
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 const {audioFeatures} = require("../../../../Utils/Spotify");
@@ -19,7 +19,7 @@ module.exports = {
         const mostPlayed = interaction.options.getBoolean('most-played') || true;
         const likedSongs = interaction.options.getBoolean('liked-songs') || true;
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') || false;
-        const spotifySession = new SpotifySession();
+        const spotifySession = new Vibify();
         const user = await spotifySession.getUser(interaction.user.id);
 
         if (!user) {

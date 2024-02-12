@@ -1,6 +1,6 @@
 const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const {createPaginatedEmbed} = require("../../Utils/Pagination");
-const SpotifySession = require('../../Api/Spotify/Spotify');
+const Vibify = require('../../Api/Spotify/Vibify');
 const currentYear = new Date().getFullYear();
 const choices = [];
 for (let year = currentYear; year >= 2015; year--) {
@@ -179,7 +179,7 @@ module.exports = {
         const commandPath = `${subCommandDir}/${subcommand}`;
         const command = require(commandPath);
 
-        const spotifySession = new SpotifySession();
+        const spotifySession = new Vibify();
 
         return command.execute(interaction, spotifySession);
     }

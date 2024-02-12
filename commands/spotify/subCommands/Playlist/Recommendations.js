@@ -1,6 +1,6 @@
 const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const config = require('../../../../botconfig/embed.json');
-const Vibify = require('../../../../Api/Spotify/Vibify');
+const Vibify = require('@vibify/vibify');
 const {setTimeout: wait} = require("node:timers/promises");
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 const {audioFeatures} = require("../../../../Utils/Spotify");

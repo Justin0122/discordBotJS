@@ -1,6 +1,6 @@
 const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const {createPaginatedEmbed} = require("../../Utils/Pagination");
-const Vibify = require('../../Api/Spotify/Vibify');
+const Vibify = require('@vibify/vibify');
 const currentYear = new Date().getFullYear();
 const choices = [];
 for (let year = currentYear; year >= 2015; year--) {

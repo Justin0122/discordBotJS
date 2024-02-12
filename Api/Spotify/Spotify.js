@@ -1,4 +1,7 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const max = 25;
+const apiUrl = process.env.SPOTIFY_API_URL;
 
 /**
  * Spotify class to handle all Spotify API calls
@@ -6,13 +9,6 @@ const max = 25;
  * @classdesc Class to handle all Spotify API calls
  */
 class Spotify {
-    /**
-     * Create a Spotify object
-     * @param {string} apiUrl - The URL for the Spotify API
-     */
-    constructor(apiUrl) {
-        this.apiUrl = apiUrl;
-    }
 
     /**
      * Make a Spotify API call and handle token refresh if necessary
@@ -26,7 +22,7 @@ class Spotify {
         const headers = {
             'x-application-id': process.env.APPLICATION_ID,
         };
-        const baseUrl = `${this.apiUrl}`;
+        const baseUrl = `${apiUrl}`;
         if (method === 'POST' || method === 'PUT') {
             headers['Content-Type'] = 'application/json';
         }

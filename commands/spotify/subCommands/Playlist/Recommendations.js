@@ -19,7 +19,7 @@ module.exports = {
         const mostPlayed = interaction.options.getBoolean('most-played') || true;
         const likedSongs = interaction.options.getBoolean('liked-songs') || true;
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') || false;
-        const spotifySession = new SpotifySession(process.env.SPOTIFY_API_URL);
+        const spotifySession = new SpotifySession();
         const user = await spotifySession.getUser(interaction.user.id);
 
         if (!user) {

@@ -1,5 +1,3 @@
-const SpotifyWebApi = require('spotify-web-api-node');
-
 const max = 25;
 
 /**
@@ -140,16 +138,18 @@ class Spotify {
      * @param {boolean} recentlyPlayed - Whether to include recently played tracks.
      * @param {boolean} mostPlayed - Whether to include most played tracks.
      * @param {boolean} likedSongs - Whether to include liked songs.
+     * @param {boolean} currentlyPlaying - Whether to include currently playing track.
      * @returns {Promise} - The created recommendation playlist.
      */
-    async createRecommendationPlaylist(discordId, genre, recentlyPlayed, mostPlayed, likedSongs) {
+    async createRecommendationPlaylist(discordId, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying) {
         const url = `/recommendations`;
         return await this.makeSpotifyApiCall(url, 'POST', {
             id: discordId,
             genre: genre,
             recentlyPlayed: recentlyPlayed || false,
             mostPlayed: mostPlayed || true,
-            likedSongs: likedSongs || true
+            likedSongs: likedSongs || true,
+            currentlyPlaying: currentlyPlaying || false
         });
     }
 

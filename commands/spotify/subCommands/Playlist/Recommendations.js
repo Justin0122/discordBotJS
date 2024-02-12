@@ -17,6 +17,7 @@ module.exports = {
         const recentlyPlayed = interaction.options.getBoolean('recently-played') || false;
         const mostPlayed = interaction.options.getBoolean('most-played') || true;
         const likedSongs = interaction.options.getBoolean('liked-songs') || true;
+        const currentlyPlaying = interaction.options.getBoolean('currently-playing') || false;
         const spotifySession = new SpotifySession(process.env.SPOTIFY_API_URL);
         const user = await spotifySession.getUser(interaction.user.id);
 
@@ -44,7 +45,8 @@ module.exports = {
             genre,
             recentlyPlayed,
             mostPlayed,
-            likedSongs
+            likedSongs,
+            currentlyPlaying
         });
 
         const embed = new EmbedBuilder()
@@ -78,10 +80,11 @@ async function processQueue() {
             genre,
             recentlyPlayed,
             mostPlayed,
-            likedSongs
+            likedSongs,
+            currentlyPlaying
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs);
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying);
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {
@@ -142,7 +145,7 @@ async function processQueue() {
             const embed = new EmbedBuilder()
                 .setColor(config.color_error)
                 .setTitle('Error')
-                .setDescription('Failed to create the playlist.')
+                .setDescription('Failed to create the playlist: \n' + error.message.toString())
                 .setTimestamp();
 
             await interaction.editReply({embeds: [embed], ephemeral: true});

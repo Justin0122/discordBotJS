@@ -149,6 +149,11 @@ module.exports = {
                             option.setName('recently-played')
                                 .setDescription('Should the generator use your recently played songs? default: false')
                                 .setRequired(false)
+                        )
+                        .addBooleanOption(option =>
+                            option.setName('currently-playing')
+                                .setDescription('Should the generator use your currently playing song? default: false')
+                                .setRequired(false)
                         ),
                 ),
         ),
@@ -164,9 +169,7 @@ module.exports = {
             );
 
         }
-    }
-    ,
-
+    },
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);

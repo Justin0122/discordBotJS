@@ -10,7 +10,7 @@ module.exports = {
 
         const user = await spotifySession.getUser(interaction.user.id);
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction);
+            await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
         const [currentlyPlaying, topTracks, topArtists, lastListened] = await Promise.all([
@@ -19,6 +19,11 @@ module.exports = {
             spotifySession.getTopArtists(interaction.user.id, 10),
             spotifySession.getLastListenedTracks(interaction.user.id, 10)
         ]);
+
+        if (!topTracks.items || !topArtists.items || !lastListened.items) {
+            await sendErrorMessage(interaction, "Failed to retrieve items.");
+            return;
+        }
 
         const formatItem = (item, index) => `**${index + 1}.** [${item.name}](${item.external_urls.spotify}) - ${item.artists.map(artist => artist.name).join(', ')}`;
 

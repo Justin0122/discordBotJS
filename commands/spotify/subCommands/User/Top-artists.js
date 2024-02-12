@@ -10,11 +10,16 @@ module.exports = {
 
         const user = await spotifySession.getUser(interaction.user.id);
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction);
+            await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
 
         const topTracks = await spotifySession.getTopArtists(interaction.user.id, 50);
+
+        if (!topTracks.items) {
+            await sendErrorMessage(interaction, "Failed to retrieve top tracks.", "Please try again later.");
+            return;
+        }
         const formatItem = (item, index) => {
             return `**${index + 1}.** [${item.name}](${item.external_urls.spotify})`;
         }

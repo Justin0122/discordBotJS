@@ -10,11 +10,15 @@ module.exports = {
 
         const user = await spotifySession.getUser(interaction.user.id);
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction);
+            await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
 
         const topTracks = await spotifySession.getTopTracks(interaction.user.id, 50);
+        if (!topTracks.items) {
+            await sendErrorMessage(interaction, "Failed to retrieve top tracks.");
+            return;
+        }
         const formatItem = (item, index) => {
             const nameLimit = 20;
             let trackName = item.name;

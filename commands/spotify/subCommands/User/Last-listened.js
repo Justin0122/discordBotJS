@@ -10,11 +10,16 @@ module.exports = {
 
         const user = await spotifySession.getUser(interaction.user.id);
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction);
+            await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
 
         const lastListened = await spotifySession.getLastListenedTracks(interaction.user.id, 50);
+
+        if (!lastListened.items) {
+            await sendErrorMessage(interaction, "Failed to retrieve last listened tracks.");
+            return;
+        }
 
         const formatItem = (item, index) => {
             const nameLimit = 20;

@@ -41,7 +41,18 @@ class Spotify {
                     return JSON.parse(text);
                 });
         }
-        return await fetch(baseUrl + apiCall, {headers}).then((res) => res.json());
+        return await fetch(baseUrl + apiCall, {
+            method,
+            headers
+        })
+            .then(res => res.text())
+            .then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    return text;
+                }
+            });
     }
 
     /**

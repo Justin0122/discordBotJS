@@ -1,6 +1,7 @@
 const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const config = require('../../../../botconfig/embed.json');
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
+const sendErrorMessage = require('../../../../Utils/Error');
 
 module.exports = {
 
@@ -8,8 +9,9 @@ module.exports = {
         const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
 
         const user = await spotifySession.getUser(interaction.user.id);
-        if (!user) {
-            throw new Error('Please authorize the application to access your Spotify account. You can do this by using the `/spotify user authorize` command.');
+        if (!user || !user.display_name) {
+            await sendErrorMessage(interaction);
+            return;
         }
 
         const lastListened = await spotifySession.getLastListenedTracks(interaction.user.id, 50);

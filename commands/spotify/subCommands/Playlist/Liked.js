@@ -2,6 +2,7 @@ const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('d
 const config = require('../../../../botconfig/embed.json');
 const { setTimeout: wait } = require("node:timers/promises");
 const { audioFeatures } = require('../../../../Utils/Spotify');
+const sendErrorMessage = require('../../../../Utils/Error');
 
 const queue = [];
 let isProcessing = false;
@@ -13,16 +14,7 @@ module.exports = {
         const user = await spotifySession.getUser(interaction.user.id);
 
         if (!user) {
-            const embed = new EmbedBuilder()
-                .setColor(config.color_error)
-                .setTitle('Error')
-                .setDescription('Something went wrong while getting your user information.')
-                .addFields(
-                    { name: '`Solution`', value: 'Please use the `/spotify login` command to authorize the bot.' },
-                    { name: '`Note`', value: 'If you have already authorized the bot, please wait a few minutes and try again.' }
-                )
-                .setTimestamp();
-            await interaction.reply({ embeds: [embed], ephemeral: true });
+            await sendErrorMessage(interaction);
             return;
         }
 

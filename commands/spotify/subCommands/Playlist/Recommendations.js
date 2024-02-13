@@ -15,11 +15,11 @@ module.exports = {
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const genre = interaction.options.getString('genre') || '';
-        const recentlyPlayed = interaction.options.getBoolean('recently-played') || false;
-        const mostPlayed = interaction.options.getBoolean('most-played') || true;
-        const likedSongs = interaction.options.getBoolean('liked-songs') || true;
-        const currentlyPlaying = interaction.options.getBoolean('currently-playing') || false;
-        const useAudioFeatures = interaction.options.getBoolean('audio-features') || true;
+        const recentlyPlayed = interaction.options.getBoolean('recently-played') !== null ? interaction.options.getBoolean('recently-played') : false;
+        const mostPlayed = interaction.options.getBoolean('most-played') !== null ? interaction.options.getBoolean('most-played') : true;
+        const likedSongs = interaction.options.getBoolean('liked-songs') !== null ? interaction.options.getBoolean('liked-songs') : true;
+        const currentlyPlaying = interaction.options.getBoolean('currently-playing') !== null ? interaction.options.getBoolean('currently-playing') : false;
+        const useAudioFeatures = interaction.options.getBoolean('audio-features') !== null ? interaction.options.getBoolean('audio-features') : true;
         const targetValues = {
             acousticness: interaction.options.getString('target-acousticness') || '',
             danceability: interaction.options.getString('target-danceability') || '',
@@ -145,11 +145,11 @@ async function processQueue() {
                     .setTitle('Arguments')
                     .setDescription(
                         `Genre: ${genre || 'None'}\n` +
-                        `Recently Played: ${recentlyPlayed || false}\n` +
-                        `Most Played: ${mostPlayed || true}\n` +
-                        `Liked Songs: ${likedSongs || true}\n` +
-                        `Currently Playing: ${currentlyPlaying || false}\n` +
-                        `Use Audio Features: ${useAudioFeatures || true}\n`
+                        `Recently Played: ${recentlyPlayed !== null ? recentlyPlayed : false}\n` +
+                        `Most Played: ${mostPlayed !== null ? mostPlayed : false}\n` +
+                        `Liked Songs: ${likedSongs !== null ? likedSongs : true}\n` +
+                        `Currently Playing: ${currentlyPlaying !== null ? currentlyPlaying : false}\n` +
+                        `Use Audio Features: ${useAudioFeatures !== null ? useAudioFeatures : true}\n`
                     )
                     .setTimestamp()
                     .setThumbnail(playlist.images[0].url)
@@ -160,18 +160,18 @@ async function processQueue() {
                     .setColor(config.color_success)
                     .setTitle('Target Values')
                     .setDescription(
-                        `Acousticness: ${targetValues.acousticness || 'None'}\n` +
-                        `Danceability: ${targetValues.danceability || 'None'}\n` +
-                        `Energy: ${targetValues.energy || 'None'}\n` +
-                        `Instrumentalness: ${targetValues.instrumentalness || 'None'}\n` +
-                        `Liveness: ${targetValues.liveness || 'None'}\n` +
-                        `Speechiness: ${targetValues.speechiness || 'None'}\n` +
-                        `Loudness: ${targetValues.loudness || 'None'}\n` +
-                        `Tempo: ${targetValues.tempo || 'None'}\n` +
-                        `Valence: ${targetValues.valence || 'None'}\n` +
-                        `Popularity: ${targetValues.popularity || 'None'}\n` +
-                        `Key: ${targetValues.key || 'None'}\n` +
-                        `Mode: ${targetValues.mode || 'None'}\n`
+                        `Acousticness: ${targetValues.acousticness !== null ? targetValues.acousticness : 'None'}\n` +
+                        `Danceability: ${targetValues.danceability !== null ? targetValues.danceability : 'None'}\n` +
+                        `Energy: ${targetValues.energy !== null ? targetValues.energy : 'None'}\n` +
+                        `Instrumentalness: ${targetValues.instrumentalness !== null ? targetValues.instrumentalness : 'None'}\n` +
+                        `Liveness: ${targetValues.liveness !== null ? targetValues.liveness : 'None'}\n` +
+                        `Speechiness: ${targetValues.speechiness !== null ? targetValues.speechiness : 'None'}\n` +
+                        `Loudness: ${targetValues.loudness !== null ? targetValues.loudness : 'None'}\n` +
+                        `Tempo: ${targetValues.tempo !== null ? targetValues.tempo : 'None'}\n` +
+                        `Valence: ${targetValues.valence !== null ? targetValues.valence : 'None'}\n` +
+                        `Popularity: ${targetValues.popularity !== null ? targetValues.popularity : 'None'}\n` +
+                        `Key: ${targetValues.key !== null ? targetValues.key : 'None'}\n` +
+                        `Mode: ${targetValues.mode !== null ? targetValues.mode : 'None'}\n`
                     )
                     .setTimestamp()
                     .setThumbnail(playlist.images[0].url)

@@ -159,6 +159,66 @@ module.exports = {
                             option.setName('audio-features')
                                 .setDescription('Should the generator use audio features? May interfere with genre. default: true')
                                 .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-acousticness')
+                                .setDescription('0.0 to 1.0')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-danceability')
+                                .setDescription('0.0 to 1.0')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-energy')
+                                .setDescription('0 to 1')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-instrumentalness')
+                                .setDescription('0 to 1')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-liveness')
+                                .setDescription('0 to 1')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-speechiness')
+                                .setDescription('0 to 1')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-loudness')
+                                .setDescription('-60 to 0 (dB)')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-tempo')
+                                .setDescription('0 to 200 (BPM)')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-valence')
+                                .setDescription('0 = negative, 1 = positive')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-popularity')
+                                .setDescription('0 to 100')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-key')
+                                .setDescription('0 = C, 1 = C♯/D♭, 2 = D, and so on. (0 to 11)')
+                                .setRequired(false)
+                        )
+                        .addStringOption(option =>
+                            option.setName('target-mode')
+                                .setDescription('0 = minor, 1 = major')
+                                .setRequired(false)
                         ),
                 ),
         ),

@@ -20,6 +20,21 @@ module.exports = {
         const likedSongs = interaction.options.getBoolean('liked-songs') || true;
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') || false;
         const useAudioFeatures = interaction.options.getBoolean('audio-features') || true;
+        const targetValues = {
+            acousticness: interaction.options.getString('target-acousticness') || '',
+            danceability: interaction.options.getString('target-danceability') || '',
+            energy: interaction.options.getString('target-energy') || '',
+            instrumentalness: interaction.options.getString('target-instrumentalness') || '',
+            liveness: interaction.options.getString('target-liveness') || '',
+            speechiness: interaction.options.getString('target-speechiness') || '',
+            loudness: interaction.options.getString('target-loudness') || '',
+            tempo: interaction.options.getString('target-tempo') || '',
+            valence: interaction.options.getString('target-valence') || '',
+            popularity: interaction.options.getString('target-popularity') || '',
+            key: interaction.options.getString('target-key') || '',
+            mode: interaction.options.getString('target-mode') || '',
+        };
+
         const spotifySession = new Vibify();
         const user = await spotifySession.getUser(interaction.user.id);
 
@@ -37,7 +52,8 @@ module.exports = {
             mostPlayed,
             likedSongs,
             currentlyPlaying,
-            useAudioFeatures
+            useAudioFeatures,
+            targetValues
         });
 
         const embed = new EmbedBuilder()
@@ -73,10 +89,11 @@ async function processQueue() {
             mostPlayed,
             likedSongs,
             currentlyPlaying,
-            useAudioFeatures
+            useAudioFeatures,
+            targetValues
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures);
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, targetValues);
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {

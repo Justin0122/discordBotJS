@@ -19,6 +19,7 @@ module.exports = {
         const mostPlayed = interaction.options.getBoolean('most-played') || true;
         const likedSongs = interaction.options.getBoolean('liked-songs') || true;
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') || false;
+        const useAudioFeatures = interaction.options.getBoolean('audio-features') || true;
         const spotifySession = new Vibify();
         const user = await spotifySession.getUser(interaction.user.id);
 
@@ -35,7 +36,8 @@ module.exports = {
             recentlyPlayed,
             mostPlayed,
             likedSongs,
-            currentlyPlaying
+            currentlyPlaying,
+            useAudioFeatures
         });
 
         const embed = new EmbedBuilder()
@@ -70,10 +72,11 @@ async function processQueue() {
             recentlyPlayed,
             mostPlayed,
             likedSongs,
-            currentlyPlaying
+            currentlyPlaying,
+            useAudioFeatures
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying);
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures);
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {

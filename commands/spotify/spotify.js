@@ -154,6 +154,11 @@ module.exports = {
                             option.setName('currently-playing')
                                 .setDescription('Should the generator use your currently playing song? default: false')
                                 .setRequired(false)
+                        )
+                        .addBooleanOption(option =>
+                            option.setName('audio-features')
+                                .setDescription('Should the generator use audio features? May interfere with genre. default: true')
+                                .setRequired(false)
                         ),
                 ),
         ),

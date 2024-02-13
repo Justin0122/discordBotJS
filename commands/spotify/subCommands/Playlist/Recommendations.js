@@ -34,6 +34,12 @@ module.exports = {
             key: interaction.options.getString('target-key') || '',
             mode: interaction.options.getString('target-mode') || '',
         };
+        for (let key in targetValues) {
+            if (isNaN(targetValues[key])) {
+                await sendErrorMessage(interaction, `The value for ${key} is not a number.`, "Please provide a valid number for all target values.");
+                return;
+            }
+        }
 
         const spotifySession = new Vibify();
         const user = await spotifySession.getUser(interaction.user.id);

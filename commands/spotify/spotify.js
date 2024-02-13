@@ -162,12 +162,12 @@ module.exports = {
                         )
                         .addStringOption(option =>
                             option.setName('target-acousticness')
-                                .setDescription('0.0 to 1.0')
+                                .setDescription('0 to 1.0')
                                 .setRequired(false)
                         )
                         .addStringOption(option =>
                             option.setName('target-danceability')
-                                .setDescription('0.0 to 1.0')
+                                .setDescription('0 to 1.0')
                                 .setRequired(false)
                         )
                         .addStringOption(option =>

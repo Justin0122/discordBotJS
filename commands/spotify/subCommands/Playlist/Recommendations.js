@@ -34,6 +34,10 @@ module.exports = {
             key: interaction.options.getString('target-key') || '',
             mode: interaction.options.getString('target-mode') || '',
         };
+        if (!recentlyPlayed && !mostPlayed && !likedSongs && !currentlyPlaying && !genre) {
+            await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedSongs`, `currentlyPlaying`, `genre`.");
+            return;
+        }
         for (let key in targetValues) {
             if (isNaN(targetValues[key])) {
                 await sendErrorMessage(interaction, `The value for ${key} is not a number.`, "Please provide a valid number for all target values.");
@@ -188,7 +192,7 @@ async function processQueue() {
                 const embed = new EmbedBuilder()
                     .setColor(config.color_error)
                     .setTitle('No Songs Found')
-                    .setDescription('No songs found for the specified month.')
+                    .setDescription('No songs found for the given arguments.')
                     .setTimestamp();
 
                 await interaction.editReply({embeds: [embed], ephemeral: true});

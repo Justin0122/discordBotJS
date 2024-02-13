@@ -160,6 +160,11 @@ module.exports = {
                                 .setDescription('Should the generator use audio features? May interfere with genre. default: true')
                                 .setRequired(false)
                         )
+                        .addBooleanOption(option =>
+                            option.setName('track-seeds')
+                                .setDescription('Should the generator use track seeds?')
+                                .setRequired(false)
+                        )
                         .addStringOption(option =>
                             option.setName('target-acousticness')
                                 .setDescription('0 to 1')

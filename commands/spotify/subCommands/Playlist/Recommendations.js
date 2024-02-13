@@ -19,6 +19,7 @@ module.exports = {
         const mostPlayed = interaction.options.getBoolean('most-played') !== null ? interaction.options.getBoolean('most-played') : true;
         const likedSongs = interaction.options.getBoolean('liked-songs') !== null ? interaction.options.getBoolean('liked-songs') : true;
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') !== null ? interaction.options.getBoolean('currently-playing') : false;
+        const useTrackSeeds = interaction.options.getBoolean('track-seeds') !== null ? interaction.options.getBoolean('track-seeds') : false;
         const useAudioFeatures = interaction.options.getBoolean('audio-features') !== null ? interaction.options.getBoolean('audio-features') : true;
         const targetValues = {
             acousticness: interaction.options.getString('target-acousticness') || '',
@@ -63,7 +64,8 @@ module.exports = {
             likedSongs,
             currentlyPlaying,
             useAudioFeatures,
-            targetValues
+            targetValues,
+            useTrackSeeds
         });
 
         const embed = new EmbedBuilder()
@@ -100,10 +102,11 @@ async function processQueue() {
             likedSongs,
             currentlyPlaying,
             useAudioFeatures,
-            targetValues
+            targetValues,
+            useTrackSeeds
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, targetValues);
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, targetValues, useTrackSeeds);
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {

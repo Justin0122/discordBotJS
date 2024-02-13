@@ -161,8 +161,8 @@ module.exports = {
                                 .setRequired(false)
                         )
                         .addBooleanOption(option =>
-                            option.setName('track-seeds')
-                                .setDescription('Should the generator use track seeds?')
+                            option.setName('seed-tracks')
+                                .setDescription('Should the generator use track seeds? default: false (if false, will use audio features only)')
                                 .setRequired(false)
                         )
                         .addStringOption(option =>

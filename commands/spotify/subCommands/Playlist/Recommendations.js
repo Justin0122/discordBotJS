@@ -140,6 +140,44 @@ async function processQueue() {
 
                 embeds.push(audioFeaturesEmbed);
 
+                const argumentsEmbed = new EmbedBuilder()
+                    .setColor(config.color_success)
+                    .setTitle('Arguments')
+                    .setDescription(
+                        `Genre: ${genre || 'None'}\n` +
+                        `Recently Played: ${recentlyPlayed || false}\n` +
+                        `Most Played: ${mostPlayed || true}\n` +
+                        `Liked Songs: ${likedSongs || true}\n` +
+                        `Currently Playing: ${currentlyPlaying || false}\n` +
+                        `Use Audio Features: ${useAudioFeatures || true}\n`
+                    )
+                    .setTimestamp()
+                    .setThumbnail(playlist.images[0].url)
+                    .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
+                embeds.push(argumentsEmbed);
+
+                const targetValuesEmbed = new EmbedBuilder()
+                    .setColor(config.color_success)
+                    .setTitle('Target Values')
+                    .setDescription(
+                        `Acousticness: ${targetValues.acousticness || 'None'}\n` +
+                        `Danceability: ${targetValues.danceability || 'None'}\n` +
+                        `Energy: ${targetValues.energy || 'None'}\n` +
+                        `Instrumentalness: ${targetValues.instrumentalness || 'None'}\n` +
+                        `Liveness: ${targetValues.liveness || 'None'}\n` +
+                        `Speechiness: ${targetValues.speechiness || 'None'}\n` +
+                        `Loudness: ${targetValues.loudness || 'None'}\n` +
+                        `Tempo: ${targetValues.tempo || 'None'}\n` +
+                        `Valence: ${targetValues.valence || 'None'}\n` +
+                        `Popularity: ${targetValues.popularity || 'None'}\n` +
+                        `Key: ${targetValues.key || 'None'}\n` +
+                        `Mode: ${targetValues.mode || 'None'}\n`
+                    )
+                    .setTimestamp()
+                    .setThumbnail(playlist.images[0].url)
+                    .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
+                embeds.push(targetValuesEmbed);
+
                 await createPaginatedEmbed(interaction, embeds, 1, true, row);
 
 

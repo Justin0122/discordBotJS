@@ -131,7 +131,7 @@ module.exports = {
                         )
                         .addStringOption(option =>
                             option.setName('genre')
-                                .setDescription('What genre should the playlist have?')
+                                .setDescription('What genres should the playlist have? (Separate with commas)')
                                 .setRequired(false)
                                 .setAutocomplete(true)
                         )

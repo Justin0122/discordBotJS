@@ -40,7 +40,7 @@ module.exports = {
             return;
         }
         if (genre && genre.split(',').length > 5) {
-            await sendErrorMessage(interaction, "Too many genres provided.", "Please provide a maximum of 5 genres.");
+            await sendErrorMessage(interaction, "Too many genres provided.", "Please provide a maximum of 5 genres.", "Please choose a maximum of 5 genres.");
             return;
         }
         for (let key in targetValues) {

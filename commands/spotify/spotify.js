@@ -228,18 +228,18 @@ module.exports = {
                 ),
         ),
 
-    async autocomplete(interaction) {
-        const focusedValue = interaction.options.getFocused();
-        if (interaction.options.getFocused(true).name === 'genre') {
-            const genres = require('../../Utils/genres.json');
-            const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(focusedValue.toLowerCase())).slice(0, 25);
-            const sliced = filteredGenres.map(genre => ({name: genre, value: genre}));
-            await interaction.respond(
-                sliced,
-            );
-
-        }
-    },
+async autocomplete(interaction) {
+    const focusedValue = interaction.options.getFocused();
+    if (interaction.options.getFocused(true).name === 'genre') {
+        const genres = require('../../Utils/genres.json');
+        const enteredGenres = focusedValue.split(',').map(genre => genre.trim());
+        const lastEnteredGenre = enteredGenres[enteredGenres.length - 1];
+        const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(lastEnteredGenre.toLowerCase())).slice(0, 25);
+        const previousGenres = enteredGenres.slice(0, -1).join(', ');
+        const sliced = filteredGenres.map(genre => ({name: `${previousGenres ? previousGenres + ', ' : ''}${genre}`, value: genre}));
+        await interaction.respond(sliced);
+    }
+},
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);

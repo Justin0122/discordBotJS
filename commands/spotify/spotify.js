@@ -236,7 +236,10 @@ async autocomplete(interaction) {
         const lastEnteredGenre = enteredGenres[enteredGenres.length - 1];
         const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(lastEnteredGenre.toLowerCase())).slice(0, 25);
         const previousGenres = enteredGenres.slice(0, -1).join(', ');
-        const sliced = filteredGenres.map(genre => ({name: `${previousGenres ? previousGenres + ', ' : ''}${genre}`, value: genre}));
+        const sliced = filteredGenres.map(genre => ({
+            name: `${previousGenres ? previousGenres + ', ' : ''}${genre}`,
+            value: `${previousGenres ? previousGenres + ', ' : ''}${genre}`
+        }));
         await interaction.respond(sliced);
     }
 },

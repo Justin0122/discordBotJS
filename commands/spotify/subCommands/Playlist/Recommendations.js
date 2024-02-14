@@ -14,7 +14,7 @@ module.exports = {
 
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
-        const genre = interaction.options.getString('genre') || '';
+        const genre = interaction.options.getString('genre') ? interaction.options.getString('genre') : null;
         const recentlyPlayed = interaction.options.getBoolean('recently-played') !== null ? interaction.options.getBoolean('recently-played') : false;
         const mostPlayed = interaction.options.getBoolean('most-played') !== null ? interaction.options.getBoolean('most-played') : true;
         const likedSongs = interaction.options.getBoolean('liked-songs') !== null ? interaction.options.getBoolean('liked-songs') : true;
@@ -37,6 +37,10 @@ module.exports = {
         };
         if (!recentlyPlayed && !mostPlayed && !likedSongs && !currentlyPlaying && !genre) {
             await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedSongs`, `currentlyPlaying`, `genre`.");
+            return;
+        }
+        if (genre && genre.split(',').length > 5) {
+            await sendErrorMessage(interaction, "Too many genres provided.", "Please provide a maximum of 5 genres.");
             return;
         }
         for (let key in targetValues) {

@@ -19,7 +19,7 @@ module.exports = {
         const mostPlayed = interaction.options.getBoolean('most-played') !== null ? interaction.options.getBoolean('most-played') : true;
         const likedSongs = interaction.options.getBoolean('liked-songs') !== null ? interaction.options.getBoolean('liked-songs') : true;
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') !== null ? interaction.options.getBoolean('currently-playing') : false;
-        const useTrackSeeds = interaction.options.getBoolean('track-seeds') !== null ? interaction.options.getBoolean('track-seeds') : false;
+        const useTrackSeeds = interaction.options.getBoolean('seed-tracks') !== null ? interaction.options.getBoolean('seed-tracks') : false;
         const useAudioFeatures = interaction.options.getBoolean('audio-features') !== null ? interaction.options.getBoolean('audio-features') : true;
         const targetValues = {
             acousticness: interaction.options.getString('target-acousticness') || '',
@@ -68,8 +68,8 @@ module.exports = {
             likedSongs,
             currentlyPlaying,
             useAudioFeatures,
-            targetValues,
-            useTrackSeeds
+            useTrackSeeds,
+            targetValues
         });
 
         const embed = new EmbedBuilder()
@@ -106,11 +106,11 @@ async function processQueue() {
             likedSongs,
             currentlyPlaying,
             useAudioFeatures,
-            targetValues,
-            useTrackSeeds
+            useTrackSeeds,
+            targetValues
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, targetValues, useTrackSeeds);
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {

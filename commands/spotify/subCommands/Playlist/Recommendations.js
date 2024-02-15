@@ -35,6 +35,10 @@ module.exports = {
             key: interaction.options.getString('target-key') || '',
             mode: interaction.options.getString('target-mode') || '',
         };
+        if (!genre && !useTrackSeeds) {
+            await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `genre`, `seedTracks`.");
+            return;
+        }
         if (!recentlyPlayed && !mostPlayed && !likedSongs && !currentlyPlaying && !genre) {
             await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedSongs`, `currentlyPlaying`, `genre`.");
             return;

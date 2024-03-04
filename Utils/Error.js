@@ -2,7 +2,7 @@ const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('di
 const config = require("../botconfig/embed.json");
 require('dotenv').config();
 
-async function sendErrorMessage(interaction, description = "An error has occurred.", solution = "Please try again later.", note = "If the problem persists, please report it to the developer.") {
+async function sendErrorMessage(interaction, description = "An error has occurred.", solution = "Please try again later.", note = "If the problem persists, please report it to the developer.", reply = false) {
 
     const row = new ActionRowBuilder()
         .addComponents(
@@ -23,6 +23,10 @@ async function sendErrorMessage(interaction, description = "An error has occurre
         .setTimestamp()
         .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
+    if (reply) {
+        await interaction.editReply({embeds: [embed], components: [row]});
+        return;
+    }
     await interaction.reply({embeds: [embed], components: [row], ephemeral: true});
 }
 

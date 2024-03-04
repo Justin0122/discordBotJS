@@ -21,19 +21,20 @@ module.exports = {
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') !== null ? interaction.options.getBoolean('currently-playing') : false;
         const useTrackSeeds = interaction.options.getBoolean('seed-tracks') !== null ? interaction.options.getBoolean('seed-tracks') : false;
         const useAudioFeatures = interaction.options.getBoolean('audio-features') !== null ? interaction.options.getBoolean('audio-features') : true;
+        const option = interaction.options;
         const targetValues = {
-            acousticness: interaction.options.getString('target-acousticness') || '',
-            danceability: interaction.options.getString('target-danceability') || '',
-            energy: interaction.options.getString('target-energy') || '',
-            instrumentalness: interaction.options.getString('target-instrumentalness') || '',
-            liveness: interaction.options.getString('target-liveness') || '',
-            speechiness: interaction.options.getString('target-speechiness') || '',
-            loudness: interaction.options.getString('target-loudness') || '',
-            tempo: interaction.options.getString('target-tempo') || '',
-            valence: interaction.options.getString('target-valence') || '',
-            popularity: interaction.options.getString('target-popularity') || '',
-            key: interaction.options.getString('target-key') || '',
-            mode: interaction.options.getString('target-mode') || '',
+            acousticness: option.getString('target-acousticness') || '',
+            danceability: option.getString('target-danceability') || '',
+            energy: option.getString('target-energy') || '',
+            instrumentalness: option.getString('target-instrumentalness') || '',
+            liveness: option.getString('target-liveness') || '',
+            speechiness: option.getString('target-speechiness') || '',
+            loudness: option.getString('target-loudness') || '',
+            tempo: option.getString('target-tempo') || '',
+            valence: option.getString('target-valence') || '',
+            popularity: option.getString('target-popularity') || '',
+            key: option.getString('target-key') || '',
+            mode: option.getString('target-mode') || ''
         };
         if (!genre && !useTrackSeeds) {
             await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `genre`, `seedTracks`.");
@@ -114,7 +115,11 @@ async function processQueue() {
             targetValues
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);``
+            if (playlist.error) {
+                await sendErrorMessage(interaction, "Failed to create the playlist.", playlist.error, 'Please try again.', true);
+                return;
+            }
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {

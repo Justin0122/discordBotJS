@@ -115,7 +115,7 @@ async function processQueue() {
             targetValues
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);``
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
             if (playlist.error) {
                 await sendErrorMessage(interaction, "Failed to create the playlist.", playlist.error, 'Please try again.', true);
                 return;

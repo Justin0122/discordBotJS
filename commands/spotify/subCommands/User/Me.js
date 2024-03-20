@@ -13,11 +13,12 @@ module.exports = {
             await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
-        const [currentlyPlaying, topTracks, topArtists, lastListened] = await Promise.all([
+        const [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
             spotifySession.getCurrentlyPlaying(interaction.user.id),
             spotifySession.getTopTracks(interaction.user.id, 10),
             spotifySession.getTopArtists(interaction.user.id, 10),
-            spotifySession.getLastListenedTracks(interaction.user.id, 10)
+            spotifySession.getLastListenedTracks(interaction.user.id, 10),
+            spotifySession.getLastLikedTracks(interaction.user.id, 10)
         ]);
 
         if (!topTracks.items || !topArtists.items || !lastListened.items) {
@@ -31,6 +32,8 @@ module.exports = {
         const topArtistsValue = topArtists.items.slice(0, 3).map((artist, index) => `**${index + 1}.** [${artist.name}](${artist.external_urls.spotify})`).join('\n');
 
         const lastListenedValue = lastListened.items.slice(0, 3).map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n');
+
+        const lastLikedValue = lastLiked.items.slice(0, 3).map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n');
 
 
         let currentlyPlayingValue = 'Nothing';
@@ -90,6 +93,15 @@ module.exports = {
             .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
         embeds.push(topTracksEmbed);
 
+        const lastLikedEmbed = new EmbedBuilder()
+            .setTitle('Last Liked Songs')
+            .setDescription(lastLiked.items.map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n'))
+            .setColor(config.color_success)
+            .setTimestamp()
+            .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
+
+        embeds.push(lastLikedEmbed);
+
         const topArtistsEmbed = new EmbedBuilder()
             .setTitle('Top Artists')
             .setDescription(topArtists.items.map((artist, index) => `**${index + 1}.** [${artist.name}](${artist.external_urls.spotify})`).join('\n'))
@@ -106,6 +118,7 @@ module.exports = {
             .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
         embeds.push(lastListenedEmbed);
+
 
         await createPaginatedEmbed(interaction, embeds, 1, false, row, ephemeral);
 

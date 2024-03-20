@@ -76,6 +76,17 @@ module.exports = {
                 )
                 .addSubcommand(subcommand =>
                     subcommand
+                        .setName('last-liked')
+                        .setDescription('Get the last liked songs.')
+                        .addBooleanOption(option =>
+                            option
+                                .setName('ephemeral')
+                                .setDescription('Whether or not the message should be ephemeral.')
+                                .setRequired(false),
+                        ),
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName('logout')
                         .setDescription('Logout of your spotify account.'),
                 ),

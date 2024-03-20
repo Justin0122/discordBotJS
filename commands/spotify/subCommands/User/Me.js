@@ -18,7 +18,7 @@ module.exports = {
             spotifySession.getTopTracks(interaction.user.id, 10),
             spotifySession.getTopArtists(interaction.user.id, 10),
             spotifySession.getLastListenedTracks(interaction.user.id, 10),
-            spotifySession.getLastLikedTracks(interaction.user.id, 10)
+            spotifySession.getLastLikedSongs(interaction.user.id, 10)
         ]);
 
         if (!topTracks.items || !topArtists.items || !lastListened.items) {

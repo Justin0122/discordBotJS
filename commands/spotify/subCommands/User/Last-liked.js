@@ -30,8 +30,8 @@ module.exports = {
 
         for (let i = 0; i < formattedItems.length; i += 10) {
             const embed = new EmbedBuilder()
-                .setTitle('Last Liked Songs')
-                .setDescription(`Here are the last 50 songs you liked on Spotify.`)
+                .setTitle('Last Liked')
+                .setDescription(`**${user.display_name}**, ${user.country} - ${user.followers.total} followers`)
                 .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
                 .addFields(
                     {name: 'Last Liked', value: formattedItems.slice(i, i + 10).join('\n'), inline: true},

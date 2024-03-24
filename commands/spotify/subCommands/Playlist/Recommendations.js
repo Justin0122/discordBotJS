@@ -17,7 +17,7 @@ module.exports = {
         const genre = interaction.options.getString('genre') ? interaction.options.getString('genre') : null;
         const recentlyPlayed = interaction.options.getBoolean('recently-played') !== null ? interaction.options.getBoolean('recently-played') : false;
         const mostPlayed = interaction.options.getBoolean('most-played') !== null ? interaction.options.getBoolean('most-played') : true;
-        const likedSongs = interaction.options.getBoolean('liked-songs') !== null ? interaction.options.getBoolean('liked-songs') : true;
+        const likedTracks = interaction.options.getBoolean('liked-songs') !== null ? interaction.options.getBoolean('liked-songs') : true;
         const currentlyPlaying = interaction.options.getBoolean('currently-playing') !== null ? interaction.options.getBoolean('currently-playing') : false;
         const useTrackSeeds = interaction.options.getBoolean('seed-tracks') !== null ? interaction.options.getBoolean('seed-tracks') : false;
         const useAudioFeatures = interaction.options.getBoolean('audio-features') !== null ? interaction.options.getBoolean('audio-features') : true;
@@ -40,8 +40,8 @@ module.exports = {
             await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `genre`, `seedTracks`.");
             return;
         }
-        if (!recentlyPlayed && !mostPlayed && !likedSongs && !currentlyPlaying && !genre) {
-            await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedSongs`, `currentlyPlaying`, `genre`.");
+        if (!recentlyPlayed && !mostPlayed && !likedTracks && !currentlyPlaying && !genre) {
+            await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedTracks`, `currentlyPlaying`, `genre`.");
             return;
         }
         if (genre && genre.split(',').length > 5) {
@@ -70,7 +70,7 @@ module.exports = {
             genre,
             recentlyPlayed,
             mostPlayed,
-            likedSongs,
+            likedTracks,
             currentlyPlaying,
             useAudioFeatures,
             useTrackSeeds,
@@ -108,14 +108,14 @@ async function processQueue() {
             genre,
             recentlyPlayed,
             mostPlayed,
-            likedSongs,
+            likedTracks,
             currentlyPlaying,
             useAudioFeatures,
             useTrackSeeds,
             targetValues
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedSongs, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
+            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedTracks, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
             if (playlist.error) {
                 await sendErrorMessage(interaction, "Failed to create the playlist.", playlist.error, 'Please try again.', true);
                 return;
@@ -167,7 +167,7 @@ async function processQueue() {
                         `Genre: ${genre || 'None'}\n` +
                         `Recently Played: ${recentlyPlayed !== null ? recentlyPlayed : false}\n` +
                         `Most Played: ${mostPlayed !== null ? mostPlayed : false}\n` +
-                        `Liked Songs: ${likedSongs !== null ? likedSongs : true}\n` +
+                        `Liked Tracks: ${likedTracks !== null ? likedTracks : true}\n` +
                         `Currently Playing: ${currentlyPlaying !== null ? currentlyPlaying : false}\n` +
                         `Use Audio Features: ${useAudioFeatures !== null ? useAudioFeatures : true}\n`
                     )
@@ -207,7 +207,7 @@ async function processQueue() {
             } else {
                 const embed = new EmbedBuilder()
                     .setColor(config.color_error)
-                    .setTitle('No Songs Found')
+                    .setTitle('No Tracks Found')
                     .setDescription('No songs found for the given arguments.')
                     .setTimestamp();
 

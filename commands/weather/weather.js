@@ -7,7 +7,6 @@ const countries = require('../../Utils/Weather/countries.json')
 const cities = require('../../Utils/Weather/cities.json')
 const {createPaginatedEmbed} = require("../../Utils/Pagination");
 
-
 const subCommandFiles = fs.readdirSync(`${__dirname}/subCommands/Weather`).filter(file => file.endsWith('.js'));
 const subCommands = subCommandFiles.map(file => file.split('.')[0]);
 

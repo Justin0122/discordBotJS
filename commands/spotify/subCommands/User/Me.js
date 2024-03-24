@@ -18,7 +18,7 @@ module.exports = {
             spotifySession.getTopTracks(interaction.user.id, 10),
             spotifySession.getTopArtists(interaction.user.id, 10),
             spotifySession.getLastListenedTracks(interaction.user.id, 10),
-            spotifySession.getLastLikedSongs(interaction.user.id, 10)
+            spotifySession.getLastLikedTracks(interaction.user.id, 10)
         ]);
 
         if (!topTracks.items || !topArtists.items || !lastListened.items) {
@@ -94,7 +94,7 @@ module.exports = {
         embeds.push(topTracksEmbed);
 
         const lastLikedEmbed = new EmbedBuilder()
-            .setTitle('Last Liked Songs')
+            .setTitle('Last Liked Tracks')
             .setDescription(lastLiked.items.map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n'))
             .setColor(config.color_success)
             .setTimestamp()

@@ -96,7 +96,7 @@ async function processQueue() {
             } else {
                 const embed = new EmbedBuilder()
                     .setColor(config.color_error)
-                    .setTitle('No Songs Found')
+                    .setTitle('No Tracks Found')
                     .setDescription('No songs found for the specified month.')
                     .setTimestamp();
 

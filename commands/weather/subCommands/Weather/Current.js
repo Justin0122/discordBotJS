@@ -41,11 +41,11 @@ ${emoji} Feels Like: ${current.feelslike_c}°C
 🌞 UV Index: ${current.uv}
 \`\`\`Last Updated: ${current.last_updated}
 `)
-            .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() })
+            .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()})
             .setTimestamp()
             .setThumbnail(`https:${current.condition.icon}`)
             .setColor(color); // Set the dynamically determined color
 
-        await interaction.reply({ embeds: [embed], ephemeral: ephemeral });
+        await interaction.reply({embeds: [embed], ephemeral: ephemeral});
     }
 };

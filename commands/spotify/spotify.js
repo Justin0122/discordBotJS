@@ -43,6 +43,23 @@ module.exports = {
                 )
                 .addSubcommand(subcommand =>
                     subcommand
+                        .setName('other')
+                        .setDescription('Get information about another user\'s spotify account.')
+                        .addUserOption(option =>
+                            option
+                                .setName('user')
+                                .setDescription('The user to get information about.')
+                                .setRequired(true),
+                        )
+                        .addBooleanOption(option =>
+                            option
+                                .setName('ephemeral')
+                                .setDescription('Whether or not the message should be ephemeral.')
+                                .setRequired(false),
+                        ),
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName('last-listened')
                         .setDescription('Get the last listened tracks.')
                         .addBooleanOption(option =>

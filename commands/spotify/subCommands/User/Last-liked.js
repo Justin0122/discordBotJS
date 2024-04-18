@@ -24,7 +24,7 @@ module.exports = {
             return;
         }
 
-        const lastLiked = await spotifySession.getLastLikedTracks(interaction.user.id, 50);
+        const lastLiked = await spotifySession.getLastLikedTracks(discordUser.id, 50);
 
         if (!lastLiked.items) {
             await sendErrorMessage(interaction, "Failed to retrieve last liked tracks.", "Please try again later.");

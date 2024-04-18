@@ -24,11 +24,11 @@ module.exports = {
             return;
         }
         const [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
-            spotifySession.getCurrentlyPlaying(interaction.user.id),
-            spotifySession.getTopTracks(interaction.user.id, 10),
-            spotifySession.getTopArtists(interaction.user.id, 10),
-            spotifySession.getLastListenedTracks(interaction.user.id, 10),
-            spotifySession.getLastLikedTracks(interaction.user.id, 10)
+            spotifySession.getCurrentlyPlaying(discordUser.id),
+            spotifySession.getTopTracks(discordUser.id, 10),
+            spotifySession.getTopArtists(discordUser.id, 10),
+            spotifySession.getLastListenedTracks(discordUser.id, 10),
+            spotifySession.getLastLikedTracks(discordUser.id, 10)
         ]);
 
         if (!topTracks.items || !topArtists.items || !lastListened.items) {

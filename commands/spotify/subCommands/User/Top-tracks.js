@@ -23,7 +23,7 @@ module.exports = {
             return;
         }
 
-        const topTracks = await spotifySession.getTopTracks(interaction.user.id, 50);
+        const topTracks = await spotifySession.getTopTracks(discordUser.id, 50);
         if (!topTracks.items) {
             await sendErrorMessage(interaction, "Failed to retrieve top tracks.");
             return;

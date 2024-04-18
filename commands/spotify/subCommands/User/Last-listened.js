@@ -25,7 +25,7 @@ module.exports = {
             return;
         }
 
-        const lastListened = await spotifySession.getLastListenedTracks(interaction.user.id, 50);
+        const lastListened = await spotifySession.getLastListenedTracks(discordUser.id, 50);
 
         if (!lastListened.items) {
             await sendErrorMessage(interaction, "Failed to retrieve last listened tracks.");

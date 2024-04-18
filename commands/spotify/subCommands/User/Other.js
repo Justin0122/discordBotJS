@@ -52,7 +52,7 @@ module.exports = {
         const embeds = [];
 
         const embed = new EmbedBuilder()
-            .setTitle('Spotify Me')
+            .setTitle(user.display_name + "'s Spotify Profile")
             .setDescription(`**${user.display_name}**, ${user.country} - ${user.followers.total} followers`)
             .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
             .addFields(

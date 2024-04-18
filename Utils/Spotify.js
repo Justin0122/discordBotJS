@@ -12,6 +12,16 @@ async function audioFeatures(spotifySession, playlist, interaction) {
         `**Tempo**: ${(audioFeatures.map(a => a.tempo).reduce((a, b) => a + b, 0) / audioFeatures.length).toFixed(2)} BPM\n`;
 }
 
+function formatItem(item, index) {
+    const nameLimit = 20;
+    let trackName = item.track.name;
+    if (trackName.length > nameLimit) {
+        trackName = trackName.slice(0, nameLimit) + '...';
+    }
+    return `**${index + 1}.** [${trackName}](${item.track.external_urls.spotify}) - ${item.track.artists[0].name}`;
+}
+
 module.exports = {
-    audioFeatures
+    audioFeatures,
+    formatItem
 }

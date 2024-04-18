@@ -2,13 +2,23 @@ const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('di
 const config = require('../../../../botconfig/embed.json');
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 const sendErrorMessage = require('../../../../Utils/Error');
+const {formatItem} = require("../../../../Utils/Spotify");
 
 module.exports = {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
-
-        const user = await spotifySession.getUser(interaction.user.id);
+        let discordUser = interaction.options.getUser('user');
+        let user;
+        if (discordUser) {
+            user = await spotifySession.getUser(discordUser.id);
+            if (!user || !user.display_name) {
+                await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
+                return;
+            }
+        } else{
+            user = await spotifySession.getUser(interaction.user.id);
+        }
         if (!user || !user.display_name) {
             await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
@@ -19,9 +29,6 @@ module.exports = {
         if (!lastLiked.items) {
             await sendErrorMessage(interaction, "Failed to retrieve last liked tracks.", "Please try again later.");
             return;
-        }
-        const formatItem = (item, index) => {
-            return `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`;
         }
 
         const formattedItems = lastLiked.items.map(formatItem);

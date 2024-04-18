@@ -62,6 +62,12 @@ module.exports = {
                     subcommand
                         .setName('last-listened')
                         .setDescription('Get the last listened tracks.')
+                        .addUserOption(option =>
+                            option
+                                .setName('user')
+                                .setDescription('The user to get the last listened tracks from.')
+                                .setRequired(false),
+                        )
                         .addBooleanOption(option =>
                             option
                                 .setName('ephemeral')
@@ -73,6 +79,12 @@ module.exports = {
                     subcommand
                         .setName('top-tracks')
                         .setDescription('Get the user\'s top tracks.')
+                        .addUserOption(option =>
+                            option
+                                .setName('user')
+                                .setDescription('The user to get the top listened tracks from.')
+                                .setRequired(false),
+                        )
                         .addBooleanOption(option =>
                             option
                                 .setName('ephemeral')
@@ -84,6 +96,12 @@ module.exports = {
                     subcommand
                         .setName('top-artists')
                         .setDescription('Get the user\'s top artists.')
+                        .addUserOption(option =>
+                            option
+                                .setName('user')
+                                .setDescription('The user to get the top artists from.')
+                                .setRequired(false),
+                        )
                         .addBooleanOption(option =>
                             option
                                 .setName('ephemeral')
@@ -95,6 +113,12 @@ module.exports = {
                     subcommand
                         .setName('last-liked')
                         .setDescription('Get the last liked songs.')
+                        .addUserOption(option =>
+                            option
+                                .setName('user')
+                                .setDescription('The user to get the last liked tracks from.')
+                                .setRequired(false),
+                        )
                         .addBooleanOption(option =>
                             option
                                 .setName('ephemeral')

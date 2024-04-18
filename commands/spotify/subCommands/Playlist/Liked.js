@@ -1,7 +1,7 @@
-const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const config = require('../../../../botconfig/embed.json');
-const { setTimeout: wait } = require("node:timers/promises");
-const { audioFeatures } = require('../../../../Utils/Spotify');
+const {setTimeout: wait} = require("node:timers/promises");
+const {audioFeatures} = require('../../../../Utils/Spotify');
 const sendErrorMessage = require('../../../../Utils/Error');
 
 const queue = [];
@@ -21,7 +21,7 @@ module.exports = {
         const month = interaction.options.getString('month');
         const year = interaction.options.getString('year');
 
-        const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'short' })} ${year}.`;
+        const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', {month: 'short'})} ${year}.`;
         queue.push({
             interaction,
             ephemeral,
@@ -37,13 +37,13 @@ module.exports = {
             .setTitle('Creating Playlist')
             .setDescription('Please wait while the playlist is being created.')
             .addFields(
-                { name: 'Month', value: month, inline: true },
-                { name: 'Year', value: year, inline: true },
-                { name: 'Playlist Name', value: playlistName, inline: true },
+                {name: 'Month', value: month, inline: true},
+                {name: 'Year', value: year, inline: true},
+                {name: 'Playlist Name', value: playlistName, inline: true},
             )
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed], ephemeral: ephemeral });
+        await interaction.reply({embeds: [embed], ephemeral: ephemeral});
 
 
         // Process the queue if it's not already being processed
@@ -54,13 +54,12 @@ module.exports = {
 };
 
 
-
 async function processQueue() {
     isProcessing = true;
 
     // Process requests one by one from the queue
     while (queue.length > 0) {
-        const { interaction, ephemeral, spotifySession, user, month, year, playlistName } = queue.shift();
+        const {interaction, ephemeral, spotifySession, user, month, year, playlistName} = queue.shift();
         try {
             const playlist = await spotifySession.createPlaylist(interaction.user.id, playlistName, month, year);
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
@@ -72,13 +71,14 @@ async function processQueue() {
                     .setTitle('Playlist Created')
                     .setDescription(audioFeaturesDescription)
                     .setURL(playlist.external_urls.spotify)
-                    .addFields({ name: 'Name', value: playlist.name, inline: true },
-                        { name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true },
-                        { name: 'Owner', value: playlist.owner.display_name, inline: true
+                    .addFields({name: 'Name', value: playlist.name, inline: true},
+                        {name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true},
+                        {
+                            name: 'Owner', value: playlist.owner.display_name, inline: true
                         })
                     .setThumbnail(playlist.images[0].url)
                     .setTimestamp()
-                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+                    .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
                 const row = new ActionRowBuilder()
                     .addComponents(
@@ -88,10 +88,10 @@ async function processQueue() {
                             .setURL(playlist.external_urls.spotify),
                     );
 
-                await interaction.editReply({ embeds: [embed], components: [row], ephemeral });
+                await interaction.editReply({embeds: [embed], components: [row], ephemeral});
                 if (interaction.options.getBoolean('notify')) {
                     //ping the user
-                    await interaction.followUp({ content: `<@${interaction.user.id}>`, ephemeral: true });
+                    await interaction.followUp({content: `<@${interaction.user.id}>`, ephemeral: true});
                 }
             } else {
                 const embed = new EmbedBuilder()
@@ -100,7 +100,7 @@ async function processQueue() {
                     .setDescription('No songs found for the specified month.')
                     .setTimestamp();
 
-                await interaction.editReply({ embeds: [embed], ephemeral });
+                await interaction.editReply({embeds: [embed], ephemeral});
             }
         } catch (error) {
             console.log(error);
@@ -110,7 +110,7 @@ async function processQueue() {
                 .setDescription('Failed to create the playlist.')
                 .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed], ephemeral });
+            await interaction.editReply({embeds: [embed], ephemeral});
         }
 
         await wait(2000);

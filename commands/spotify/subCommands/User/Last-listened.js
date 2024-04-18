@@ -2,13 +2,24 @@ const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('di
 const config = require('../../../../botconfig/embed.json');
 const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
 const sendErrorMessage = require('../../../../Utils/Error');
+const {formatItem} = require("../../../../Utils/Spotify");
 
 module.exports = {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
+        let discordUser = interaction.options.getUser('user');
+        let user;
+        if (discordUser) {
+            user = await spotifySession.getUser(discordUser.id);
+            if (!user || !user.display_name) {
+                await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
+                return;
+            }
+        } else{
+            user = await spotifySession.getUser(interaction.user.id);
+        }
 
-        const user = await spotifySession.getUser(interaction.user.id);
         if (!user || !user.display_name) {
             await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
@@ -19,15 +30,6 @@ module.exports = {
         if (!lastListened.items) {
             await sendErrorMessage(interaction, "Failed to retrieve last listened tracks.");
             return;
-        }
-
-        const formatItem = (item, index) => {
-            const nameLimit = 20;
-            let trackName = item.track.name;
-            if (trackName.length > nameLimit) {
-                trackName = trackName.slice(0, nameLimit) + '...';
-            }
-            return `**${index + 1}.** [${trackName}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`;
         }
 
         const formattedItems = lastListened.items.map(formatItem);

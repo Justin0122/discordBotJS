@@ -16,6 +16,7 @@ module.exports = {
                 return;
             }
         } else{
+            discordUser = interaction.user;
             user = await spotifySession.getUser(interaction.user.id);
         }
         if (!user || !user.display_name) {
@@ -23,6 +24,7 @@ module.exports = {
             return;
         }
 
+        console.log(discordUser)
         const topTracks = await spotifySession.getTopArtists(discordUser.id, 50);
 
         if (!topTracks.items) {

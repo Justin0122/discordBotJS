@@ -17,6 +17,7 @@ module.exports = {
                 return;
             }
         } else{
+            discordUser = interaction.user;
             user = await spotifySession.getUser(interaction.user.id);
         }
 

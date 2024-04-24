@@ -23,7 +23,8 @@
       "default": "It's cloudy outside. It's {temperature} degrees and {condition}. You should get some fresh air.",
       "windy": "It's cloudy and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
       "dry": "Cloudy with clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
-      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities."
+      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities.",
+        "breezy": "A pleasant breeze in the air. It's {temperature} degrees and {condition}. Ideal for a stroll."
     }
   },
   "Partly cloudy": {
@@ -49,7 +50,17 @@
       "default": "It's overcast outside. It's {temperature} degrees and {condition}. You should get some fresh air.",
       "windy": "It's overcast and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
       "dry": "Overcast with clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
-      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities."
+      "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities.",
+        "breezy": "A pleasant breeze in the air. It's {temperature} degrees and {condition}. Ideal for a stroll."
+    }
+  },
+  "Light sleet": {
+    "default": {
+      "default": "It's sleeting outside. It's {temperature} degrees and {condition}. Stay warm and dry.",
+        "windy": "It's sleeting and windy. It's {temperature} degrees and {condition}. Bundle up if you go out.",
+        "dry": "Sleet with clear skies. It's {temperature} degrees and {condition}. Enjoy the crisp air.",
+        "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities.",
+        "breezy": "A pleasant breeze in the air. It's {temperature} degrees and {condition}. Ideal for a stroll."
     }
   }
 }

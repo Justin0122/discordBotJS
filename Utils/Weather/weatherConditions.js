@@ -47,6 +47,10 @@ const weatherConditions = {
         color: '#ffffff',
         emoji: '❄️',
     },
+    sleet: {
+        color: '#ffffff',
+        emoji: '❄️',
+    },
 };
 
 const moonPhases = {

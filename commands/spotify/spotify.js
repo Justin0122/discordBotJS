@@ -7,6 +7,14 @@ for (let year = currentYear; year >= 2015; year--) {
     choices.push({name: year.toString(), value: year.toString()});
 }
 
+let filters = []
+
+    filters = [
+    {name: 'Genre', value: 'genre'},
+    {name: 'Artist', value: 'artist'},
+    {name: 'Album', value: 'album'}
+];
+
 const monthChoices = [];
 for (let i = 1; i <= 12; i++) {
     const month = i.toString().padStart(2, '0');
@@ -169,6 +177,34 @@ module.exports = {
                 )
                 .addSubcommand(subcommand =>
                     subcommand
+                        .setName('filter-liked')
+                        .setDescription('Create a playlist of your liked songs based on a filter.')
+                        .addStringOption(option =>
+                            option.setName('filter')
+                                .setDescription('The filter to use.')
+                                .setRequired(true)
+                                .addChoices(
+                                    ...filters,
+                                ),
+                        )
+                        .addStringOption(option =>
+                            option.setName('value')
+                                .setDescription('The value to use for the filter.')
+                                .setRequired(true)
+                        )
+                        .addBooleanOption(option =>
+                            option.setName('ephemeral')
+                                .setDescription('Should the response be ephemeral?')
+                                .setRequired(false)
+                        )
+                        .addBooleanOption(option =>
+                            option.setName('notify')
+                                .setDescription('Should the bot notify you when the playlist is created?')
+                                .setRequired(false)
+                        ),
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName('recommendations')
                         .setDescription('Create a playlist with song recommendations based on your liked/most played songs.')
                         .addBooleanOption(option =>
@@ -280,21 +316,21 @@ module.exports = {
                 ),
         ),
 
-async autocomplete(interaction) {
-    const focusedValue = interaction.options.getFocused();
-    if (interaction.options.getFocused(true).name === 'genre') {
-        const genres = require('../../Utils/genres.json');
-        const enteredGenres = focusedValue.split(',').map(genre => genre.trim());
-        const lastEnteredGenre = enteredGenres[enteredGenres.length - 1];
-        const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(lastEnteredGenre.toLowerCase())).slice(0, 25);
-        const previousGenres = enteredGenres.slice(0, -1).join(', ');
-        const sliced = filteredGenres.map(genre => ({
-            name: `${previousGenres ? previousGenres + ', ' : ''}${genre}`,
-            value: `${previousGenres ? previousGenres + ', ' : ''}${genre}`
-        }));
-        await interaction.respond(sliced);
-    }
-},
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused();
+        if (interaction.options.getFocused(true).name === 'genre') {
+            const genres = require('../../Utils/genres.json');
+            const enteredGenres = focusedValue.split(',').map(genre => genre.trim());
+            const lastEnteredGenre = enteredGenres[enteredGenres.length - 1];
+            const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(lastEnteredGenre.toLowerCase())).slice(0, 25);
+            const previousGenres = enteredGenres.slice(0, -1).join(', ');
+            const sliced = filteredGenres.map(genre => ({
+                name: `${previousGenres ? previousGenres + ', ' : ''}${genre}`,
+                value: `${previousGenres ? previousGenres + ', ' : ''}${genre}`
+            }));
+            await interaction.respond(sliced);
+        }
+    },
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);

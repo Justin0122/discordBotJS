@@ -10,8 +10,7 @@ module.exports = {
 
         const response = await spotifySession.getUser(interaction.user.id);
         const user = response.body;
-        const status = response.status;
-        if (status !== 200) {
+        if (response.body.error) {
             await sendErrorMessage(interaction, response.body.error);
             return;
         }

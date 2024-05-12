@@ -1,7 +1,7 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
-import sendErrorMessage from '../../../../Utils/Error.js'
+import ErrorUtils from '../../../../Utils/Error.js'
 import {formatItem} from "../../../../Utils/Spotify.js"
 
 export default {
@@ -13,11 +13,11 @@ export default {
         if (discordUser) {
             user = await spotifySession.getUser(discordUser.id);
             if (user.body.error) {
-                await sendErrorMessage(interaction, user.body.error);
+                await ErrorUtils.sendErrorMessage(interaction, user.body.error);
                 return;
             }
             if (!user || !user.display_name) {
-                await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
+                await ErrorUtils.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return;
             }
         } else{
@@ -26,13 +26,13 @@ export default {
         }
 
         if (user.body.error) {
-            await sendErrorMessage(interaction, user.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
             return;
         }
         user = user.body;
 
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
+            await ErrorUtils.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
 
@@ -40,7 +40,7 @@ export default {
         lastListened = lastListened.body;
 
         if (!lastListened.items) {
-            await sendErrorMessage(interaction, "Failed to retrieve last listened tracks.");
+            await ErrorUtils.sendErrorMessage(interaction, "Failed to retrieve last listened tracks.");
             return;
         }
 

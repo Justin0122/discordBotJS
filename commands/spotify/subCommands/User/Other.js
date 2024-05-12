@@ -1,7 +1,7 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
-import sendErrorMessage from '../../../../Utils/Error.js'
+import ErrorUtils from '../../../../Utils/Error.js'
 
 export default {
 
@@ -12,24 +12,24 @@ export default {
         if (discordUser) {
             user = await spotifySession.getUser(discordUser.id);
             if (user.body.error) {
-                await sendErrorMessage(interaction, user.body.error);
+                await ErrorUtils.sendErrorMessage(interaction, user.body.error);
                 return;
             }
             if (!user || !user.display_name) {
-                await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
+                await ErrorUtils.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return;
             }
         } else {
             user = await spotifySession.getUser(interaction.user.id);
         }
         if (user.body.error) {
-            await sendErrorMessage(interaction, user.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
             return;
         }
         user = user.body;
 
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
+            await ErrorUtils.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
             return;
         }
         let [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
@@ -44,7 +44,7 @@ export default {
 
 
         if (!topTracks.items || !topArtists.items || !lastListened.items) {
-            await sendErrorMessage(interaction, "Failed to retrieve items.");
+            await ErrorUtils.sendErrorMessage(interaction, "Failed to retrieve items.");
             return;
         }
 

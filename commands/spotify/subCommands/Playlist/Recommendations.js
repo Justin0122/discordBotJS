@@ -5,7 +5,7 @@ import {setTimeout as wait} from 'node:timers/promises'
 
 import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
 import {audioFeatures} from "../../../../Utils/Spotify.js"
-import sendErrorMessage from '../../../../Utils/Error.js'
+import ErrorUtils from '../../../../Utils/Error.js'
 
 const queue = [];
 let isProcessing = false;
@@ -38,20 +38,20 @@ export default {
             mode: option.getString('target-mode') || ''
         };
         if (!genre && !useTrackSeeds) {
-            await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `genre`, `seedTracks`.");
+            await ErrorUtils.sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `genre`, `seedTracks`.");
             return;
         }
         if (!recentlyPlayed && !mostPlayed && !likedTracks && !currentlyPlaying && !genre) {
-            await sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedTracks`, `currentlyPlaying`, `genre`.");
+            await ErrorUtils.sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedTracks`, `currentlyPlaying`, `genre`.");
             return;
         }
         if (genre && genre.split(',').length > 5) {
-            await sendErrorMessage(interaction, "Too many genres provided.", "Please provide a maximum of 5 genres.", "Please choose a maximum of 5 genres.");
+            await ErrorUtils.sendErrorMessage(interaction, "Too many genres provided.", "Please provide a maximum of 5 genres.", "Please choose a maximum of 5 genres.");
             return;
         }
         for (let key in targetValues) {
             if (isNaN(targetValues[key])) {
-                await sendErrorMessage(interaction, `The value for ${key} is not a number.`, "Please provide a valid number for all target values.");
+                await ErrorUtils.sendErrorMessage(interaction, `The value for ${key} is not a number.`, "Please provide a valid number for all target values.");
                 return;
             }
         }
@@ -59,12 +59,12 @@ export default {
         const spotifySession = new Vibify();
         let user = await spotifySession.getUser(interaction.user.id);
         if (user.body.error) {
-            await sendErrorMessage(interaction, user.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
             return;
         }
         user = user.body;
         if (!user) {
-            await sendErrorMessage(interaction);
+            await ErrorUtils.sendErrorMessage(interaction);
             return;
         }
 
@@ -122,7 +122,7 @@ async function processQueue() {
         try {
             let playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedTracks, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
             if (playlist.error || !playlist) {
-                await sendErrorMessage(interaction, "Failed to create the playlist.", playlist.error, 'Please try again.', true);
+                await ErrorUtils.sendErrorMessage(interaction, "Failed to create the playlist.", playlist.error, 'Please try again.', true);
                 return;
             }
             playlist = playlist.body;

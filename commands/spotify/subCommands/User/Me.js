@@ -1,7 +1,7 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
-import sendErrorMessage from '../../../../Utils/Error.js'
+import ErrorUtils from '../../../../Utils/Error.js'
 
 export default {
 
@@ -11,11 +11,11 @@ export default {
         const response = await spotifySession.getUser(interaction.user.id);
         const user = response.body;
         if (response.body.error) {
-            await sendErrorMessage(interaction, response.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, response.body.error);
             return;
         }
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
+            await ErrorUtils.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
         const [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
@@ -27,7 +27,7 @@ export default {
         ]);
 
         if (!topTracks.body.items || !topArtists.body.items || !lastListened.body.items) {
-            await sendErrorMessage(interaction, "Failed to retrieve items.");
+            await ErrorUtils.sendErrorMessage(interaction, "Failed to retrieve items.");
             return;
         }
 

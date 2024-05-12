@@ -1,6 +1,6 @@
 import {EmbedBuilder} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import sendErrorMessage from '../../../../Utils/Error.js'
+import ErrorUtils from '../../../../Utils/Error.js'
 
 const queue = [];
 let isProcessing = false;
@@ -13,12 +13,12 @@ export default {
         const user = response.body;
         const status = response.status;
         if (response.body.error) {
-            await sendErrorMessage(interaction, response.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, response.body.error);
             return;
         }
 
         if (!user) {
-            await sendErrorMessage(interaction);
+            await ErrorUtils.sendErrorMessage(interaction);
             return;
         }
 

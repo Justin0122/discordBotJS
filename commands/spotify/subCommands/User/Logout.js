@@ -6,6 +6,10 @@ module.exports = {
 
     async execute(interaction, spotifySession) {
         const user = await spotifySession.getUser(interaction.user.id);
+        if (user.body.error) {
+            await sendErrorMessage(interaction, user.body.error);
+            return;
+        }
         if (!user || !user.display_name) {
             await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;

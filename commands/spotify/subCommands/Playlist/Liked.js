@@ -12,6 +12,10 @@ module.exports = {
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const user = await spotifySession.getUser(interaction.user.id);
+        if (user.body.error) {
+            await sendErrorMessage(interaction, user.body.error);
+            return;
+        }
 
         if (!user) {
             await sendErrorMessage(interaction);

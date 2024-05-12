@@ -1,5 +1,6 @@
 async function audioFeatures(spotifySession, playlist, interaction) {
-    const audioFeatures = await spotifySession.getAudioFeatures(playlist.id, interaction.user.id);
+    let audioFeatures = await spotifySession.getAudioFeatures(playlist.id, interaction.user.id);
+    audioFeatures = audioFeatures.body;
 
     return `**Danceability**: ${((audioFeatures.map(a => a.danceability).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +
         `**Energy**: ${((audioFeatures.map(a => a.energy).reduce((a, b) => a + b, 0) / audioFeatures.length) * 100).toFixed(2)}%\n` +

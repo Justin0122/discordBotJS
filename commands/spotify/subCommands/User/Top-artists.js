@@ -11,6 +11,11 @@ module.exports = {
         let user;
         if (discordUser) {
             user = await spotifySession.getUser(discordUser.id);
+            if (user.body.error) {
+                await sendErrorMessage(interaction, user.body.error);
+                return;
+            }
+            user = user.body;
             if (!user || !user.display_name) {
                 await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return;
@@ -19,13 +24,18 @@ module.exports = {
             discordUser = interaction.user;
             user = await spotifySession.getUser(interaction.user.id);
         }
+        if (user.body.error) {
+            await sendErrorMessage(interaction, user.body.error);
+            return;
+        }
+        user = user.body;
         if (!user || !user.display_name) {
             await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
 
-        console.log(discordUser)
-        const topTracks = await spotifySession.getTopArtists(discordUser.id, 50);
+        let topTracks = await spotifySession.getTopArtists(discordUser.id, 50);
+        topTracks = topTracks.body;
 
         if (!topTracks.items) {
             await sendErrorMessage(interaction, "Failed to retrieve top tracks.", "Please try again later.");

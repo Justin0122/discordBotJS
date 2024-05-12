@@ -56,8 +56,12 @@ module.exports = {
         }
 
         const spotifySession = new Vibify();
-        const user = await spotifySession.getUser(interaction.user.id);
-
+        let user = await spotifySession.getUser(interaction.user.id);
+        if (user.body.error) {
+            await sendErrorMessage(interaction, user.body.error);
+            return;
+        }
+        user = user.body;
         if (!user) {
             await sendErrorMessage(interaction);
             return;
@@ -115,15 +119,15 @@ async function processQueue() {
             targetValues
         } = queue.shift();
         try {
-            const playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedTracks, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
-            if (playlist.error) {
+            let playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedTracks, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
+            if (playlist.error || !playlist) {
                 await sendErrorMessage(interaction, "Failed to create the playlist.", playlist.error, 'Please try again.', true);
                 return;
             }
+            playlist = playlist.body;
             const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {
-
                 const embeds = [];
 
                 const embed = new EmbedBuilder()

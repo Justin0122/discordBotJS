@@ -11,25 +11,37 @@ module.exports = {
         let user;
         if (discordUser) {
             user = await spotifySession.getUser(discordUser.id);
+            if (user.body.error) {
+                await sendErrorMessage(interaction, user.body.error);
+                return;
+            }
             if (!user || !user.display_name) {
                 await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return;
             }
-        } else{
+        } else {
             user = await spotifySession.getUser(interaction.user.id);
         }
+        if (user.body.error) {
+            await sendErrorMessage(interaction, user.body.error);
+            return;
+        }
+        user = user.body;
 
         if (!user || !user.display_name) {
             await sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
             return;
         }
-        const [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
+        let [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
             spotifySession.getCurrentlyPlaying(discordUser.id),
             spotifySession.getTopTracks(discordUser.id, 10),
             spotifySession.getTopArtists(discordUser.id, 10),
             spotifySession.getLastListenedTracks(discordUser.id, 10),
             spotifySession.getLastLikedTracks(discordUser.id, 10)
         ]);
+
+        [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked].map(response => response.body);
+
 
         if (!topTracks.items || !topArtists.items || !lastListened.items) {
             await sendErrorMessage(interaction, "Failed to retrieve items.");

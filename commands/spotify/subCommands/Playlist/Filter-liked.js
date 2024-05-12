@@ -11,7 +11,13 @@ module.exports = {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
-        const user = await spotifySession.getUser(interaction.user.id);
+        const response = await spotifySession.getUser(interaction.user.id);
+        const user = response.body;
+        const status = response.status;
+        if (response.body.error) {
+            await sendErrorMessage(interaction, response.body.error);
+            return;
+        }
 
         if (!user) {
             await sendErrorMessage(interaction);
@@ -25,7 +31,8 @@ module.exports = {
 
 
         try {
-            const playlist = await spotifySession.filterLikedTracks(interaction.user.id, `${filter}:${value}`, playlistName);
+            let playlist = await spotifySession.filterLikedTracks(interaction.user.id, `${filter}:${value}`, playlistName);
+            playlist = playlist.body;
             const embeds = [];
             if (playlist) {
                 const embed = new EmbedBuilder()

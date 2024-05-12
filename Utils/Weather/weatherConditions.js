@@ -1,4 +1,4 @@
-const weatherConditions = {
+export const weatherConditions = {
     sunny: {
         color: '#ffff00',
         emoji: '🌞',
@@ -53,7 +53,7 @@ const weatherConditions = {
     },
 };
 
-const moonPhases = {
+export const moonPhases = {
     'New Moon': '🌑',
     'Waxing Crescent': '🌒',
     'First Quarter': '🌓',
@@ -63,8 +63,3 @@ const moonPhases = {
     'Last Quarter': '🌗',
     'Waning Crescent': '🌘',
 };
-
-module.exports = {
-    moonPhases: moonPhases,
-    weatherConditions: weatherConditions
-}

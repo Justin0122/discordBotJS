@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js'
-import WeatherConditions from '../../../../Utils/Weather/weatherConditions.js'
+import { weatherConditions } from '../../../../Utils/Weather/weatherConditions.js';
 import WeatherStories from '../../../../Utils/Weather/weatherStories.json' assert {type: "json"}
 
 export default {
@@ -12,7 +12,7 @@ export default {
         const location = weatherData.location;
         const current = weatherData.current;
 
-        const condition = Object.keys(WeatherConditions.weatherConditions).find(condition =>
+        const condition = Object.keys(weatherConditions).find(condition =>
             current.condition.text.toLowerCase().includes(condition)
         );
 
@@ -20,8 +20,8 @@ export default {
         let emoji;
 
         if (condition) {
-            color = WeatherConditions.weatherConditions[condition].color;
-            emoji = WeatherConditions.weatherConditions[condition].emoji;
+            color = weatherConditions[condition].color;
+            emoji = weatherConditions[condition].emoji;
         }
         const weatherStoryData = WeatherStories[current.condition.text][condition] || WeatherStories[current.condition.text]['default'];
         const weatherStory = weatherStoryData[current.condition.text] || weatherStoryData.default;

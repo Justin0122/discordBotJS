@@ -1,10 +1,9 @@
-import WeatherConditions from '../../../../Utils/Weather/weatherConditions'
-import {moonPhases} from "../../../../Utils/Weather/weatherConditions"
-import {createPaginatedEmbed} from "../../../../Utils/Pagination"
+import { weatherConditions, moonPhases } from "../../../../Utils/Weather/weatherConditions.js"
+import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
+import { EmbedBuilder } from 'discord.js'
 
 export default {
     async execute(interaction, weatherSession) {
-    const {EmbedBuilder} = require("discord.js");
     const country = interaction.options.getString('country');
     const city = interaction.options.getString('city');
     const ephemeral = interaction.options.getBoolean('ephemeral');
@@ -16,16 +15,16 @@ export default {
         const day = forecastDay.day;
         const astro = forecastDay.astro;
 
-        const condition = Object.keys(WeatherConditions.weatherConditions).find(condition =>
+        const condition = Object.keys(weatherConditions).find(condition =>
            day.condition.text.toLowerCase().includes(condition)
         );
 
-        let color = WeatherConditions.weatherConditions.default?.color || '#00ff00'; // Default color
+        let color = weatherConditions.default?.color || '#00ff00'; // Default color
         let emoji = '';
 
         if (condition) {
-            color = WeatherConditions.weatherConditions[condition].color;
-            emoji = WeatherConditions.weatherConditions[condition].emoji;
+            color = weatherConditions[condition].color;
+            emoji = weatherConditions[condition].emoji;
         }
 
         const date = new Date(forecastDay.date);

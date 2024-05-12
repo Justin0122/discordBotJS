@@ -1,7 +1,7 @@
-const { Events, Collection, EmbedBuilder} = require('discord.js');
-const config = require("../botconfig/embed.json");
+import { Events, Collection, EmbedBuilder} from 'discord.js';
+import config from "../botconfig/embed.json" assert {type: "json"};
 
-module.exports = {
+export default {
     name: Events.InteractionCreate,
     async execute(interaction) {
         if (interaction.isMessageContextMenuCommand()) {

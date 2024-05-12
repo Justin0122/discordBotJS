@@ -1,35 +1,40 @@
-const { REST, Routes } = require('discord.js');
-const Dotenv = require('dotenv');
-Dotenv.config();
+import { REST, Routes } from 'discord.js';
+import { config as dotenvConfig } from 'dotenv';
+dotenvConfig();
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
-
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'fs';
+import path from 'path';
 
 const commands = [];
 const guildCommands = [];
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
     const commandsPath = path.join(foldersPath, folder);
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
-        if ('data' in command && 'execute' in command) {
-            if (command.guildOnly) {
-                command.data.guildOnly = command.guildOnly;
-                guildCommands.push(command.data.toJSON());
-            }
-            else {
-                commands.push(command.data.toJSON());
-            }
-        } else {
-            console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = await import(filePath);
+    if ('data' in command.default && 'execute' in command.default) {
+        if (command.default.guildOnly) {
+            command.default.data.guildOnly = command.default.guildOnly;
+            guildCommands.push(command.default.data.toJSON());
         }
+        else {
+            commands.push(command.default.data.toJSON());
+        }
+    } else {
+        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
     }
+}
 }
 
 const rest = new REST().setToken(token);

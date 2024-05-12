@@ -1,8 +1,8 @@
-const { EmbedBuilder } = require('discord.js');
-const WeatherConditions = require('../../../../Utils/Weather/weatherConditions');
-const WeatherStories = require('../../../../Utils/Weather/weatherStories'); // Import the weatherStories JSON
+import { EmbedBuilder } from 'discord.js'
+import WeatherConditions from '../../../../Utils/Weather/weatherConditions.js'
+import WeatherStories from '../../../../Utils/Weather/weatherStories.json' assert {type: "json"}
 
-module.exports = {
+export default {
     async execute(interaction, weatherSession) {
         const country = interaction.options.getString('country');
         const city = interaction.options.getString('city');

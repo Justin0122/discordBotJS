@@ -1,17 +1,16 @@
-const {EmbedBuilder } = require('discord.js');
-const config = require('../../../../botconfig/embed.json');
-const sendErrorMessage = require('../../../../Utils/Error');
+import {EmbedBuilder } from 'discord.js'
+import config from '../../../../botconfig/embed.json' assert {type: "json"}
+import ErrorUtils from '../../../../Utils/Error.js'
 
-module.exports = {
-
+export default {
     async execute(interaction, spotifySession) {
         const user = await spotifySession.getUser(interaction.user.id);
         if (user.body.error) {
-            await sendErrorMessage(interaction, user.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
             return;
         }
         if (!user || !user.display_name) {
-            await sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
+            await ErrorUtils.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
         await spotifySession.logout(interaction.user.id).then(() => {

@@ -1,13 +1,11 @@
-const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
-const config = require('../../../../botconfig/embed.json');
-const {setTimeout: wait} = require("node:timers/promises");
-const {audioFeatures} = require('../../../../Utils/Spotify');
-const sendErrorMessage = require('../../../../Utils/Error');
+import {EmbedBuilder} from 'discord.js'
+import config from '../../../../botconfig/embed.json' assert {type: "json"}
+import sendErrorMessage from '../../../../Utils/Error.js'
 
 const queue = [];
 let isProcessing = false;
 
-module.exports = {
+export default {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;

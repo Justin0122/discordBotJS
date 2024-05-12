@@ -1,8 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const wait = require('node:timers/promises').setTimeout;
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { setTimeout as wait } from 'node:timers/promises';
+import axios from 'axios';
 
-
-module.exports = {
+export default {
     category: 'Utility',
     data: new SlashCommandBuilder()
         .setName('ping')
@@ -17,7 +17,6 @@ module.exports = {
         const ephemeral = interaction.options.getBoolean('ephemeral');
 
         if (interaction.user.id === process.env.DEV_USER_ID) {
-            const axios = require('axios');
             const url = process.env.SPOTIFY_REDIRECT_URI.replace('callback', '');
             let status = 0;
             let statusText = 'Null';

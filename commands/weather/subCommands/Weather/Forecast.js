@@ -1,8 +1,8 @@
-const WeatherConditions = require('../../../../Utils/Weather/weatherConditions');
-const {moonPhases} = require("../../../../Utils/Weather/weatherConditions");
-const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
+import WeatherConditions from '../../../../Utils/Weather/weatherConditions'
+import {moonPhases} from "../../../../Utils/Weather/weatherConditions"
+import {createPaginatedEmbed} from "../../../../Utils/Pagination"
 
-module.exports = {
+export default {
     async execute(interaction, weatherSession) {
     const {EmbedBuilder} = require("discord.js");
     const country = interaction.options.getString('country');

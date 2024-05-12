@@ -1,4 +1,4 @@
-const request = require('request');
+import request from 'request'
 class Weather {
     constructor(apiUrl, apiKey){
         this.apiUrl = apiUrl;
@@ -28,4 +28,4 @@ class Weather {
     }
 
 }
-module.exports = Weather;
+export default Weather;

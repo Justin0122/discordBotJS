@@ -1,6 +1,9 @@
-const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
-const {createPaginatedEmbed} = require("../../Utils/Pagination");
-const Vibify = require('@vibify/vibify');
+import {SlashCommandBuilder, EmbedBuilder} from 'discord.js'
+import {createPaginatedEmbed} from "../../Utils/Pagination.js"
+import Vibify from '@vibify/vibify'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+
 const currentYear = new Date().getFullYear();
 const choices = [];
 for (let year = currentYear; year >= 2015; year--) {
@@ -9,7 +12,7 @@ for (let year = currentYear; year >= 2015; year--) {
 
 let filters = []
 
-    filters = [
+filters = [
     {name: 'Genre', value: 'genre'},
     {name: 'Artist', value: 'artist'},
     {name: 'Album', value: 'album'}
@@ -23,7 +26,7 @@ for (let i = 1; i <= 12; i++) {
     monthChoices.push({name: monthName, value: month});
 }
 
-module.exports = {
+export default {
     category: 'Spotify',
     cooldown: 30,
     data: new SlashCommandBuilder()
@@ -335,10 +338,15 @@ module.exports = {
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);
         const subcommandGroup = interaction.options.getSubcommandGroup().charAt(0).toUpperCase() + interaction.options.getSubcommandGroup().slice(1);
-        const subCommandDir = `${__dirname}/subCommands/${subcommandGroup}`;
 
-        const commandPath = `${subCommandDir}/${subcommand}`;
-        const command = require(commandPath);
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+
+        const subCommandDir = join(__dirname, 'subCommands', subcommandGroup);
+        const commandPath = `${subCommandDir}/${subcommand}.js`;
+
+        const commandModule = await import(commandPath);
+        const command = commandModule.default;
 
         const spotifySession = new Vibify();
 

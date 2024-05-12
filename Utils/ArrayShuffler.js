@@ -11,4 +11,4 @@ class ArrayShuffler {
     }
 }
 
-module.exports = ArrayShuffler;
+export default ArrayShuffler;

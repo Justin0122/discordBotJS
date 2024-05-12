@@ -1,8 +1,9 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
-const Dotenv = require('dotenv');
-Dotenv.config();
+import fs from 'fs';
+import path from 'path';
+import {Client, Collection, GatewayIntentBits, Events} from 'discord.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 const token = process.env.TOKEN;
 
 const client = new Client({
@@ -18,6 +19,11 @@ client.cooldowns = new Collection();
 client.commands = new Collection();
 
 client.commands = new Collection();
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -26,7 +32,8 @@ for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
+        const commandModule = await import(filePath);
+        const command = commandModule.default;
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
         } else {
@@ -40,7 +47,8 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'
 
 for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
-    const event = require(filePath);
+    const eventModule = await import(filePath);
+    const event = eventModule.default;
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
     } else {

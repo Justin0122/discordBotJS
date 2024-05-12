@@ -22,7 +22,4 @@ function formatItem(item, index) {
     return `**${index + 1}.** [${trackName}](${item.track.external_urls.spotify}) - ${item.track.artists[0].name}`;
 }
 
-module.exports = {
-    audioFeatures,
-    formatItem
-}
+export {audioFeatures, formatItem};

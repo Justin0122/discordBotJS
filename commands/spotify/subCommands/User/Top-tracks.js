@@ -1,9 +1,9 @@
-const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
-const config = require('../../../../botconfig/embed.json');
-const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
-const sendErrorMessage = require('../../../../Utils/Error');
+import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
+import config from '../../../../botconfig/embed.json' assert {type: "json"}
+import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
+import sendErrorMessage from '../../../../Utils/Error.js'
 
-module.exports = {
+export default {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;

@@ -1,16 +1,17 @@
-const {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
-const config = require('../../../../botconfig/embed.json');
-const Vibify = require('@vibify/vibify');
-const {setTimeout: wait} = require("node:timers/promises");
-const {createPaginatedEmbed} = require("../../../../Utils/Pagination");
-const {audioFeatures} = require("../../../../Utils/Spotify");
-const sendErrorMessage = require('../../../../Utils/Error');
+import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
+import config from '../../../../botconfig/embed.json' assert {type: "json"}
+import Vibify from '@vibify/vibify'
+import {setTimeout as wait} from 'node:timers/promises'
+
+import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
+import {audioFeatures} from "../../../../Utils/Spotify.js"
+import sendErrorMessage from '../../../../Utils/Error.js'
 
 const queue = [];
 let isProcessing = false;
 
 
-module.exports = {
+export default {
 
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;

@@ -1,11 +1,20 @@
-const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
-const fs = require('fs');
-const Weather = require("../../Api/Weather/Weather");
+import {SlashCommandBuilder, EmbedBuilder} from 'discord.js'
+import fs from 'fs'
+import Weather from "../../Api/Weather/Weather.js"
+import countries from '../../Utils/Weather/countries.json' assert {type: "json"}
+import cities from '../../Utils/Weather/cities.json' assert {type: "json"}
+import {createPaginatedEmbed} from "../../Utils/Pagination.js"
+import {fileURLToPath} from 'url'
+import path, {dirname, join} from 'path'
+import dotenv from 'dotenv'
+dotenv.config()
+
 const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
-const countries = require('../../Utils/Weather/countries.json')
-const cities = require('../../Utils/Weather/cities.json')
-const {createPaginatedEmbed} = require("../../Utils/Pagination");
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const subCommandFiles = fs.readdirSync(`${__dirname}/subCommands/Weather`).filter(file => file.endsWith('.js'));
 const subCommands = subCommandFiles.map(file => file.split('.')[0]);
@@ -39,8 +48,7 @@ subCommands.forEach(subCommand => {
 });
 
 
-
-module.exports = {
+export default {
     category: 'Weather',
     cooldown: 30,
     data: commandBuilder,
@@ -60,7 +68,7 @@ module.exports = {
         if (focusedOption.name === 'city') {
             const country = interaction.options.get('country').value
 
-            if (!interaction.options.get('country') || !countries.map(country => country.name.toLowerCase()).includes(country.toLowerCase())){
+            if (!interaction.options.get('country') || !countries.map(country => country.name.toLowerCase()).includes(country.toLowerCase())) {
                 return;
             }
             const code = countries.find(countryObj => countryObj.name.toLowerCase() === country.toLowerCase()).code;
@@ -72,22 +80,28 @@ module.exports = {
                 .slice(0, 25);
         }
         await interaction.respond(
-            choices.map(choice => ({ name: choice, value: choice })),
+            choices.map(choice => ({name: choice, value: choice})),
         );
     },
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);
-        const subCommandDir = `${__dirname}/subCommands/Weather`;
 
-        const commandPath = `${subCommandDir}/${subcommand}`;
-        const command = require(commandPath);
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+
+        const subCommandDir = join(__dirname, 'subCommands', 'Weather');
+        const commandPath = `${subCommandDir}/${subcommand}.js`;
+
+        const commandModule = await import(commandPath);
+        const command = commandModule.default;
+
         const weatherSession = new Weather(apiUrl, apiKey);
 
         return command.execute(interaction, weatherSession);
     },
 
-    async help(interaction){
+    async help(interaction) {
         const embeds = [];
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
 

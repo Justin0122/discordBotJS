@@ -1,7 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { exec } = require('child_process');
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { exec } from 'child_process';
 
-module.exports = {
+export default {
     category: 'Utility',
     cooldown: 5,
     data: new SlashCommandBuilder()

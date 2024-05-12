@@ -1,8 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
-const config = require("../../botconfig/embed.json");
-const {createPaginatedEmbed} = require("../../Utils/Pagination");
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import {createPaginatedEmbed} from "../../Utils/Pagination.js";
 
-module.exports = {
+export default {
     category: 'Info',
     data: new SlashCommandBuilder()
         .setName('server')

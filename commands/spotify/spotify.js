@@ -13,9 +13,7 @@ for (let year = currentYear; year >= 2015; year--) {
 let filters = []
 
 filters = [
-    {name: 'Genre', value: 'genre'},
     {name: 'Artist', value: 'artist'},
-    {name: 'Album', value: 'album'}
 ];
 
 const monthChoices = [];

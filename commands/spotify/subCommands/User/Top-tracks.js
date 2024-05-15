@@ -11,7 +11,8 @@ export default {
         let user;
         if (discordUser) {
             user = await spotifySession.getUser(discordUser.id);
-            if (user.body.error) {
+            user = user.body;
+            if (user.error) {
                 await ErrorUtils.sendErrorMessage(interaction, user.body.error);
                 return;
             }

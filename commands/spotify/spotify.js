@@ -1,8 +1,8 @@
 import {SlashCommandBuilder, EmbedBuilder} from 'discord.js'
 import {createPaginatedEmbed} from "../../Utils/Pagination.js"
 import Vibify from '@vibify/vibify'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
+import {fileURLToPath} from 'url'
+import {dirname, join} from 'path'
 
 const currentYear = new Date().getFullYear();
 const choices = [];
@@ -320,7 +320,8 @@ export default {
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
         if (interaction.options.getFocused(true).name === 'genre') {
-            const genres = require('../../Utils/genres.json');
+            const genresModule = await import('../../Utils/genres.json', {assert: {type: 'json'}});
+            const genres = genresModule.default;
             const enteredGenres = focusedValue.split(',').map(genre => genre.trim());
             const lastEnteredGenre = enteredGenres[enteredGenres.length - 1];
             const filteredGenres = genres.genres.filter(genre => genre.toLowerCase().startsWith(lastEnteredGenre.toLowerCase())).slice(0, 25);

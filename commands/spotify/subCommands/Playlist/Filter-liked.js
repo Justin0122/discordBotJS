@@ -23,25 +23,24 @@ export default {
         }
 
         const filter = interaction.options.getString('filter');
-        const value = interaction.options.getString('value');
+        let value = interaction.options.getString('value');
 
-        const playlistName = `Liked Songs filtered by ${filter} ${value}.`;
+        // Split the value by ',' and remove empty strings
+        const values = value.split(',').map(v => v.trim()).filter(v => v);
 
+        const playlistName = `Liked Songs filtered by ${filter} ${values.join(', ')}.`;
 
         try {
-            let playlist = await spotifySession.filterLikedTracks(interaction.user.id, `${filter}:${value}`, playlistName);
+            let playlist = await spotifySession.filterLikedTracks(interaction.user.id, values.map(v => `${filter}:${v}`), playlistName);
             playlist = playlist.body;
             const embeds = [];
             if (playlist) {
                 const embed = new EmbedBuilder()
                     .setColor(config.color_success)
                     .setTitle('Playlist Created')
-                    .setDescription('The playlist is being created. Please wait while the songs are being added.')
-                    .addFields(
-                        { name: 'Name', value: playlist.name, inline: true },
-                    )
+                    .setDescription(playlistName + ' is being created.')
                     .setTimestamp()
-                    .setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
+                    .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
                 await interaction.reply({embeds: [embed], ephemeral});
                 if (interaction.options.getBoolean('notify')) {

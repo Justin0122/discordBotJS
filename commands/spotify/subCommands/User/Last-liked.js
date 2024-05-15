@@ -14,10 +14,10 @@ export default {
             user = await spotifySession.getUser(discordUser.id);
             user = user.body;
             if (user.error) {
-                await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+                await ErrorUtils.sendErrorMessage(interaction, user.error);
                 return;
             }
-            if (!user || !user.body.display_name) {
+            if (!user || !user.display_name) {
                 await ErrorUtils.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return;
             }
@@ -27,7 +27,7 @@ export default {
             user = user.body;
         }
         if (user.error) {
-            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, user.error);
             return;
         }
         if (!user || !user.display_name) {

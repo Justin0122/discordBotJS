@@ -13,7 +13,7 @@ export default {
             user = await spotifySession.getUser(discordUser.id);
             user = user.body;
             if (user.error) {
-                await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+                await ErrorUtils.sendErrorMessage(interaction, user.error);
                 return;
             }
             if (!user || !user.display_name) {
@@ -25,7 +25,7 @@ export default {
             user = user.body;
         }
         if (user.error) {
-            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+            await ErrorUtils.sendErrorMessage(interaction, user.error);
             return;
         }
 

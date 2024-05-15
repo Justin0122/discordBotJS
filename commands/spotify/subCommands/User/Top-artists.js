@@ -13,7 +13,7 @@ export default {
             user = await spotifySession.getUser(discordUser.id);
             user = user.body;
             if (user.error) {
-                await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+                await ErrorUtils.sendErrorMessage(interaction, user.error);
                 return;
             }
             if (!user || !user.display_name) {
@@ -23,6 +23,7 @@ export default {
         } else {
             discordUser = interaction.user;
             user = await spotifySession.getUser(interaction.user.id);
+            user = user.body;
         }
         if (!user || !user.display_name) {
             await ErrorUtils.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");

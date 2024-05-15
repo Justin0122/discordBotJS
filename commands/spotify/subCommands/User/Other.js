@@ -24,7 +24,7 @@ export default {
             user = await spotifySession.getUser(interaction.user.id);
             user = user.body;
         }
-        if (user.body.error) {
+        if (user.error) {
             await ErrorUtils.sendErrorMessage(interaction, user.body.error);
             return;
         }

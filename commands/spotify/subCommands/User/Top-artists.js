@@ -11,20 +11,19 @@ export default {
         let user;
         if (discordUser) {
             user = await spotifySession.getUser(discordUser.id);
-            if (user.body.error) {
+            user = user.body;
+            if (user.error) {
                 await ErrorUtils.sendErrorMessage(interaction, user.body.error);
                 return;
             }
-            user = user.body;
             if (!user || !user.display_name) {
                 await ErrorUtils.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return;
             }
-        } else{
+        } else {
             discordUser = interaction.user;
             user = await spotifySession.getUser(interaction.user.id);
         }
-        user = user.body;
         if (!user || !user.display_name) {
             await ErrorUtils.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;

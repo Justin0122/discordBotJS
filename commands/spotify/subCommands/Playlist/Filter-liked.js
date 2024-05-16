@@ -28,17 +28,15 @@ export default {
         // Split the value by ',' and remove empty strings
         const values = value.split(',').map(v => v.trim()).filter(v => v);
 
-        const playlistName = `Liked Songs filtered by ${filter} ${values.join(', ')}.`;
-
         try {
-            let playlist = await spotifySession.filterLikedTracks(interaction.user.id, values.map(v => `${filter}:${v}`), playlistName);
+            let playlist = await spotifySession.filterLikedTracks(interaction.user.id, values.map(v => `${filter}:${v}`));
             playlist = playlist.body;
             const embeds = [];
             if (playlist) {
                 const embed = new EmbedBuilder()
                     .setColor(config.color_success)
                     .setTitle('Playlist Created')
-                    .setDescription(playlistName + ' is being created.')
+                    .setDescription(`Please wait while your playlist is being created.`)
                     .setTimestamp()
                     .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 

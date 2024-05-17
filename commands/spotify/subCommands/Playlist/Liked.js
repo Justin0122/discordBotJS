@@ -1,7 +1,7 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import {audioFeatures} from '../../../../Utils/Spotify.js'
-import ErrorUtils from '../../../../Utils/Error.js'
+import SpotifyUtils from '../../../../Utils/Spotify.js'
+import ErrorUtils from '../../../../Utils/Embed/Error.js'
 
 export default {
 
@@ -37,7 +37,7 @@ export default {
         await interaction.reply({embeds: [embed], ephemeral: ephemeral});
 
         let playlist = await spotifySession.createPlaylist(interaction.user.id, playlistName, month, year);
-        const audioFeaturesDescription = await audioFeatures(spotifySession, playlist.body, interaction);
+        const audioFeaturesDescription = await SpotifyUtils.audioFeatures(spotifySession, playlist.body, interaction);
         playlist = playlist.body;
 
         const embeds = [];

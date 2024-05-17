@@ -2,7 +2,7 @@ import {SlashCommandBuilder, EmbedBuilder} from 'discord.js'
 import config from "../../botconfig/embed.json" assert {type: "json"}
 import {readdirSync} from 'fs'
 import {join} from 'path'
-import {createPaginatedEmbed} from "../../Utils/Pagination.js"
+import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js"
 import {fileURLToPath} from 'url'
 import path from 'path'
 

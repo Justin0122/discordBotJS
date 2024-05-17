@@ -62,5 +62,14 @@
         "clear": "Clear and cool. It's {temperature} degrees and {condition}. A great day for outdoor activities.",
         "breezy": "A pleasant breeze in the air. It's {temperature} degrees and {condition}. Ideal for a stroll."
     }
+  },
+  "Patchy rain": {
+    "default": {
+      "default": "There's patchy rain outside. It's {temperature} degrees and {condition}. You might need an umbrella.",
+      "windy": "There's patchy rain and it's windy. It's {temperature} degrees and {condition}. Bundle up and take an umbrella if you go out.",
+      "dry": "Patchy rain with clear skies. It's {temperature} degrees and {condition}. Enjoy the fresh air, but you might need an umbrella.",
+      "clear": "Clear and cool with patchy rain. It's {temperature} degrees and {condition}. A great day for indoor activities.",
+      "breezy": "A pleasant breeze in the air with patchy rain. It's {temperature} degrees and {condition}. Ideal for a stroll, but don't forget your umbrella."
+    }
   }
 }

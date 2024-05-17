@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import {createPaginatedEmbed} from "../../Utils/Pagination.js";
+import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js";
 
 export default {
     category: 'Info',

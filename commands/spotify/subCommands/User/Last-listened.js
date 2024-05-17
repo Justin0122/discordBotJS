@@ -1,8 +1,8 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
-import ErrorUtils from '../../../../Utils/Error.js'
-import {formatItem} from "../../../../Utils/Spotify.js"
+import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
+import ErrorUtils from '../../../../Utils/Embed/Error.js'
+import SpotifyUtils from "../../../../Utils/Spotify.js"
 
 export default {
 
@@ -45,7 +45,7 @@ export default {
             return;
         }
 
-        const formattedItems = lastListened.items.map(formatItem);
+        const formattedItems = lastListened.items.map(SpotifyUtils.formatItem);
 
         const embeds = [];
 

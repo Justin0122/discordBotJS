@@ -1,7 +1,7 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
-import ErrorUtils from '../../../../Utils/Error.js'
+import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
+import ErrorUtils from '../../../../Utils/Embed/Error.js'
 
 export default {
 

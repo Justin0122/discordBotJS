@@ -1,5 +1,5 @@
 import { ButtonBuilder, ButtonComponent, ActionRowBuilder, ButtonStyle} from 'discord.js';
-import config from '../botconfig/embed.json' assert { type: "json" };
+import config from '../../botconfig/embed.json' assert { type: "json" };
 
 async function createPaginatedEmbed(interaction, embeds, currentPage, update = false, InitialRow = null, ephemeral = false){
     const maxPerPage = 1;

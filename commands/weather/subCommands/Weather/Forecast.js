@@ -1,5 +1,5 @@
 import { weatherConditions, moonPhases } from "../../../../Utils/Weather/weatherConditions.js"
-import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
+import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 import { EmbedBuilder } from 'discord.js'
 
 export default {

@@ -1,5 +1,5 @@
 import {SlashCommandBuilder, EmbedBuilder} from 'discord.js'
-import {createPaginatedEmbed} from "../../Utils/Pagination.js"
+import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js"
 import Vibify from '@vibify/vibify'
 import {fileURLToPath} from 'url'
 import {dirname, join} from 'path'

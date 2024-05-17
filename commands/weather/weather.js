@@ -3,7 +3,7 @@ import fs from 'fs'
 import Weather from "../../Api/Weather/Weather.js"
 import countries from '../../Utils/Weather/countries.json' assert {type: "json"}
 import cities from '../../Utils/Weather/cities.json' assert {type: "json"}
-import {createPaginatedEmbed} from "../../Utils/Pagination.js"
+import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js"
 import {fileURLToPath} from 'url'
 import path, {dirname, join} from 'path'
 import dotenv from 'dotenv'

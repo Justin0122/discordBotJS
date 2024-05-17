@@ -1,5 +1,5 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
-import config from "../botconfig/embed.json" assert {type: "json"}
+import config from "../../botconfig/embed.json" assert {type: "json"}
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -30,5 +30,9 @@ export default {
             return;
         }
         await interaction.reply({embeds: [embed], components: [row], ephemeral: true});
+    },
+
+    async sendErrorMessageReply(interaction, description = "An error has occurred.", solution = "Please try again later.", note = "If the problem persists, please report it to the developer.") {
+        await this.sendErrorMessage(interaction, description, solution, note, true);
     }
 }

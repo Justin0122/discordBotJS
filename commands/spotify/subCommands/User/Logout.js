@@ -1,6 +1,6 @@
 import {EmbedBuilder } from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import ErrorUtils from '../../../../Utils/Error.js'
+import ErrorUtils from '../../../../Utils/Embed/Error.js'
 
 export default {
     async execute(interaction, spotifySession) {

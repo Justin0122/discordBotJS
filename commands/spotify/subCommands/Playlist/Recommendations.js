@@ -3,9 +3,9 @@ import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import Vibify from '@vibify/vibify'
 import {setTimeout as wait} from 'node:timers/promises'
 
-import {createPaginatedEmbed} from "../../../../Utils/Pagination.js"
-import {audioFeatures} from "../../../../Utils/Spotify.js"
-import ErrorUtils from '../../../../Utils/Error.js'
+import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
+import SpotifyUtils from "../../../../Utils/Spotify.js"
+import ErrorUtils from '../../../../Utils/Embed/Error.js'
 
 const queue = [];
 let isProcessing = false;
@@ -122,11 +122,11 @@ async function processQueue() {
         try {
             let playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedTracks, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
             if (playlist.error || !playlist) {
-                await ErrorUtils.sendErrorMessage(interaction, "Failed to create the playlist.", playlist.error, 'Please try again.', true);
+                await ErrorUtils.sendErrorMessageReply(interaction);
                 return;
             }
             playlist = playlist.body;
-            const audioFeaturesDescription = await audioFeatures(spotifySession, playlist, interaction);
+            const audioFeaturesDescription = await SpotifyUtils.audioFeatures(spotifySession, playlist, interaction);
 
             if (playlist) {
                 const embeds = [];
@@ -210,23 +210,11 @@ async function processQueue() {
                     await interaction.followUp({content: `<@${interaction.user.id}>`, ephemeral: true});
                 }
             } else {
-                const embed = new EmbedBuilder()
-                    .setColor(config.error)
-                    .setTitle('No Tracks Found')
-                    .setDescription('No songs found for the given arguments.')
-                    .setTimestamp();
-
-                await interaction.editReply({embeds: [embed], ephemeral: true});
+                await ErrorUtils.sendErrorMessageReply(interaction, "Failed to create the playlist.");
             }
         } catch (error) {
-            console.log(error);
-            const embed = new EmbedBuilder()
-                .setColor(config.error)
-                .setTitle('Error')
-                .setDescription('Failed to create the playlist: \n' + error.message.toString())
-                .setTimestamp();
-
-            await interaction.editReply({embeds: [embed], ephemeral: true});
+            console.error(error);
+            await ErrorUtils.sendErrorMessageReply(interaction, "An error occurred.", "Please try again later.");
         }
 
         await wait(2000);

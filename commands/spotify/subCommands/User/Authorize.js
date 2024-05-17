@@ -11,7 +11,7 @@ export default {
         const embed = new EmbedBuilder()
             .setTitle('Spotify Login')
             .setDescription('Click the button below to authorize the bot to access your Spotify account.')
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp();
 
         const row = new ActionRowBuilder()

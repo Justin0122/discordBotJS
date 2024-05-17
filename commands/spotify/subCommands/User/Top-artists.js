@@ -53,7 +53,7 @@ export default {
                 .addFields(
                     {name: 'Top Artists', value: formattedItems.slice(i, i + 10).join('\n'), inline: false},
                 )
-                .setColor(config.color_success)
+                .setColor(config.success)
                 .setTimestamp()
                 .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
             embeds.push(embed);

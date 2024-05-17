@@ -83,7 +83,7 @@ export default {
         });
 
         const embed = new EmbedBuilder()
-            .setColor(config.color_info)
+            .setColor(config.info)
             .setTitle('Creating Playlist')
             .setDescription('Please wait while the playlist is being created.')
             .addFields(
@@ -132,7 +132,7 @@ async function processQueue() {
                 const embeds = [];
 
                 const embed = new EmbedBuilder()
-                    .setColor(config.color_success)
+                    .setColor(config.success)
                     .setTitle('Playlist Created')
                     .setDescription(`Click the button below to view the playlist.`)
                     .setURL(playlist.external_urls.spotify)
@@ -155,7 +155,7 @@ async function processQueue() {
                 embeds.push(embed);
 
                 const audioFeaturesEmbed = new EmbedBuilder()
-                    .setColor(config.color_success)
+                    .setColor(config.success)
                     .setURL(playlist.external_urls.spotify)
                     .setTitle('Audio Features')
                     .setDescription(audioFeaturesDescription)
@@ -166,7 +166,7 @@ async function processQueue() {
                 embeds.push(audioFeaturesEmbed);
 
                 const argumentsEmbed = new EmbedBuilder()
-                    .setColor(config.color_success)
+                    .setColor(config.success)
                     .setTitle('Arguments')
                     .setDescription(
                         `Genre: ${genre || 'None'}\n` +
@@ -182,7 +182,7 @@ async function processQueue() {
                 embeds.push(argumentsEmbed);
 
                 const targetValuesEmbed = new EmbedBuilder()
-                    .setColor(config.color_success)
+                    .setColor(config.success)
                     .setTitle('Target Values')
                     .setDescription(
                         `Acousticness: ${targetValues.acousticness !== null ? targetValues.acousticness : 'None'}\n` +
@@ -211,7 +211,7 @@ async function processQueue() {
                 }
             } else {
                 const embed = new EmbedBuilder()
-                    .setColor(config.color_error)
+                    .setColor(config.error)
                     .setTitle('No Tracks Found')
                     .setDescription('No songs found for the given arguments.')
                     .setTimestamp();
@@ -221,7 +221,7 @@ async function processQueue() {
         } catch (error) {
             console.log(error);
             const embed = new EmbedBuilder()
-                .setColor(config.color_error)
+                .setColor(config.error)
                 .setTitle('Error')
                 .setDescription('Failed to create the playlist: \n' + error.message.toString())
                 .setTimestamp();

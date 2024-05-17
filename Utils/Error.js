@@ -17,7 +17,7 @@ export default {
         const embed = new EmbedBuilder()
             .setTitle('Error')
             .setDescription(description)
-            .setColor(config.color_error)
+            .setColor(config.error)
             .addFields(
                 {name: 'Solution', value: solution, inline: false},
                 {name: 'Note', value: note, inline: false},

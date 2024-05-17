@@ -49,7 +49,7 @@ export default {
 
             if (!embed) return;
 
-            await embed.setColor(config.color_success);
+            await embed.setColor(config.success);
             embed.setFooter({ text: interaction.user.username, iconURL: interaction.user.avatarURL() });
             embed.setTimestamp();
 
@@ -62,7 +62,7 @@ export default {
             }
         } catch (error) {
             const embed = new EmbedBuilder()
-                .setColor(config.color_error)
+                .setColor(config.error)
                 .setTitle('Error')
                 .addFields(
                     { name: 'Command', value: `\`${command.data.name}\`` },

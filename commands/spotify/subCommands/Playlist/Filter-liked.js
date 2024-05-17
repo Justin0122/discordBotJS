@@ -34,7 +34,7 @@ export default {
             const embeds = [];
             if (playlist) {
                 const embed = new EmbedBuilder()
-                    .setColor(config.color_success)
+                    .setColor(config.success)
                     .setTitle('Playlist Created')
                     .setDescription(`Please wait while your playlist is being created.`)
                     .setTimestamp()
@@ -46,7 +46,7 @@ export default {
                 }
             } else {
                 const embed = new EmbedBuilder()
-                    .setColor(config.color_error)
+                    .setColor(config.error)
                     .setTitle('No Tracks Found')
                     .setDescription('No songs found for the filter.')
                     .setTimestamp();
@@ -55,7 +55,7 @@ export default {
         } catch (error) {
             console.log(error);
             const embed = new EmbedBuilder()
-                .setColor(config.color_error)
+                .setColor(config.error)
                 .setTitle('Error')
                 .setDescription('Failed to create the playlist.')
                 .setTimestamp();

@@ -12,7 +12,7 @@ async function createPaginatedEmbed(interaction, embeds, currentPage, update = f
     embeds.forEach(embed => {
         if (!embed.data.footer) {
             if (!embed.data.color){
-            embed.setColor(config.color_success)
+            embed.setColor(config.success)
             }
             embed.setTimestamp()
             embed.setFooter({ text: 'page ' + (pageCount + 1) + ' of ' + totalPages, iconURL: interaction.user.avatarURL() });

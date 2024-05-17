@@ -67,7 +67,7 @@ export default {
 
         const embed = new EmbedBuilder()
             .setTitle('Help')
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp()
             .setDescription(commandList.join('\n'))
             .setTimestamp()
@@ -82,7 +82,7 @@ export default {
 
         const firstPage = new EmbedBuilder()
             .setTitle('Help')
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp()
             .setDescription('`/help` - Show all commands\n`/help <category>` - Show all commands in a category')
             .setTimestamp()

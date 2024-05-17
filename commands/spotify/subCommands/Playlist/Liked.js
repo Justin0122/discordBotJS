@@ -24,7 +24,7 @@ export default {
         const playlistName = `Liked Songs from ${new Date(year, month - 1, 1).toLocaleString('en-US', {month: 'short'})} ${year}.`;
 
         const embed = new EmbedBuilder()
-            .setColor(config.color_info)
+            .setColor(config.info)
             .setTitle('Creating Playlist')
             .setDescription('Please wait while the playlist is being created.')
             .addFields(
@@ -43,7 +43,7 @@ export default {
         const embeds = [];
         if (playlist) {
             const embed = new EmbedBuilder()
-                .setColor(config.color_success)
+                .setColor(config.success)
                 .setTitle('Playlist Created')
                 .setDescription(audioFeaturesDescription)
                 .setURL(playlist.external_urls.spotify)
@@ -71,7 +71,7 @@ export default {
             }
         } else {
             const embed = new EmbedBuilder()
-                .setColor(config.color_error)
+                .setColor(config.error)
                 .setTitle('No Tracks Found')
                 .setDescription('No songs found for the specified month.')
                 .setTimestamp();

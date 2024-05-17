@@ -55,7 +55,7 @@ export default {
                 .addFields(
                     {name: 'Last Liked', value: formattedItems.slice(i, i + 10).join('\n'), inline: true},
                 )
-                .setColor(config.color_success)
+                .setColor(config.success)
             embeds.push(embed);
         }
         await createPaginatedEmbed(interaction, embeds, 1, false, null, ephemeral);

@@ -83,7 +83,7 @@ export default {
                 {name: 'Recently Played', value: lastListenedValue, inline: true},
                 {name: 'Currently Playing', value: currentlyPlayingValue, inline: false},
             )
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp()
             .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
@@ -111,7 +111,7 @@ export default {
         const topTracksEmbed = new EmbedBuilder()
             .setTitle('Top Tracks')
             .setDescription(topTracks.items.map(formatItem).join('\n'))
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp()
             .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
         embeds.push(topTracksEmbed);
@@ -119,7 +119,7 @@ export default {
         const lastLikedEmbed = new EmbedBuilder()
             .setTitle('Last Liked Tracks')
             .setDescription(lastLiked.items.map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n'))
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp()
             .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 
@@ -128,7 +128,7 @@ export default {
         const topArtistsEmbed = new EmbedBuilder()
             .setTitle('Top Artists')
             .setDescription(topArtists.items.map((artist, index) => `**${index + 1}.** [${artist.name}](${artist.external_urls.spotify})`).join('\n'))
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp()
             .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
         embeds.push(topArtistsEmbed);
@@ -136,7 +136,7 @@ export default {
         const lastListenedEmbed = new EmbedBuilder()
             .setTitle('Recently Played')
             .setDescription(lastListened.items.map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n'))
-            .setColor(config.color_success)
+            .setColor(config.success)
             .setTimestamp()
             .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 

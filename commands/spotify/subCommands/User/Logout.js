@@ -15,14 +15,14 @@ export default {
         }
         await spotifySession.logout(interaction.user.id).then(() => {
             const embed = new EmbedBuilder()
-                .setColor(config.color_success)
+                .setColor(config.success)
                 .setTitle('Logout')
                 .setDescription('You have been successfully logged out of your Spotify account.')
                 .setTimestamp();
             interaction.reply({embeds: [embed], ephemeral: true});
         }).catch((error) => {
             const embed = new EmbedBuilder()
-                .setColor(config.color_error)
+                .setColor(config.error)
                 .setTitle('Error')
                 .setDescription('An error occurred while logging out of your Spotify account.')
                 .addFields(

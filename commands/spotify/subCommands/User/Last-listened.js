@@ -57,7 +57,7 @@ export default {
                 .addFields(
                     {name: 'Last Listened', value: formattedItems.slice(i, i + 10).join('\n'), inline: false},
                 )
-                .setColor(config.color_success)
+                .setColor(config.success)
                 .setTimestamp()
                 .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});
 

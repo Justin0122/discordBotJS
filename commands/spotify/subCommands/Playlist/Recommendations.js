@@ -2,6 +2,8 @@ import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discor
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import Vibify from '@vibify/vibify'
 import {setTimeout as wait} from 'node:timers/promises'
+import dotenv from 'dotenv'
+dotenv.config()
 
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 import SpotifyUtils from "../../../../Utils/Spotify.js"
@@ -56,7 +58,7 @@ export default {
             }
         }
 
-        const spotifySession = new Vibify();
+        const spotifySession = new Vibify(process.env.VIBIFY_API_URL, process.env.APPLICATION_ID);
         let user = await spotifySession.getUser(interaction.user.id);
         if (user.body.error) {
             await ErrorUtils.sendErrorMessage(interaction, user.body.error);

@@ -7,7 +7,7 @@
   "type": "module",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "@vibify/vibify": "^2.0.0",
+    "@vibify/vibify": "^3.0.0",
     "axios": "^1.4.0",
     "discord-api-types": "^0.37.83",
     "discord.js": "^14.11.0",

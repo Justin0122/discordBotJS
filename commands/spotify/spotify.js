@@ -3,6 +3,8 @@ import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js"
 import Vibify from '@vibify/vibify'
 import {fileURLToPath} from 'url'
 import {dirname, join} from 'path'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const currentYear = new Date().getFullYear();
 const choices = [];
@@ -347,7 +349,7 @@ export default {
         const commandModule = await import(commandPath);
         const command = commandModule.default;
 
-        const spotifySession = new Vibify();
+        const spotifySession = new Vibify(process.env.VIBIFY_API_URL, process.env.APPLICATION_ID);
 
         return command.execute(interaction, spotifySession);
     }

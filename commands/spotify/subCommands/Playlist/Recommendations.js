@@ -2,18 +2,17 @@ import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discor
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import Vibify from '@vibify/vibify'
 import {setTimeout as wait} from 'node:timers/promises'
-import dotenv from 'dotenv'
-dotenv.config()
-
+import {SubCommand} from "../../../SubCommand.js";
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 import SpotifyUtils from "../../../../Utils/Spotify.js"
-import ErrorUtils from '../../../../Utils/Embed/Error.js'
+
+import dotenv from 'dotenv'
+dotenv.config()
 
 const queue = [];
 let isProcessing = false;
 
-
-export default {
+class SpotifyRecommendations extends SubCommand {
 
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
@@ -40,20 +39,20 @@ export default {
             mode: option.getString('target-mode') || ''
         };
         if (!genre && !useTrackSeeds) {
-            await ErrorUtils.sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `genre`, `seedTracks`.");
+            await this.sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `genre`, `seedTracks`.");
             return;
         }
         if (!recentlyPlayed && !mostPlayed && !likedTracks && !currentlyPlaying && !genre) {
-            await ErrorUtils.sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedTracks`, `currentlyPlaying`, `genre`.");
+            await this.sendErrorMessage(interaction, "No arguments provided.", "Please provide at least one of the following arguments: `recentlyPlayed`, `mostPlayed`, `likedTracks`, `currentlyPlaying`, `genre`.");
             return;
         }
         if (genre && genre.split(',').length > 5) {
-            await ErrorUtils.sendErrorMessage(interaction, "Too many genres provided.", "Please provide a maximum of 5 genres.", "Please choose a maximum of 5 genres.");
+            await this.sendErrorMessage(interaction, "Too many genres provided.", "Please provide a maximum of 5 genres.", "Please choose a maximum of 5 genres.");
             return;
         }
         for (let key in targetValues) {
             if (isNaN(targetValues[key])) {
-                await ErrorUtils.sendErrorMessage(interaction, `The value for ${key} is not a number.`, "Please provide a valid number for all target values.");
+                await this.sendErrorMessage(interaction, `The value for ${key} is not a number.`, "Please provide a valid number for all target values.");
                 return;
             }
         }
@@ -61,12 +60,12 @@ export default {
         const spotifySession = new Vibify(process.env.VIBIFY_API_URL, process.env.APPLICATION_ID);
         let user = await spotifySession.getUser(interaction.user.id);
         if (user.body.error) {
-            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+            await this.sendErrorMessage(interaction, user.body.error);
             return;
         }
         user = user.body;
         if (!user) {
-            await ErrorUtils.sendErrorMessage(interaction);
+            await this.sendErrorMessage(interaction);
             return;
         }
 
@@ -124,7 +123,7 @@ async function processQueue() {
         try {
             let playlist = await spotifySession.createRecommendationPlaylist(interaction.user.id, genre, recentlyPlayed, mostPlayed, likedTracks, currentlyPlaying, useAudioFeatures, useTrackSeeds, targetValues);
             if (playlist.error || !playlist) {
-                await ErrorUtils.sendErrorMessageReply(interaction);
+                await this.sendErrorMessageReply(interaction);
                 return;
             }
             playlist = playlist.body;
@@ -212,11 +211,11 @@ async function processQueue() {
                     await interaction.followUp({content: `<@${interaction.user.id}>`, ephemeral: true});
                 }
             } else {
-                await ErrorUtils.sendErrorMessageReply(interaction, "Failed to create the playlist.");
+                await this.sendErrorMessageReply(interaction, "Failed to create the playlist.");
             }
         } catch (error) {
             console.error(error);
-            await ErrorUtils.sendErrorMessageReply(interaction, "An error occurred.", "Please try again later.");
+            await this.sendErrorMessageReply(interaction, "An error occurred.", "Please try again later.");
         }
 
         await wait(2000);
@@ -224,3 +223,5 @@ async function processQueue() {
 
     isProcessing = false;
 }
+
+export default SpotifyRecommendations;

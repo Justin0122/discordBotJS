@@ -1,8 +1,9 @@
 import { weatherConditions, moonPhases } from "../../../../Utils/Weather/weatherConditions.js"
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 import { EmbedBuilder } from 'discord.js'
+import {SubCommand} from "../../../SubCommand.js";
 
-export default {
+class WeatherForecast extends SubCommand {
     async execute(interaction, weatherSession) {
     const country = interaction.options.getString('country');
     const city = interaction.options.getString('city');
@@ -65,3 +66,5 @@ ${moonPhaseEmoji} Moon phase: \`${astro.moon_phase}\``)
     await createPaginatedEmbed(interaction, embeds, currentPage, '', '', ephemeral);
     }
 }
+
+export default WeatherForecast;

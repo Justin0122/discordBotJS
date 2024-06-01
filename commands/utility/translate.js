@@ -1,24 +1,28 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { exec } from 'child_process';
+import { Command } from '../Command.js'
 
-export default {
-    category: 'Utility',
-    cooldown: 5,
-    data: new SlashCommandBuilder()
-        .setName('translate')
-        .setDescription('Translate text to a different language')
-        .addStringOption(option =>
-            option.setName('text')
-                .setDescription('The text to translate')
-                .setRequired(true))
-        .addStringOption(option =>
-            option.setName('to')
-                .setDescription('The language to translate to. Use the full language name or the language code.')
-                .setRequired(true)
-        )
-        .addStringOption(option =>
-            option.setName('from')
-                .setDescription('The language to translate from')),
+class TranslateCommand extends Command {
+    constructor() {
+        super();
+        this.category =  'Utility'
+            this.cooldown = 5
+            this.data = new SlashCommandBuilder()
+            .setName('translate')
+            .setDescription('Translate text to a different language')
+            .addStringOption(option =>
+                option.setName('text')
+                    .setDescription('The text to translate')
+                    .setRequired(true))
+            .addStringOption(option =>
+                option.setName('to')
+                    .setDescription('The language to translate to. Use the full language name or the language code.')
+                    .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('from')
+                    .setDescription('The language to translate from'))
+    }
 
     async execute(interaction) {
         return new Promise((resolve, reject) => {
@@ -60,8 +64,8 @@ export default {
                 resolve(embed);
             });
         });
-    },
-};
+    }
+}
 
 function getCodeFromLanguage(language) {
     // Check if input is a valid language code
@@ -72,3 +76,5 @@ function getCodeFromLanguage(language) {
     // Convert language name to language code
     return require('iso-639-1').getCode(language);
 }
+
+export default new TranslateCommand();

@@ -1,33 +1,30 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
-import ErrorUtils from '../../../../Utils/Embed/Error.js'
 
-export default {
+import {SubCommand} from "../../../SubCommand.js";
+
+class SpotifyMe extends SubCommand {
+    constructor() {
+        super();
+        this.category = 'Spotify'
+    }
 
     async execute(interaction, spotifySession) {
-        const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
+        const { ephemeral, discordUser } = this.getCommonOptions(interaction);
+        const user = await this.getUser(interaction, spotifySession, discordUser);
+        if (!user) return;
 
-        const response = await spotifySession.getUser(interaction.user.id);
-        const user = response.body;
-        if (response.body.error) {
-            await ErrorUtils.sendErrorMessage(interaction, response.body.error);
-            return;
-        }
-        if (!user || !user.display_name) {
-            await ErrorUtils.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
-            return;
-        }
         const [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
-            spotifySession.getCurrentlyPlaying(interaction.user.id),
-            spotifySession.getTopTracks(interaction.user.id, 10),
-            spotifySession.getTopArtists(interaction.user.id, 10),
-            spotifySession.getLastListenedTracks(interaction.user.id, 10),
-            spotifySession.getLastLikedTracks(interaction.user.id, 10)
+            spotifySession.getCurrentlyPlaying(discordUser.id),
+            spotifySession.getTopTracks(discordUser.id, 10),
+            spotifySession.getTopArtists(discordUser.id, 10),
+            spotifySession.getLastListenedTracks(discordUser.id, 10),
+            spotifySession.getLastLikedTracks(discordUser.id, 10)
         ]);
 
         if (!topTracks.body.items || !topArtists.body.items || !lastListened.body.items) {
-            await ErrorUtils.sendErrorMessage(interaction, "Failed to retrieve items.");
+            await this.sendErrorMessage(interaction, "Failed to retrieve items.");
             return;
         }
 
@@ -38,7 +35,7 @@ export default {
 
         const lastListenedValue = lastListened.body.items.slice(0, 3).map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n');
 
-        const lastLikedValue = lastLiked.body.items.slice(0, 3).map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n');
+
 
 
         let currentlyPlayingValue = 'Nothing';
@@ -129,3 +126,5 @@ export default {
 
     }
 }
+
+export default new SpotifyMe();

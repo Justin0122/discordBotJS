@@ -1,16 +1,21 @@
 import {EmbedBuilder } from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import ErrorUtils from '../../../../Utils/Embed/Error.js'
 
-export default {
+import {SubCommand} from "../../../SubCommand.js";
+
+class SpotifyLogout extends SubCommand {
+    constructor() {
+        super();
+        this.category = 'Spotify'
+    }
     async execute(interaction, spotifySession) {
         const user = await spotifySession.getUser(interaction.user.id);
         if (user.body.error) {
-            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+            await this.sendErrorMessage(interaction, user.body.error);
             return;
         }
         if (!user || !user.display_name) {
-            await ErrorUtils.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
+            await this.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify login` command to authorize the bot.");
             return;
         }
         await spotifySession.logout(interaction.user.id).then(() => {
@@ -35,3 +40,5 @@ export default {
         );
     }
 }
+
+export default new SpotifyLogout();

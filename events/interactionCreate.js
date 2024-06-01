@@ -1,6 +1,6 @@
 import { Events, Collection, EmbedBuilder} from 'discord.js';
 import config from "../botconfig/embed.json" assert {type: "json"};
-import ErrorUtils from "../Utils/Embed/Error.js";
+import ErrorUtils from '../Utils/Embed/Error.js'
 
 export default {
     name: Events.InteractionCreate,
@@ -62,6 +62,7 @@ export default {
                 await interaction.reply({ embeds: [embed] });
             }
         } catch (error) {
+            console.log(error);
             await ErrorUtils.sendErrorMessage(interaction, "An error occurred.", "Please try again later.");
         }
     },

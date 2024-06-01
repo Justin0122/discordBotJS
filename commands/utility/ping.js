@@ -1,33 +1,33 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { setTimeout as wait } from 'node:timers/promises';
 import axios from 'axios';
+import { Command } from '../Command.js'
 
-export default {
-    category: 'Utility',
-    data: new SlashCommandBuilder()
-        .setName('ping')
-        .setDescription('Replies with Pong!')
-        .addBooleanOption( option =>
-            option.setName('ephemeral')
-                .setDescription('Should the response be ephemeral?')
-                .setRequired(false)
-        ),
+
+class PingCommand extends Command {
+    constructor() {
+        super();
+        this.category = 'Utility'
+        this.data = new SlashCommandBuilder()
+            .setName('ping')
+            .setDescription('Replies with Pong!')
+            .addBooleanOption(option =>
+                option.setName('ephemeral')
+                    .setDescription('Should the response be ephemeral?')
+                    .setRequired(false)
+            );
+    }
+
     async execute(interaction) {
-        const ping = Date.now() - interaction.createdTimestamp;
+        const ping = interaction.client.ws.ping;
         const ephemeral = interaction.options.getBoolean('ephemeral');
 
         if (interaction.user.id === process.env.DEV_USER_ID) {
-            const url = process.env.SPOTIFY_REDIRECT_URI.replace('callback', '');
+            const url = process.env.VIBIFY_API_URL;
             let status = 0;
             let statusText = 'Null';
-            try {
                 const res = await axios.get(url);
                 status = res.status;
                 statusText = res.statusText;
-            } catch (error) {
-                status = error.response.status;
-                statusText = error.response.statusText;
-            }
 
             const embed = new EmbedBuilder()
                 .setTitle('Pong!')
@@ -46,11 +46,7 @@ export default {
             return;
         }
         await interaction.reply({ content: 'Pong! ' + ping + 'ms', ephemeral: ephemeral });
-        //how long to wait in milliseconds
-        const waitTime = 4000;
-        await wait(waitTime);
-        //see how long it takes to reply
-        const ping2 = Date.now() - interaction.createdTimestamp - waitTime;
-        await interaction.followUp({ content: 'Pong again! ' + ping2 + 'ms', ephemeral: true });
-        },
-};
+    }
+}
+
+export default new PingCommand();

@@ -1,24 +1,24 @@
 import {EmbedBuilder} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import ErrorUtils from '../../../../Utils/Embed/Error.js'
+import {SubCommand} from "../../../SubCommand.js";
 
-const queue = [];
-let isProcessing = false;
-
-export default {
+class SpotifyFilterLiked extends SubCommand {
+    constructor() {
+        super();
+        this.category = 'Spotify'
+    }
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const response = await spotifySession.getUser(interaction.user.id);
         const user = response.body;
-        const status = response.status;
         if (response.body.error) {
-            await ErrorUtils.sendErrorMessage(interaction, response.body.error);
+            await this.sendErrorMessage(interaction, response.body.error);
             return;
         }
 
         if (!user) {
-            await ErrorUtils.sendErrorMessage(interaction);
+            await this.sendErrorMessage(interaction);
             return;
         }
 
@@ -31,7 +31,6 @@ export default {
         try {
             let playlist = await spotifySession.filterLikedTracks(interaction.user.id, values.map(v => `${filter}:${v}`));
             playlist = playlist.body;
-            const embeds = [];
             if (playlist) {
                 const embed = new EmbedBuilder()
                     .setColor(config.success)
@@ -64,3 +63,5 @@ export default {
         }
     }
 }
+
+export default new SpotifyFilterLiked();

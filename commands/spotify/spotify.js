@@ -3,6 +3,7 @@ import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js"
 import Vibify from '@vibify/vibify'
 import {fileURLToPath} from 'url'
 import {dirname, join} from 'path'
+import { Command } from '../Command.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -26,298 +27,301 @@ for (let i = 1; i <= 12; i++) {
     monthChoices.push({name: monthName, value: month});
 }
 
-export default {
-    category: 'Spotify',
-    cooldown: 30,
-    data: new SlashCommandBuilder()
-        .setName('spotify')
-        .setDescription('Spotify commands.')
-        .addSubcommandGroup(group =>
-            group
-                .setName('user')
-                .setDescription('User commands.')
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('authorize')
-                        .setDescription('Authorize the bot to access your spotify account.'),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('me')
-                        .setDescription('Get information about your spotify account.')
-                        .addBooleanOption(option =>
-                            option
-                                .setName('ephemeral')
-                                .setDescription('Whether or not the message should be ephemeral.')
-                                .setRequired(false),
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('other')
-                        .setDescription('Get information about another user\'s spotify account.')
-                        .addUserOption(option =>
-                            option
-                                .setName('user')
-                                .setDescription('The user to get information about.')
-                                .setRequired(true),
-                        )
-                        .addBooleanOption(option =>
-                            option
-                                .setName('ephemeral')
-                                .setDescription('Whether or not the message should be ephemeral.')
-                                .setRequired(false),
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('last-listened')
-                        .setDescription('Get the last listened tracks.')
-                        .addUserOption(option =>
-                            option
-                                .setName('user')
-                                .setDescription('The user to get the last listened tracks from.')
-                                .setRequired(false),
-                        )
-                        .addBooleanOption(option =>
-                            option
-                                .setName('ephemeral')
-                                .setDescription('Whether or not the message should be ephemeral.')
-                                .setRequired(false),
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('top-tracks')
-                        .setDescription('Get the user\'s top tracks.')
-                        .addUserOption(option =>
-                            option
-                                .setName('user')
-                                .setDescription('The user to get the top listened tracks from.')
-                                .setRequired(false),
-                        )
-                        .addBooleanOption(option =>
-                            option
-                                .setName('ephemeral')
-                                .setDescription('Whether or not the message should be ephemeral.')
-                                .setRequired(false),
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('top-artists')
-                        .setDescription('Get the user\'s top artists.')
-                        .addUserOption(option =>
-                            option
-                                .setName('user')
-                                .setDescription('The user to get the top artists from.')
-                                .setRequired(false),
-                        )
-                        .addBooleanOption(option =>
-                            option
-                                .setName('ephemeral')
-                                .setDescription('Whether or not the message should be ephemeral.')
-                                .setRequired(false),
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('last-liked')
-                        .setDescription('Get the last liked songs.')
-                        .addUserOption(option =>
-                            option
-                                .setName('user')
-                                .setDescription('The user to get the last liked tracks from.')
-                                .setRequired(false),
-                        )
-                        .addBooleanOption(option =>
-                            option
-                                .setName('ephemeral')
-                                .setDescription('Whether or not the message should be ephemeral.')
-                                .setRequired(false),
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('logout')
-                        .setDescription('Logout of your spotify account.'),
-                ),
-        )
-        .addSubcommandGroup(group =>
-            group
-                .setName('playlist')
-                .setDescription('Playlist commands.')
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('liked')
-                        .setDescription('Create a playlist of your liked songs from a specific month.')
-                        .addStringOption(option =>
-                            option.setName('month')
-                                .setDescription('The month to create the playlist for.')
-                                .setRequired(true)
-                                .addChoices(
-                                    ...monthChoices,
-                                ),
-                        )
-                        .addStringOption(option =>
-                            option.setName('year')
-                                .setDescription('The year to create the playlist for.')
-                                .setRequired(true)
-                                .addChoices(
-                                    ...choices,
-                                ),
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('ephemeral')
-                                .setDescription('Should the response be ephemeral?')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('notify')
-                                .setDescription('Should the bot notify you when the playlist is created?')
-                                .setRequired(false)
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('filter-liked')
-                        .setDescription('Create a playlist of your liked songs based on a filter.')
-                        .addStringOption(option =>
-                            option.setName('filter')
-                                .setDescription('The filter to use.')
-                                .setRequired(true)
-                                .addChoices(
-                                    ...filters,
-                                ),
-                        )
-                        .addStringOption(option =>
-                            option.setName('value')
-                                .setDescription('The value to use for the filter.')
-                                .setRequired(true)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('ephemeral')
-                                .setDescription('Should the response be ephemeral?')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('notify')
-                                .setDescription('Should the bot notify you when the playlist is created?')
-                                .setRequired(false)
-                        ),
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('recommendations')
-                        .setDescription('Create a playlist with song recommendations based on your liked/most played songs.')
-                        .addBooleanOption(option =>
-                            option.setName('ephemeral')
-                                .setDescription('Should the response be ephemeral?')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('notify')
-                                .setDescription('Should the bot notify you when the playlist is created?')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('genre')
-                                .setDescription('What genres should the playlist have? (Separate with commas)')
-                                .setRequired(false)
-                                .setAutocomplete(true)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('most-played')
-                                .setDescription('Should the generator use your most played songs? default: true')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('liked-songs')
-                                .setDescription('Should the generator use your liked songs? default: true')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('recently-played')
-                                .setDescription('Should the generator use your recently played songs? default: false')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('currently-playing')
-                                .setDescription('Should the generator use your currently playing song? default: false')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('audio-features')
-                                .setDescription('Should the generator use audio features? May interfere with genre. default: true')
-                                .setRequired(false)
-                        )
-                        .addBooleanOption(option =>
-                            option.setName('seed-tracks')
-                                .setDescription('Should the generator use track seeds? default: false (if false, will use audio features only)')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-acousticness')
-                                .setDescription('0 to 1')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-danceability')
-                                .setDescription('0 to 1')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-energy')
-                                .setDescription('0 to 1')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-instrumentalness')
-                                .setDescription('0 to 1')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-liveness')
-                                .setDescription('0 to 1')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-speechiness')
-                                .setDescription('0 to 1')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-loudness')
-                                .setDescription('-60 to 0 (dB)')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-tempo')
-                                .setDescription('0 to 200 (BPM)')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-valence')
-                                .setDescription('0 = negative, 1 = positive')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-popularity')
-                                .setDescription('0 to 100')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-key')
-                                .setDescription('0 = C, 1 = C♯/D♭, 2 = D, and so on. (0 to 11)')
-                                .setRequired(false)
-                        )
-                        .addStringOption(option =>
-                            option.setName('target-mode')
-                                .setDescription('0 = minor, 1 = major')
-                                .setRequired(false)
-                        ),
-                ),
-        ),
+class SpotifyCommand extends Command {
+    constructor() {
+        super();
+        this.category = 'Spotify'
+        this.cooldown = 30
+        this.data = new SlashCommandBuilder()
+            .setName('spotify')
+            .setDescription('Spotify commands.')
+            .addSubcommandGroup(group =>
+                group
+                    .setName('user')
+                    .setDescription('User commands.')
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('authorize')
+                            .setDescription('Authorize the bot to access your spotify account.'),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('me')
+                            .setDescription('Get information about your spotify account.')
+                            .addBooleanOption(option =>
+                                option
+                                    .setName('ephemeral')
+                                    .setDescription('Whether or not the message should be ephemeral.')
+                                    .setRequired(false),
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('other')
+                            .setDescription('Get information about another user\'s spotify account.')
+                            .addUserOption(option =>
+                                option
+                                    .setName('user')
+                                    .setDescription('The user to get information about.')
+                                    .setRequired(true),
+                            )
+                            .addBooleanOption(option =>
+                                option
+                                    .setName('ephemeral')
+                                    .setDescription('Whether or not the message should be ephemeral.')
+                                    .setRequired(false),
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('last-listened')
+                            .setDescription('Get the last listened tracks.')
+                            .addUserOption(option =>
+                                option
+                                    .setName('user')
+                                    .setDescription('The user to get the last listened tracks from.')
+                                    .setRequired(false),
+                            )
+                            .addBooleanOption(option =>
+                                option
+                                    .setName('ephemeral')
+                                    .setDescription('Whether or not the message should be ephemeral.')
+                                    .setRequired(false),
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('top-tracks')
+                            .setDescription('Get the user\'s top tracks.')
+                            .addUserOption(option =>
+                                option
+                                    .setName('user')
+                                    .setDescription('The user to get the top listened tracks from.')
+                                    .setRequired(false),
+                            )
+                            .addBooleanOption(option =>
+                                option
+                                    .setName('ephemeral')
+                                    .setDescription('Whether or not the message should be ephemeral.')
+                                    .setRequired(false),
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('top-artists')
+                            .setDescription('Get the user\'s top artists.')
+                            .addUserOption(option =>
+                                option
+                                    .setName('user')
+                                    .setDescription('The user to get the top artists from.')
+                                    .setRequired(false),
+                            )
+                            .addBooleanOption(option =>
+                                option
+                                    .setName('ephemeral')
+                                    .setDescription('Whether or not the message should be ephemeral.')
+                                    .setRequired(false),
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('last-liked')
+                            .setDescription('Get the last liked songs.')
+                            .addUserOption(option =>
+                                option
+                                    .setName('user')
+                                    .setDescription('The user to get the last liked tracks from.')
+                                    .setRequired(false),
+                            )
+                            .addBooleanOption(option =>
+                                option
+                                    .setName('ephemeral')
+                                    .setDescription('Whether or not the message should be ephemeral.')
+                                    .setRequired(false),
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('logout')
+                            .setDescription('Logout of your spotify account.'),
+                    ),
+            )
+            .addSubcommandGroup(group =>
+                group
+                    .setName('playlist')
+                    .setDescription('Playlist commands.')
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('liked')
+                            .setDescription('Create a playlist of your liked songs from a specific month.')
+                            .addStringOption(option =>
+                                option.setName('month')
+                                    .setDescription('The month to create the playlist for.')
+                                    .setRequired(true)
+                                    .addChoices(
+                                        ...monthChoices,
+                                    ),
+                            )
+                            .addStringOption(option =>
+                                option.setName('year')
+                                    .setDescription('The year to create the playlist for.')
+                                    .setRequired(true)
+                                    .addChoices(
+                                        ...choices,
+                                    ),
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('ephemeral')
+                                    .setDescription('Should the response be ephemeral?')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('notify')
+                                    .setDescription('Should the bot notify you when the playlist is created?')
+                                    .setRequired(false)
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('filter-liked')
+                            .setDescription('Create a playlist of your liked songs based on a filter.')
+                            .addStringOption(option =>
+                                option.setName('filter')
+                                    .setDescription('The filter to use.')
+                                    .setRequired(true)
+                                    .addChoices(
+                                        ...filters,
+                                    ),
+                            )
+                            .addStringOption(option =>
+                                option.setName('value')
+                                    .setDescription('The value to use for the filter.')
+                                    .setRequired(true)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('ephemeral')
+                                    .setDescription('Should the response be ephemeral?')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('notify')
+                                    .setDescription('Should the bot notify you when the playlist is created?')
+                                    .setRequired(false)
+                            ),
+                    )
+                    .addSubcommand(subcommand =>
+                        subcommand
+                            .setName('recommendations')
+                            .setDescription('Create a playlist with song recommendations based on your liked/most played songs.')
+                            .addBooleanOption(option =>
+                                option.setName('ephemeral')
+                                    .setDescription('Should the response be ephemeral?')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('notify')
+                                    .setDescription('Should the bot notify you when the playlist is created?')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('genre')
+                                    .setDescription('What genres should the playlist have? (Separate with commas)')
+                                    .setRequired(false)
+                                    .setAutocomplete(true)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('most-played')
+                                    .setDescription('Should the generator use your most played songs? default: true')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('liked-songs')
+                                    .setDescription('Should the generator use your liked songs? default: true')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('recently-played')
+                                    .setDescription('Should the generator use your recently played songs? default: false')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('currently-playing')
+                                    .setDescription('Should the generator use your currently playing song? default: false')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('audio-features')
+                                    .setDescription('Should the generator use audio features? May interfere with genre. default: true')
+                                    .setRequired(false)
+                            )
+                            .addBooleanOption(option =>
+                                option.setName('seed-tracks')
+                                    .setDescription('Should the generator use track seeds? default: false (if false, will use audio features only)')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-acousticness')
+                                    .setDescription('0 to 1')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-danceability')
+                                    .setDescription('0 to 1')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-energy')
+                                    .setDescription('0 to 1')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-instrumentalness')
+                                    .setDescription('0 to 1')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-liveness')
+                                    .setDescription('0 to 1')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-speechiness')
+                                    .setDescription('0 to 1')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-loudness')
+                                    .setDescription('-60 to 0 (dB)')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-tempo')
+                                    .setDescription('0 to 200 (BPM)')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-valence')
+                                    .setDescription('0 = negative, 1 = positive')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-popularity')
+                                    .setDescription('0 to 100')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-key')
+                                    .setDescription('0 = C, 1 = C♯/D♭, 2 = D, and so on. (0 to 11)')
+                                    .setRequired(false)
+                            )
+                            .addStringOption(option =>
+                                option.setName('target-mode')
+                                    .setDescription('0 = minor, 1 = major')
+                                    .setRequired(false)
+                            ),
+                    ),
+            )
+    }
 
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
@@ -334,7 +338,7 @@ export default {
             }));
             await interaction.respond(sliced);
         }
-    },
+    }
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);
@@ -353,7 +357,6 @@ export default {
 
         return command.execute(interaction, spotifySession);
     }
-    ,
 
     async help(interaction) {
         const embeds = [];
@@ -399,4 +402,5 @@ export default {
         await createPaginatedEmbed(interaction, embeds, 1, false, '', ephemeral);
     }
 }
-;
+
+export default new SpotifyCommand();

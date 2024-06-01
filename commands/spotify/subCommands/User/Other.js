@@ -1,38 +1,19 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
-import ErrorUtils from '../../../../Utils/Embed/Error.js'
 
-export default {
+import {SubCommand} from "../../../SubCommand.js";
 
+class SpotifyOther extends SubCommand {
+    constructor() {
+        super();
+        this.category = 'Spotify'
+    }
     async execute(interaction, spotifySession) {
-        const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
-        let discordUser = interaction.options.getUser('user');
-        let user;
-        if (discordUser) {
-            user = await spotifySession.getUser(discordUser.id);
-            user = user.body;
-            if (user.error) {
-                await ErrorUtils.sendErrorMessage(interaction, user.error);
-                return;
-            }
-            if (!user || !user.display_name) {
-                await ErrorUtils.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
-                return;
-            }
-        } else {
-            user = await spotifySession.getUser(interaction.user.id);
-            user = user.body;
-        }
-        if (user.error) {
-            await ErrorUtils.sendErrorMessage(interaction, user.error);
-            return;
-        }
+        const { ephemeral, discordUser } = this.getCommonOptions(interaction);
+        const user = await this.getUser(interaction, spotifySession, discordUser);
+        if (!user) return;
 
-        if (!user || !user.display_name) {
-            await ErrorUtils.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
-            return;
-        }
         let [currentlyPlaying, topTracks, topArtists, lastListened, lastLiked] = await Promise.all([
             spotifySession.getCurrentlyPlaying(discordUser.id),
             spotifySession.getTopTracks(discordUser.id, 10),
@@ -45,7 +26,7 @@ export default {
 
 
         if (!topTracks.items || !topArtists.items || !lastListened.items) {
-            await ErrorUtils.sendErrorMessage(interaction, "Failed to retrieve items.");
+            await this.sendErrorMessage(interaction, "Failed to retrieve items.");
             return;
         }
 
@@ -147,3 +128,5 @@ export default {
 
     }
 }
+
+export default new SpotifyOther();

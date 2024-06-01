@@ -1,20 +1,21 @@
-import {SlashCommandBuilder, EmbedBuilder} from 'discord.js'
-import fs from 'fs'
-import Weather from "../../Api/Weather/Weather.js"
-import countries from '../../Utils/Weather/countries.json' assert {type: "json"}
-import cities from '../../Utils/Weather/cities.json' assert {type: "json"}
-import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js"
-import {fileURLToPath} from 'url'
-import path, {dirname, join} from 'path'
-import dotenv from 'dotenv'
-dotenv.config()
+import {SlashCommandBuilder, EmbedBuilder} from 'discord.js';
+import fs from 'fs';
+import Weather from "../../Api/Weather/Weather.js";
+import countries from '../../Utils/Weather/countries.json' assert {type: "json"};
+import cities from '../../Utils/Weather/cities.json' assert {type: "json"};
+import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js";
+import {fileURLToPath} from 'url';
+import {dirname, join} from 'path';
+import dotenv from 'dotenv';
+import {Command} from '../Command.js'
+
+dotenv.config();
 
 const apiUrl = process.env.WEATHER_API_URL;
 const apiKey = process.env.WEATHER_API_KEY;
 
-
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
 const subCommandFiles = fs.readdirSync(`${__dirname}/subCommands/Weather`).filter(file => file.endsWith('.js'));
 const subCommands = subCommandFiles.map(file => file.split('.')[0]);
@@ -47,11 +48,13 @@ subCommands.forEach(subCommand => {
     );
 });
 
-
-export default {
-    category: 'Weather',
-    cooldown: 30,
-    data: commandBuilder,
+class WeatherCommand extends Command {
+    constructor() {
+        super();
+        this.category = 'Weather';
+        this.cooldown = 30;
+        this.data = commandBuilder;
+    }
 
     async autocomplete(interaction) {
         let focusedOption = interaction.options.getFocused(true);
@@ -82,24 +85,27 @@ export default {
         await interaction.respond(
             choices.map(choice => ({name: choice, value: choice})),
         );
-    },
+    }
 
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand().charAt(0).toUpperCase() + interaction.options.getSubcommand().slice(1);
+        const subcommandGroup = 'Weather';
 
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = dirname(__filename);
 
-        const subCommandDir = join(__dirname, 'subCommands', 'Weather');
+        const subCommandDir = join(__dirname, 'subCommands', subcommandGroup);
         const commandPath = `${subCommandDir}/${subcommand}.js`;
 
         const commandModule = await import(commandPath);
-        const command = commandModule.default;
+        const CommandClass = commandModule.default;
+
+        const command = new CommandClass();
 
         const weatherSession = new Weather(apiUrl, apiKey);
 
         return command.execute(interaction, weatherSession);
-    },
+    }
 
     async help(interaction) {
         const embeds = [];
@@ -128,5 +134,6 @@ export default {
         await createPaginatedEmbed(interaction, embeds, 1, false, '', ephemeral);
 
     }
-};
+}
 
+export default new WeatherCommand();

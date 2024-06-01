@@ -1,12 +1,16 @@
 import { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder} from 'discord.js';
 import { exec } from 'child_process';
+import { Command } from '../Command.js'
 
-export default {
-    category: 'Utility',
-    cooldown: 5,
-    data: new ContextMenuCommandBuilder()
-        .setName('Translate message')
-        .setType(ApplicationCommandType.Message),
+class TranslateMessageCommand extends Command {
+    constructor() {
+        super();
+        this.category = 'Utility'
+        this.cooldown = 5
+        this.data = new ContextMenuCommandBuilder()
+            .setName('Translate message')
+            .setType(ApplicationCommandType.Message)
+    }
 
     async execute(interaction) {
         const message = interaction.options.getMessage('message');
@@ -34,4 +38,6 @@ export default {
             interaction.reply({ embeds: [embed], ephemeral: true });
         });
     }
-};
+}
+
+export default new TranslateMessageCommand();

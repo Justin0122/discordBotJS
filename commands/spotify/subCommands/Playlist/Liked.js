@@ -1,20 +1,20 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import SpotifyUtils from '../../../../Utils/Spotify.js'
-import ErrorUtils from '../../../../Utils/Embed/Error.js'
+import {SubCommand} from "../../../SubCommand.js";
 
-export default {
+class SpotifyLiked extends SubCommand {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
         const user = await spotifySession.getUser(interaction.user.id);
         if (user.body.error) {
-            await ErrorUtils.sendErrorMessage(interaction, user.body.error);
+            await this.sendErrorMessage(interaction, user.body.error);
             return;
         }
 
         if (!user) {
-            await ErrorUtils.sendErrorMessage(interaction);
+            await this.sendErrorMessage(interaction);
             return;
         }
 
@@ -80,3 +80,5 @@ export default {
         }
     }
 }
+
+export default SpotifyLiked;

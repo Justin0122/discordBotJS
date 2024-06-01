@@ -1,8 +1,13 @@
 import { EmbedBuilder } from 'discord.js'
 import { weatherConditions } from '../../../../Utils/Weather/weatherConditions.js';
 import WeatherStories from '../../../../Utils/Weather/weatherStories.json' assert {type: "json"}
+import {SubCommand} from "../../../SubCommand.js";
 
-export default {
+class WeatherCurrent extends SubCommand {
+    constructor() {
+        super();
+        this.category = 'Weather'
+    }
     async execute(interaction, weatherSession) {
         const country = interaction.options.getString('country');
         const city = interaction.options.getString('city');
@@ -48,4 +53,6 @@ ${emoji} Feels Like: ${current.feelslike_c}°C
 
         await interaction.reply({embeds: [embed], ephemeral: ephemeral});
     }
-};
+}
+
+export default WeatherCurrent;

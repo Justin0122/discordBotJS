@@ -351,7 +351,9 @@ class SpotifyCommand extends Command {
         const commandPath = `${subCommandDir}/${subcommand}.js`;
 
         const commandModule = await import(commandPath);
-        const command = commandModule.default;
+        const CommandClass = commandModule.default;
+
+        const command = new CommandClass();
 
         const spotifySession = new Vibify(process.env.VIBIFY_API_URL, process.env.APPLICATION_ID);
 

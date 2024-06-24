@@ -32,4 +32,4 @@ class SpotifyAuthorize extends SubCommand {
     }
 }
 
-export default new SpotifyAuthorize();
+export default SpotifyAuthorize;

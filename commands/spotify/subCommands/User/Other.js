@@ -129,4 +129,4 @@ class SpotifyOther extends SubCommand {
     }
 }
 
-export default new SpotifyOther();
+export default SpotifyOther;

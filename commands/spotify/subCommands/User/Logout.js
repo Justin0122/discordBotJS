@@ -41,4 +41,4 @@ class SpotifyLogout extends SubCommand {
     }
 }
 
-export default new SpotifyLogout();
+export default SpotifyLogout;

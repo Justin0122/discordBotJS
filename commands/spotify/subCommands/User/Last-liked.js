@@ -44,4 +44,4 @@ class SpotifyLastLiked extends SubCommand {
     }
 }
 
-export default new SpotifyLastLiked();
+export default SpotifyLastLiked;

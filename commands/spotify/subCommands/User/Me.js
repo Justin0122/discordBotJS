@@ -127,4 +127,4 @@ class SpotifyMe extends SubCommand {
     }
 }
 
-export default new SpotifyMe();
+export default SpotifyMe;

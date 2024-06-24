@@ -64,4 +64,4 @@ class SpotifyFilterLiked extends SubCommand {
     }
 }
 
-export default new SpotifyFilterLiked();
+export default SpotifyFilterLiked;

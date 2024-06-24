@@ -56,4 +56,4 @@ class SpotifyTopTracks extends SubCommand {
     }
 }
 
-export default new SpotifyTopTracks();
+export default SpotifyTopTracks;

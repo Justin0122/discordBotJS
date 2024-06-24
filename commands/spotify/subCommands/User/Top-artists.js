@@ -49,4 +49,4 @@ class SpotifyTopArtists extends SubCommand {
     }
 }
 
-export default new SpotifyTopArtists();
+export default SpotifyTopArtists;

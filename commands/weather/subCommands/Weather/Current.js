@@ -1,9 +1,9 @@
 import { EmbedBuilder } from 'discord.js'
 import { weatherConditions } from '../../../../Utils/Weather/weatherConditions.js';
 import WeatherStories from '../../../../Utils/Weather/weatherStories.json' assert {type: "json"}
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 
-class WeatherCurrent extends SubCommand {
+class WeatherCurrent extends Command {
     constructor() {
         super();
         this.category = 'Weather'

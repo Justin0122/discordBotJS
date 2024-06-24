@@ -3,9 +3,9 @@ import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 
 import SpotifyUtils from "../../../../Utils/Spotify.js"
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 
-class SpotifyLastListened extends SubCommand {
+class SpotifyLastListened extends Command {
     constructor() {
         super();
         this.category = 'Spotify'

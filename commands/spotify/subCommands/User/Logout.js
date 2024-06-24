@@ -1,9 +1,9 @@
 import {EmbedBuilder } from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 
-class SpotifyLogout extends SubCommand {
+class SpotifyLogout extends Command {
     constructor() {
         super();
         this.category = 'Spotify'

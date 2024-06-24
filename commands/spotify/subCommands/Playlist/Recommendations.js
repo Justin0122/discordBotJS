@@ -2,7 +2,7 @@ import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discor
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import Vibify from '@vibify/vibify'
 import {setTimeout as wait} from 'node:timers/promises'
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 import SpotifyUtils from "../../../../Utils/Spotify.js"
 
@@ -12,7 +12,7 @@ dotenv.config()
 const queue = [];
 let isProcessing = false;
 
-class SpotifyRecommendations extends SubCommand {
+export default class SpotifyRecommendations extends Command {
 
     async execute(interaction) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;
@@ -223,5 +223,3 @@ async function processQueue() {
 
     isProcessing = false;
 }
-
-export default SpotifyRecommendations;

@@ -4,7 +4,7 @@ import { SubCommand } from '../../../SubCommand.js'
 import dotenv from "dotenv";
 dotenv.config();
 
-class SpotifyAuthorize extends SubCommand {
+class SpotifyAuthorize extends Command {
     constructor() {
         super();
         this.category = 'Spotify'

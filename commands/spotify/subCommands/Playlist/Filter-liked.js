@@ -1,8 +1,8 @@
 import {EmbedBuilder} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 
-class SpotifyFilterLiked extends SubCommand {
+class SpotifyFilterLiked extends Command {
     constructor() {
         super();
         this.category = 'Spotify'

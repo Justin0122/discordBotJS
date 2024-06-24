@@ -1,9 +1,9 @@
 import { weatherConditions, moonPhases } from "../../../../Utils/Weather/weatherConditions.js"
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 import { EmbedBuilder } from 'discord.js'
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 
-class WeatherForecast extends SubCommand {
+class WeatherForecast extends Command {
     async execute(interaction, weatherSession) {
     const country = interaction.options.getString('country');
     const city = interaction.options.getString('city');

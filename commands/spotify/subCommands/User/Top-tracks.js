@@ -2,9 +2,9 @@ import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discor
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 
-class SpotifyTopTracks extends SubCommand {
+class SpotifyTopTracks extends Command {
     constructor() {
         super();
         this.category = 'Spotify'

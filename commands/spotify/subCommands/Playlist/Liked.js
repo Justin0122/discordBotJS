@@ -1,9 +1,9 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
 import SpotifyUtils from '../../../../Utils/Spotify.js'
-import {SubCommand} from "../../../SubCommand.js";
+import {Command} from "../../../Command.js";
 
-class SpotifyLiked extends SubCommand {
+class SpotifyLiked extends Command {
 
     async execute(interaction, spotifySession) {
         const ephemeral = interaction.options.getBoolean('ephemeral') || false;

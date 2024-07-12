@@ -1,6 +1,6 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
 import config from '../../../../botconfig/embed.json' assert {type: "json"}
-import { SubCommand } from '../../../SubCommand.js'
+import { Command } from '../../../Command.js'
 import dotenv from "dotenv";
 dotenv.config();
 

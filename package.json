@@ -16,7 +16,9 @@
     "iso-639-1": "^2.1.15",
     "mysql": "^2.18.1",
     "request": "^2.88.2",
-    "spotify-web-api-node": "^5.0.2"
+    "spotify-web-api-node": "^5.0.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "eslint": "^8.43.0"

@@ -31,59 +31,63 @@ class ManageServer extends Command {
 
         if (['start', 'stop', 'restart'].includes(action)) {
             await this.performAction(interaction, baseUrl, action);
+
+            // If action is start, stop or restart, send a basic status message without buttons
+            await interaction.editReply(`${action.charAt(0).toUpperCase() + action.slice(1)} the server`);
+
         } else if (action === 'status') {
             await this.getStatus(interaction, baseUrl);
+
+            // Setup interaction collector for button presses only when needed
+            const filter = (i) => ['start', 'stop', 'restart', 'status'].includes(i.customId) && i.user.id === interaction.user.id;
+            const collector = interaction.channel.createMessageComponentCollector({filter, time: 240000}); // 240 seconds
+
+            collector.on('collect', async (i) => {
+                if (i.customId === 'start') {
+                    await this.performAction(interaction, baseUrl, 'start');
+                    await this.updateStatusEmbed(interaction, baseUrl, '#00ff00'); // Green
+                } else if (i.customId === 'stop') {
+                    await this.performAction(interaction, baseUrl, 'stop');
+                    await this.updateStatusEmbed(interaction, baseUrl, '#ff0000'); // Red
+                } else if (i.customId === 'restart') {
+                    await this.performAction(interaction, baseUrl, 'restart');
+                    await this.getStatus(interaction, baseUrl);
+                } else if (i.customId === 'status') {
+                    await this.getStatus(interaction, baseUrl);
+                }
+
+                // Acknowledge the button interaction by changing the embed with updated status
+                await i.deferUpdate();
+            });
+
+            collector.on('end', async (collected, reason) => {
+                // Disable the buttons after the collector ends
+                const newRow = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setLabel('Start')
+                        .setCustomId('start')
+                        .setDisabled(true)
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                        .setLabel('Stop')
+                        .setCustomId('stop')
+                        .setDisabled(true)
+                        .setStyle(ButtonStyle.Danger),
+                    new ButtonBuilder()
+                        .setLabel('Restart')
+                        .setCustomId('restart')
+                        .setDisabled(true)
+                        .setStyle(ButtonStyle.Secondary),
+                    new ButtonBuilder()
+                        .setLabel('Status')
+                        .setCustomId('status')
+                        .setDisabled(true)
+                        .setStyle(ButtonStyle.Secondary)
+                );
+
+                await interaction.editReply({components: [newRow]});
+            });
         }
-
-        // Setup interaction collector for button presses
-        const filter = (i) => ['start', 'stop', 'restart', 'status'].includes(i.customId) && i.user.id === interaction.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({filter, time: 240000}); // 240 seconds
-
-        collector.on('collect', async (i) => {
-            if (i.customId === 'start') {
-                await this.performAction(interaction, baseUrl, 'start');
-                await this.updateStatusEmbed(interaction, baseUrl, '#00ff00'); // Green
-            } else if (i.customId === 'stop') {
-                await this.performAction(interaction, baseUrl, 'stop');
-                await this.updateStatusEmbed(interaction, baseUrl, '#ff0000'); // Red
-            } else if (i.customId === 'restart') {
-                await this.performAction(interaction, baseUrl, 'restart');
-                await this.getStatus(interaction, baseUrl);
-            } else if (i.customId === 'status') {
-                await this.getStatus(interaction, baseUrl);
-            }
-
-            // Acknowledge the button interaction by changing the embed with updated status
-            await i.deferUpdate();
-        });
-
-        collector.on('end', async (collected, reason) => {
-            // Disable the buttons
-            const newRow = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setLabel('Start')
-                    .setCustomId('start')
-                    .setDisabled(true)
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setLabel('Stop')
-                    .setCustomId('stop')
-                    .setDisabled(true)
-                    .setStyle(ButtonStyle.Danger),
-                new ButtonBuilder()
-                    .setLabel('Restart')
-                    .setCustomId('restart')
-                    .setDisabled(true)
-                    .setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder()
-                    .setLabel('Status')
-                    .setCustomId('status')
-                    .setDisabled(true)
-                    .setStyle(ButtonStyle.Secondary)
-            );
-
-            await interaction.editReply({components: [newRow]});
-        });
     }
 
     async help(interaction) {
@@ -215,41 +219,41 @@ class ManageServer extends Command {
         return `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
-async getPortainerJWT() {
-    const baseUrl = process.env.PORTAINER_URL;
-    const url = `${baseUrl}/auth`;
+    async getPortainerJWT() {
+        const baseUrl = process.env.PORTAINER_URL;
+        const url = `${baseUrl}/auth`;
 
-    const body = {
-        username: process.env.PORTAINER_USERNAME,
-        password: process.env.PORTAINER_PASSWORD
-    };
-    const headers = {
-        'Content-Type': 'application/json'
-    };
+        const body = {
+            username: process.env.PORTAINER_USERNAME,
+            password: process.env.PORTAINER_PASSWORD
+        };
+        const headers = {
+            'Content-Type': 'application/json'
+        };
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(body)
-        });
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(body)
+            });
 
-        if (!response.ok) {
+            if (!response.ok) {
+                const responseText = await response.text();
+                console.error(`HTTP error! Status: ${response.status} - ${responseText}`); // Detailed error log
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
             const responseText = await response.text();
-            console.error(`HTTP error! Status: ${response.status} - ${responseText}`); // Detailed error log
-            throw new Error(`HTTP error! Status: ${response.status}`);
+
+            // Parse the JSON and return the JWT token
+            const data = JSON.parse(responseText);
+            return data.jwt;
+        } catch (error) {
+            console.error("Error in getPortainerJWT method:", error);
+            throw new Error('Failed to retrieve JWT token');
         }
-
-        const responseText = await response.text();
-
-        // Parse the JSON and return the JWT token
-        const data = JSON.parse(responseText);
-        return data.jwt;
-    } catch (error) {
-        console.error("Error in getPortainerJWT method:", error);
-        throw new Error('Failed to retrieve JWT token');
     }
-}
 
     async updateStatusEmbed(interaction, baseUrl, color) {
         const url = `${baseUrl}json`; // Endpoint to get container status

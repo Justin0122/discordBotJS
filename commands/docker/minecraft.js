@@ -215,39 +215,42 @@ class ManageServer extends Command {
         return `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
-    async getPortainerJWT() {
-        const url = `${process.env.PORTAINER_URL}/auth`;
-        const body = {
-            username: process.env.PORTAINER_USERNAME,
-            password: process.env.PORTAINER_PASSWORD
-        };
-        const headers = {
-            'Content-Type': 'application/json'
-        };
+async getPortainerJWT() {
+    const baseUrl = process.env.PORTAINER_URL;
+    const url = `${baseUrl}/auth`;
 
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(body)
-            });
+    const body = {
+        username: process.env.PORTAINER_USERNAME,
+        password: process.env.PORTAINER_PASSWORD
+    };
+    const headers = {
+        'Content-Type': 'application/json'
+    };
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(body)
+        });
 
+        if (!response.ok) {
             const responseText = await response.text();
-
-            // Parse the JSON and return the JWT token
-            const data = JSON.parse(responseText);
-            return data.jwt;
-        } catch (error) {
-            console.error("Error in getPortainerJWT method:", error);
-            throw new Error('Failed to retrieve JWT token');
+            console.error(`HTTP error! Status: ${response.status} - ${responseText}`); // Detailed error log
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    }
 
-    // New helper method to update status embed with dynamic color
+        const responseText = await response.text();
+
+        // Parse the JSON and return the JWT token
+        const data = JSON.parse(responseText);
+        return data.jwt;
+    } catch (error) {
+        console.error("Error in getPortainerJWT method:", error);
+        throw new Error('Failed to retrieve JWT token');
+    }
+}
+
     async updateStatusEmbed(interaction, baseUrl, color) {
         const url = `${baseUrl}json`; // Endpoint to get container status
         try {
@@ -292,7 +295,7 @@ class ManageServer extends Command {
                     {name: 'Started At', value: startTime, inline: false},
                     {name: 'Uptime', value: uptime, inline: false},
                 )
-                .setColor(color) // Set the color dynamically based on the button pressed
+                .setColor(color)
                 .setTimestamp()
                 .setThumbnail(interaction.client.user.avatarURL() || interaction.client.user.defaultAvatarURL)
                 .setFooter({text: interaction.user.username, iconURL: interaction.user.avatarURL()});

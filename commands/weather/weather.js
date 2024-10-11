@@ -1,8 +1,8 @@
 import {SlashCommandBuilder, EmbedBuilder} from 'discord.js';
 import fs from 'fs';
 import Weather from "../../Api/Weather/Weather.js";
-import countries from '../../Utils/Weather/countries.json' assert {type: "json"};
-import cities from '../../Utils/Weather/cities.json' assert {type: "json"};
+import countries from '../../Utils/Weather/countries.json' with {type: "json"};
+import cities from '../../Utils/Weather/cities.json' with {type: "json"};
 import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js";
 import {fileURLToPath} from 'url';
 import {dirname, join} from 'path';

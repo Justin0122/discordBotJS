@@ -1,5 +1,5 @@
 import { Events, Collection, EmbedBuilder} from 'discord.js';
-import config from "../botconfig/embed.json" assert {type: "json"};
+import config from "../botconfig/embed.json" with {type: "json"};
 import ErrorUtils from '../Utils/Embed/Error.js'
 
 export default {

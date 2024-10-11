@@ -1,5 +1,5 @@
 import {SlashCommandBuilder, EmbedBuilder} from 'discord.js'
-import config from "../../botconfig/embed.json" assert {type: "json"}
+import config from "../../botconfig/embed.json" with { type: "json" };
 import {readdirSync} from 'fs'
 import {join} from 'path'
 import {createPaginatedEmbed} from "../../Utils/Embed/Pagination.js"

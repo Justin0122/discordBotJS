@@ -326,7 +326,7 @@ class SpotifyCommand extends Command {
     async autocomplete(interaction) {
         const focusedValue = interaction.options.getFocused();
         if (interaction.options.getFocused(true).name === 'genre') {
-            const genresModule = await import('../../Utils/genres.json', {assert: {type: 'json'}});
+            const genresModule = await import('../../Utils/genres.json', {with: {type: 'json'}});
             const genres = genresModule.default;
             const enteredGenres = focusedValue.split(',').map(genre => genre.trim());
             const lastEnteredGenre = enteredGenres[enteredGenres.length - 1];

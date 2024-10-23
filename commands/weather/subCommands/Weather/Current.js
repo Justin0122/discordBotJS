@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js'
 import { weatherConditions } from '../../../../Utils/Weather/weatherConditions.js';
-import WeatherStories from '../../../../Utils/Weather/weatherStories.json' assert {type: "json"}
+import WeatherStories from '../../../../Utils/Weather/weatherStories.json' with {type: "json"}
 import {Command} from "../../../Command.js";
 
 class WeatherCurrent extends Command {

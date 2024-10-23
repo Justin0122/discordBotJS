@@ -1,5 +1,5 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
-import config from '../../../../botconfig/embed.json' assert {type: "json"}
+import config from '../../../../botconfig/embed.json' with {type: "json"}
 import SpotifyUtils from '../../../../Utils/Spotify.js'
 import {Command} from "../../../Command.js";
 

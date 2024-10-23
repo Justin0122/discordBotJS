@@ -1,5 +1,5 @@
 import {EmbedBuilder } from 'discord.js'
-import config from '../../../../botconfig/embed.json' assert {type: "json"}
+import config from '../../../../botconfig/embed.json' with {type: "json"}
 
 import {Command} from "../../../Command.js";
 

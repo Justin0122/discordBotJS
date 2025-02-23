@@ -1,4 +1,4 @@
-import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
+import {EmbedBuilder} from 'discord.js'
 import config from '../../../../botconfig/embed.json' with {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 
@@ -21,7 +21,7 @@ class SpotifyLastListened extends Command {
                 await this.sendErrorMessage(interaction, user.error);
                 return;
             }
-            if (!user || !user.display_name) {
+            if (!user || !user.displayName) {
                 await this.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return;
             }
@@ -36,7 +36,7 @@ class SpotifyLastListened extends Command {
             return;
         }
 
-        if (!user || !user.display_name) {
+        if (!user || !user.displayName) {
             await this.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify user authorize` command to authorize the bot.");
             return;
         }
@@ -56,8 +56,8 @@ class SpotifyLastListened extends Command {
         for (let i = 0; i < formattedItems.length; i += 10) {
             const embed = new EmbedBuilder()
                 .setTitle('Last Listened')
-                .setDescription(`**${user.display_name}**, ${user.country} - ${user.followers.total} followers`)
-                .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
+                .setDescription(`**${user.displayName}**, ${user.country} - ${user.followers} followers`)
+                .setThumbnail(user.profileImage || interaction.user.avatarURL())
                 .addFields(
                     {name: 'Last Listened', value: formattedItems.slice(i, i + 10).join('\n'), inline: false},
                 )

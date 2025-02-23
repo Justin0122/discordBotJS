@@ -11,7 +11,16 @@ class SpotifyAuthorize extends Command {
     }
 
     async execute(interaction) {
-        const url = `https://accounts.spotify.com/authorize?client_id=${process.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}&scope=user-read-email%20user-read-private%20user-library-read%20user-top-read%20user-read-recently-played%20user-read-currently-playing%20user-follow-read%20playlist-read-private%20playlist-modify-public%20playlist-modify-private%20playlist-read-collaborative%20user-library-modify&state=${interaction.user.id}`;
+        const {SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI} = process.env;
+        const state = interaction.user.id;
+        const scopes = [
+            'user-read-email', 'user-read-private', 'user-library-read', 'user-top-read',
+            'user-read-recently-played', 'user-read-currently-playing', 'user-follow-read',
+            'playlist-read-private', 'playlist-modify-public', 'playlist-modify-private',
+            'playlist-read-collaborative', 'user-library-modify'
+        ].join('%20');
+
+        const url = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${SPOTIFY_REDIRECT_URI}&scope=${scopes}&state=${state}`;
 
         const embed = new EmbedBuilder()
             .setTitle('Spotify Login')

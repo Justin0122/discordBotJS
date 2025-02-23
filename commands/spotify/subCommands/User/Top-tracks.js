@@ -1,4 +1,4 @@
-import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
+import {EmbedBuilder} from 'discord.js'
 import config from '../../../../botconfig/embed.json' with {type: "json"}
 import {createPaginatedEmbed} from "../../../../Utils/Embed/Pagination.js"
 
@@ -11,7 +11,7 @@ class SpotifyTopTracks extends Command {
     }
 
     async execute(interaction, spotifySession) {
-        const { ephemeral, discordUser } = this.getCommonOptions(interaction);
+        const {ephemeral, discordUser} = this.getCommonOptions(interaction);
         const user = await this.getUser(interaction, spotifySession, discordUser);
         if (!user) return;
 
@@ -36,12 +36,16 @@ class SpotifyTopTracks extends Command {
         const embeds = [];
 
         for (let i = 0; i < formattedItems.length; i += 10) {
+            let value = formattedItems.slice(i, i + 10).join('\n');
+            if (value.length > 1024) {
+                value = value.slice(0, 1021) + '...';
+            }
             const embed = new EmbedBuilder()
                 .setTitle('Top Tracks')
-                .setDescription(`**${user.display_name}**, ${user.country} - ${user.followers.total} followers`)
-                .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
+                .setDescription(`**${user.displayName}**, ${user.country} - ${user.followers} followers`)
+                .setThumbnail(user.profileImage || interaction.user.avatarURL())
                 .addFields(
-                    {name: 'Top Tracks', value: formattedItems.slice(i, i + 10).join('\n'), inline: false},
+                    {name: 'Top Tracks', value: value, inline: false},
                 )
                 .setColor(config.success)
                 .setTimestamp()

@@ -36,10 +36,7 @@ class SpotifyOther extends Command {
         const topArtistsValue = topArtists.items.slice(0, 3).map((artist, index) => `**${index + 1}.** [${artist.name}](${artist.external_urls.spotify})`).join('\n');
 
         const lastListenedValue = lastListened.items.slice(0, 3).map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n');
-
-        const lastLikedValue = lastLiked.items.slice(0, 3).map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n');
-
-
+        lastLiked.items.slice(0, 3).map((item, index) => `**${index + 1}.** [${item.track.name}](${item.track.external_urls.spotify}) - ${item.track.artists.map(artist => artist.name).join(', ')}`).join('\n');
         let currentlyPlayingValue = 'Nothing';
         if (currentlyPlaying?.item) {
             const progress = formatProgress(currentlyPlaying.progress_ms, currentlyPlaying.item.duration_ms);
@@ -55,9 +52,9 @@ class SpotifyOther extends Command {
         const embeds = [];
 
         const embed = new EmbedBuilder()
-            .setTitle(user.display_name + "'s Spotify Profile")
-            .setDescription(`**${user.display_name}**, ${user.country} - ${user.followers.total} followers`)
-            .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
+            .setTitle(user.displayName + "'s Spotify Profile")
+            .setDescription(`**${user.displayName}**, ${user.country} - ${user.followers} followers`)
+            .setThumbnail(user.profileImage || interaction.user.avatarURL())
             .addFields(
                 {name: 'Top Tracks', value: topTracksValue, inline: true},
                 {name: 'Top Artists', value: topArtistsValue, inline: true},

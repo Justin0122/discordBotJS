@@ -14,7 +14,7 @@ class SpotifyLogout extends Command {
             await this.sendErrorMessage(interaction, user.body.error);
             return;
         }
-        if (!user || !user.display_name) {
+        if (!user || !user.displayName) {
             await this.sendErrorMessage(interaction, "You are not logged in to your Spotify account.", "Please use the `/spotify user authorize` command to authorize the bot.");
             return;
         }

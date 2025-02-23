@@ -7,7 +7,7 @@ export class Command {
     }
 
     async execute(interaction) {
-        const ephemeral = interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
+        interaction.options.getBoolean('ephemeral') ? interaction.options.getBoolean('ephemeral') : false;
         await this.sendErrorMessage(interaction, 'This command has not been implemented yet.');
     }
 
@@ -34,7 +34,7 @@ export class Command {
                 await this.sendErrorMessage(interaction, user.error);
                 return null;
             }
-            if (!user || !user.display_name) {
+            if (!user || !user.displayName) {
                 await this.sendErrorMessage(interaction, user.error, 'Please try again later.', 'Ask the user to authorize the bot.');
                 return null;
             }

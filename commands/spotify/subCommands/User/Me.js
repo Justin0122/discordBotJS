@@ -54,8 +54,8 @@ export default class SpotifyMe extends Command {
 
         const embed = new EmbedBuilder()
             .setTitle('Spotify Me')
-            .setDescription(`**${user.display_name}**, ${user.country} - ${user.followers.total} followers`)
-            .setThumbnail(user.images.length > 0 ? user.images[0].url : interaction.user.avatarURL())
+            .setDescription(`**${user.displayName}**, ${user.country} - ${user.followers} followers`)
+            .setThumbnail(user.profileImage || interaction.user.avatarURL())
             .addFields(
                 {name: 'Top Tracks', value: topTracksValue, inline: true},
                 {name: 'Top Artists', value: topArtistsValue, inline: true},

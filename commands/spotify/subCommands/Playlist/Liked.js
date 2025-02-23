@@ -1,6 +1,5 @@
 import {EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js'
 import config from '../../../../botconfig/embed.json' with {type: "json"}
-import SpotifyUtils from '../../../../Utils/Spotify.js'
 import {Command} from "../../../Command.js";
 
 class SpotifyLiked extends Command {
@@ -34,23 +33,27 @@ class SpotifyLiked extends Command {
             )
             .setTimestamp();
 
+        const time = new Date();
         await interaction.reply({embeds: [embed], ephemeral: ephemeral});
 
         let playlist = await spotifySession.createPlaylist(interaction.user.id, playlistName, month, year);
-        const audioFeaturesDescription = await SpotifyUtils.audioFeatures(spotifySession, playlist.body, interaction);
         playlist = playlist.body;
-
-        const embeds = [];
+        const endTime = Date.now();
+        const timeTaken = (endTime - time) / 1000;
+        let title = 'Playlist Created';
+        // TODO: Fix temporary solution
+        if (timeTaken < 3) {
+            title = "Already exists";
+        }
         if (playlist) {
             const embed = new EmbedBuilder()
                 .setColor(config.success)
-                .setTitle('Playlist Created')
-                .setDescription(audioFeaturesDescription)
+                .setTitle(title)
                 .setURL(playlist.external_urls.spotify)
                 .addFields({name: 'Name', value: playlist.name, inline: true},
                     {name: 'Total Tracks', value: playlist.tracks.total.toString(), inline: true},
                     {
-                        name: 'Owner', value: playlist.owner.display_name, inline: true
+                        name: 'Owner', value: playlist.owner.displayName, inline: true
                     })
                 .setThumbnail(playlist.images[0].url)
                 .setTimestamp()
